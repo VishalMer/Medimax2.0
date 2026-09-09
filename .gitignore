@@ -1,0 +1,36 @@
+# Environment and local configuration
+.env
+.env.*
+!.env.example
+*.local
+
+# Claude/VS Code machine-specific settings
+.claude/settings.local.json
+.claude/launch.json
+.vscode/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs, dumps, and temporary files
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+
+# PHP and local development artifacts
+vendor/
+*.sqlite
+*.sqlite3
+*.db
+phpunit.xml
+coverage/
+
+# Runtime uploads: keep the directory, but do not commit user-uploaded files.
+# Existing tracked images remain available until explicitly removed from Git.
+public/images/temp/*
+!public/images/temp/.gitkeep
