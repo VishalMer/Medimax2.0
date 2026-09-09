@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "medimax",
+      "runtimeExecutable": "D:/Xampp/php/php.exe",
+      "runtimeArgs": ["-S", "localhost:8765", "-t", "D:/Xampp/htdocs"],
+      "port": 8765,
+      "url": "http://localhost:8765"
+    }
+  ]
+}
