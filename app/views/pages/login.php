@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <!-- custom.css (loads the type stack) -->
   <link rel="stylesheet" href="<?= asset('css/custom.css') ?>">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body class="auth-body">
 
@@ -54,14 +55,14 @@
         <div class="mm-field">
           <label for="identifier">Username or email</label>
           <input class="mm-input" type="text" id="identifier" name="identifier"
-                 autocomplete="username" placeholder="you@example.com" required>
+               autocomplete="username" placeholder="you@example.com" required data-validation="required">
         </div>
         <p class="error-text" id="identifierError" aria-live="polite"></p>
 
         <div class="mm-field mm-field--pw">
           <label for="password">Password</label>
           <input class="mm-input" type="password" id="password" name="password"
-                 autocomplete="current-password" placeholder="••••••••" required>
+               autocomplete="current-password" placeholder="••••••••" required data-validation="required">
           <button class="pw-toggle" type="button" data-pw-toggle="password" aria-label="Show password">
             <i class="far fa-eye" aria-hidden="true"></i>
           </button>

@@ -10,17 +10,17 @@
   <form action="<?= url('admin-add-user-submit') ?>" method="POST">
     <div class="mm-field">
       <label for="name">Full name</label>
-      <input class="mm-input" type="text" id="name" name="name" required placeholder="Priya Patel" autocomplete="name">
+      <input class="mm-input" type="text" id="name" name="name" required data-validation="required alpha min" data-min="2" placeholder="Priya Patel" autocomplete="name">
     </div>
 
     <div class="mm-field">
       <label for="email">Email address</label>
-      <input class="mm-input" type="email" id="email" name="email" required placeholder="priya@example.com" autocomplete="email">
+      <input class="mm-input" type="email" id="email" name="email" required data-validation="required email" placeholder="priya@example.com" autocomplete="email">
     </div>
 
     <div class="mm-field">
       <label for="role">Role</label>
-      <input class="mm-input" type="text" id="role" name="role" list="roleOptions" required placeholder="customer">
+      <input class="mm-input" type="text" id="role" name="role" list="roleOptions" required data-validation="required alpha" placeholder="customer">
       <datalist id="roleOptions">
         <option value="customer">
         <option value="admin">
@@ -33,8 +33,8 @@
 
     <div class="mm-field mm-field--pw">
       <label for="password">Temporary password</label>
-      <input class="mm-input" type="password" id="password" name="password" required
-             placeholder="At least 8 characters" autocomplete="new-password">
+            <input class="mm-input" type="password" id="password" name="password" required data-validation="required strongPassword min max" data-min="8" data-max="25"
+              placeholder="At least 8 characters" autocomplete="new-password">
       <button class="pw-toggle" type="button" data-pw-toggle="password" aria-label="Show password">
         <i class="far fa-eye" aria-hidden="true"></i>
       </button>

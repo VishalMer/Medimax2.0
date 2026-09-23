@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <!-- custom.css (loads the type stack) -->
   <link rel="stylesheet" href="<?= asset('css/custom.css') ?>">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body class="auth-body">
 
@@ -52,21 +53,21 @@
         <div class="mm-field">
           <label for="username">Your name</label>
           <input class="mm-input" type="text" id="username" name="name"
-                 autocomplete="name" placeholder="Priya Patel" required>
+               autocomplete="name" placeholder="Yash Patel" required data-validation="required alpha min" data-min="2">
         </div>
         <p class="error-text" id="usernameError" aria-live="polite"></p>
 
         <div class="mm-field">
           <label for="email">Email</label>
           <input class="mm-input" type="email" id="email" name="email"
-                 autocomplete="email" placeholder="you@example.com" required>
+               autocomplete="email" placeholder="you@example.com" required data-validation="required email">
         </div>
         <p class="error-text" id="emailError" aria-live="polite"></p>
 
         <div class="mm-field mm-field--pw">
           <label for="password">Password</label>
           <input class="mm-input" type="password" id="password" name="password"
-                 autocomplete="new-password" placeholder="At least 8 characters" required>
+               autocomplete="new-password" placeholder="At least 8 characters" required data-validation="required strongPassword min max" data-min="8" data-max="25">
           <button class="pw-toggle" type="button" data-pw-toggle="password" aria-label="Show password">
             <i class="far fa-eye" aria-hidden="true"></i>
           </button>

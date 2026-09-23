@@ -29,13 +29,13 @@
                 <div class="col-md-6">
                   <div class="mm-field">
                     <label for="name">Your name</label>
-                    <input class="mm-input" type="text" id="name" name="name" placeholder="Priya Patel" required>
+                    <input class="mm-input" type="text" id="name" name="name" placeholder="Priya Patel" required data-validation="required alpha min" data-min="2">
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="mm-field">
                     <label for="email">Email</label>
-                    <input class="mm-input" type="email" id="email" name="email" placeholder="you@example.com" required>
+                    <input class="mm-input" type="email" id="email" name="email" placeholder="you@example.com" required data-validation="required email">
                   </div>
                 </div>
               </div>
@@ -44,20 +44,20 @@
                 <div class="col-md-6">
                   <div class="mm-field">
                     <label for="phone">Phone <span style="color:var(--ink-40);font-weight:500">(optional)</span></label>
-                    <input class="mm-input" type="tel" id="phone" name="phone" placeholder="+91 12345 67890">
+                    <input class="mm-input" type="tel" id="phone" name="phone" placeholder="+91 12345 67890" data-validation="max" data-max="20">
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="mm-field">
                     <label for="subject">Subject</label>
-                    <input class="mm-input" type="text" id="subject" name="subject" placeholder="Order MX-0003">
+                    <input class="mm-input" type="text" id="subject" name="subject" placeholder="Order MX-0003" data-validation="max" data-max="120">
                   </div>
                 </div>
               </div>
 
               <div class="mm-field">
                 <label for="message">Message</label>
-                <textarea class="mm-input" id="message" name="message" rows="5"
+                <textarea class="mm-input" id="message" name="message" rows="5" data-validation="required min max" data-min="10" data-max="2000"
                           placeholder="Tell us what you need. Include an order number if your question is about a delivery."></textarea>
               </div>
 

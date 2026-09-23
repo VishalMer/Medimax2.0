@@ -23,6 +23,7 @@ $navUserFirst = strtok($navUser['name'] ?? 'Guest', ' ');
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <!-- MediMax design system -->
     <link rel="stylesheet" href="<?= asset('css/custom.css') ?>">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
 <a class="visually-hidden-focusable btn-mm btn-mm-primary position-absolute top-0 start-0 m-2" style="z-index:2000" href="#main">Skip to content</a>
@@ -62,7 +63,7 @@ $navUserFirst = strtok($navUser['name'] ?? 'Guest', ' ');
           <input type="hidden" name="page" value="products">
           <i class="fas fa-magnifying-glass mm-search__icon" aria-hidden="true"></i>
           <label class="visually-hidden" for="navSearch">Search products</label>
-          <input id="navSearch" type="search" name="q" placeholder="Search medicines &amp; wellness" value="<?= htmlspecialchars($_GET['q'] ?? '') ?>">
+          <input id="navSearch" type="search" name="q" data-validation="max" data-max="120" placeholder="Search medicines &amp; wellness" value="<?= htmlspecialchars($_GET['q'] ?? '') ?>">
           <button type="submit" aria-label="Search"><i class="fas fa-arrow-right" aria-hidden="true"></i></button>
         </form>
 

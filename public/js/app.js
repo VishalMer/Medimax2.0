@@ -281,79 +281,107 @@
       });
     });
 
-    /* --- Auth forms: check before the round trip ----------------------
-       Front-of-house checks only. The server stays the authority; this
-       just saves a page load and says what to fix, in the field. */
-    var authForms = [
-      {
-        form: 'loginForm',
-        checks: [
-          { input: 'identifier', out: 'identifierError', test: function (v) {
-              if (!v) return 'Enter your username or email.';
-              return '';
-            } },
-          { input: 'password', out: 'passwordError', test: function (v) {
-              if (!v) return 'Enter your password.';
-              return '';
-            } }
-        ]
-      },
-      {
-        form: 'registrationForm',
-        checks: [
-          { input: 'username', out: 'usernameError', test: function (v) {
-              if (!v) return 'Enter your name.';
-              if (v.length < 2) return 'That looks too short to be a name.';
-              return '';
-            } },
-          { input: 'email', out: 'emailError', test: function (v) {
-              if (!v) return 'Enter your email.';
-              if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return 'That email is missing something — check the @ and the domain.';
-              return '';
-            } },
-          { input: 'password', out: 'passwordError', test: function (v) {
-              if (!v) return 'Choose a password.';
-              if (v.length < 8) return 'Use at least 8 characters.';
-              return '';
-            } }
-        ]
-      }
-    ];
+    /* --- Shared jQuery form validation ------------------------------- */
+    if (window.jQuery) {
+      (function ($) {
+        function validateField(input) {
+          var field = $(input);
+          var value = field.val() ? String(field.val()).trim() : '';
+          var errorSpan = $('#' + (field.attr('id') || field.attr('name')) + 'Error');
+          if (!errorSpan.length) errorSpan = field.siblings('.validation-error').first();
+          var validationType = field.data('validation') || '';
+          var minLength = field.data('min') || 0;
+          var maxLength = field.data('max') || 9999;
+          var filesize = field.data('filesize') || 0;
+          var fileTypes = String(field.data('filetypes') || '').split(',').filter(Boolean);
+          var errorMessage = '';
 
-    authForms.forEach(function (spec) {
-      var form = document.getElementById(spec.form);
-      if (!form) return;
+          if (!validationType) return true;
 
-      var fields = spec.checks.map(function (c) {
-        return { input: document.getElementById(c.input), out: document.getElementById(c.out), test: c.test };
-      }).filter(function (f) { return f.input && f.out; });
+          if (validationType.includes('required') && value === '') {
+            errorMessage = 'This field is required.';
+          }
+          if (!errorMessage && value !== '' && validationType.includes('email') &&
+              !/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
+            errorMessage = 'Please enter a valid email address.';
+          }
+          if (!errorMessage && value !== '' && validationType.includes('strongPassword') &&
+              !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,25}$/.test(value)) {
+            errorMessage = 'Password must be at least 8 characters, include uppercase, lowercase, number, and special character.';
+          }
+          if (!errorMessage && validationType.includes('confirmPassword')) {
+            var password = $('#' + field.data('password-id')).val().trim();
+            if (value !== password) errorMessage = 'Passwords do not match.';
+          }
+          if (!errorMessage && validationType.includes('terms') && !field.is(':checked')) {
+            errorMessage = 'You must agree to the Terms & Conditions.';
+          }
+          if (!errorMessage && value !== '' && validationType.includes('alpha') && !/^[A-Za-z\s]+$/.test(value)) {
+            errorMessage = 'Only letters are allowed.';
+          }
+          if (!errorMessage && value !== '' && validationType.includes('numeric') && !/^[0-9]+$/.test(value)) {
+            errorMessage = 'Only numbers are allowed.';
+          }
+          if (!errorMessage && value !== '' && validationType.includes('min') && value.length < minLength) {
+            errorMessage = 'Must be at least ' + minLength + ' characters.';
+          }
+          if (!errorMessage && value !== '' && validationType.includes('max') && value.length > maxLength) {
+            errorMessage = 'Must be less than ' + maxLength + ' characters.';
+          }
+          if (!errorMessage && validationType.includes('file')) {
+            if (input.files && input.files.length > 0) {
+              var file = input.files[0];
+              var extension = file.name.split('.').pop().toLowerCase();
+              if (fileTypes.length && fileTypes.indexOf(extension) === -1) {
+                errorMessage = 'Only JPG, JPEG, or PNG files are allowed.';
+              } else if (validationType.includes('filesize') && file.size / 1024 > filesize) {
+                errorMessage = 'File size must be less than ' + filesize + ' KB.';
+              }
+            } else if (validationType.includes('required')) {
+              errorMessage = 'Please upload a file.';
+            }
+          }
+          if (!errorMessage && field.is('select') && validationType.includes('required') &&
+              (value === '' || field.find('option:selected').index() === 0)) {
+            errorMessage = 'Please select an option.';
+          }
 
-      var show = function (f) {
-        var msg = f.test(f.input.value.trim());
-        f.out.textContent = msg;
-        f.input.setAttribute('aria-invalid', msg ? 'true' : 'false');
-        f.input.style.borderColor = msg ? 'var(--danger)' : '';
-        return !msg;
-      };
-
-      fields.forEach(function (f) {
-        f.input.addEventListener('blur', function () { show(f); });
-        f.input.addEventListener('input', function () {
-          if (f.out.textContent) show(f);
-        });
-      });
-
-      form.addEventListener('submit', function (e) {
-        var firstBad = null;
-        fields.forEach(function (f) {
-          if (!show(f) && !firstBad) firstBad = f.input;
-        });
-        if (firstBad) {
-          e.preventDefault();
-          firstBad.focus();
+          if (errorMessage) {
+            errorSpan.text(errorMessage).show();
+            field.addClass('is-invalid').removeClass('is-valid').attr('aria-invalid', 'true');
+          } else {
+            errorSpan.text('').hide();
+            field.removeClass('is-invalid').addClass('is-valid').attr('aria-invalid', 'false');
+          }
+          return !errorMessage;
         }
-      });
-    });
+
+        $('input, textarea, select').each(function () {
+          var field = $(this);
+          if (!field.data('validation')) return;
+            if (!field.siblings('.validation-error').length &&
+              !$('#' + (field.attr('id') || field.attr('name')) + 'Error').length) {
+            $('<span class="validation-error error-text" role="alert"></span>').insertAfter(field);
+          }
+        });
+
+        $(document).on('input change blur', 'input, textarea, select', function () {
+          if ($(this).data('validation')) validateField(this);
+        });
+
+        $('form').on('submit', function (e) {
+          var form = this;
+          var isValid = true;
+          $(form).find('input, textarea, select').each(function () {
+            if ($(this).data('validation') && !validateField(this)) isValid = false;
+          });
+          if (!isValid) {
+            e.preventDefault();
+            $(form).find('.is-invalid').first().trigger('focus');
+          }
+        });
+      })(window.jQuery);
+    }
   });
 
   window.MediMax = { toast: toast };

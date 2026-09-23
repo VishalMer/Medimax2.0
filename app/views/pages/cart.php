@@ -64,7 +64,7 @@ foreach ($items as $it) { $units += (int) ($it['quantity'] ?? 1); }
                       <input type="hidden" name="cart_id" value="<?= $iId ?>">
                       <div class="stepper">
                         <button type="button" data-step="-1" aria-label="Decrease quantity"><i class="fas fa-minus" aria-hidden="true"></i></button>
-                        <input type="number" name="quantity" value="<?= $iQty ?>" min="1"
+                           <input type="number" name="quantity" value="<?= $iQty ?>" min="1" data-validation="required numeric min max" data-min="1" data-max="3"
                                aria-label="Quantity of <?= htmlspecialchars($iName) ?>">
                         <button type="button" data-step="1" aria-label="Increase quantity"><i class="fas fa-plus" aria-hidden="true"></i></button>
                       </div>

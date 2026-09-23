@@ -14,13 +14,13 @@
         <div class="mm-field">
           <label for="name">Full name</label>
           <input class="mm-input" type="text" id="name" name="name"
-                 value="<?= htmlspecialchars($adminUser['name'] ?? '') ?>" required autocomplete="name">
+                 value="<?= htmlspecialchars($adminUser['name'] ?? '') ?>" required data-validation="required alpha min" data-min="2" autocomplete="name">
         </div>
 
         <div class="mm-field">
           <label for="email">Email address</label>
           <input class="mm-input" type="email" id="email" name="email"
-                 value="<?= htmlspecialchars($adminUser['email'] ?? '') ?>" required autocomplete="email">
+                 value="<?= htmlspecialchars($adminUser['email'] ?? '') ?>" required data-validation="required email" autocomplete="email">
         </div>
 
         <div class="mm-field">
@@ -48,7 +48,7 @@
 
           <div class="w-100 mt-4 text-start">
             <label class="mm-label" for="image">Change picture</label>
-            <input class="mm-input" type="file" id="image" name="image" accept="image/*">
+            <input class="mm-input" type="file" id="image" name="image" accept="image/*" data-validation="file filesize" data-filesize="2048" data-filetypes="jpg,jpeg,png,webp">
             <p class="mb-0 mt-2" style="font-size:.74rem;color:var(--ink-40)">Square image, at least 200&times;200.</p>
           </div>
         </div>

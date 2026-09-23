@@ -13,18 +13,18 @@
     <div class="mm-field">
       <label for="name">Product name</label>
       <input class="mm-input" type="text" id="name" name="name"
-             value="<?= htmlspecialchars($product['name'] ?? '') ?>" required>
+             value="<?= htmlspecialchars($product['name'] ?? '') ?>" required data-validation="required min max" data-min="2" data-max="150">
     </div>
 
     <div class="mm-field">
       <label for="price">Price (&#8377;)</label>
       <input class="mm-input num" type="number" id="price" name="price" step="0.01" min="0"
-             value="<?= htmlspecialchars((string) ($product['price'] ?? '')) ?>" required>
+             value="<?= htmlspecialchars((string) ($product['price'] ?? '')) ?>" required data-validation="required">
     </div>
 
     <div class="mm-field">
       <label for="image">Replace image</label>
-      <input class="mm-input" type="file" id="image" name="image" accept="image/*">
+      <input class="mm-input" type="file" id="image" name="image" accept="image/*" data-validation="file filesize" data-filesize="2048" data-filetypes="jpg,jpeg,png,webp">
     </div>
 
     <?php if (!empty($product['image'])): ?>

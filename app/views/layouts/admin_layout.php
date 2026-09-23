@@ -34,6 +34,7 @@ $sectionLabel = $sections[$currentPage] ?? 'Console';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <!-- Custom CSS (loads the type stack) -->
     <link rel="stylesheet" href="<?= asset('css/custom.css') ?>">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#adminMain">Skip to content</a>

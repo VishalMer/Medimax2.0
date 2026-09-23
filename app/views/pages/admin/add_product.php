@@ -10,7 +10,7 @@
   <form action="<?= url('admin-add-product-submit') ?>" method="POST" enctype="multipart/form-data">
     <div class="mm-field">
       <label for="name">Product name</label>
-      <input class="mm-input" type="text" id="name" name="name" required placeholder="Vitamin C 500mg, 60 tablets">
+      <input class="mm-input" type="text" id="name" name="name" required data-validation="required min max" data-min="2" data-max="150" placeholder="Vitamin C 500mg, 60 tablets">
       <p class="mb-0 mt-2" style="font-size:.76rem;color:var(--ink-40)">
         Write it the way a customer would search for it: brand, strength, pack size.
       </p>
@@ -18,12 +18,12 @@
 
     <div class="mm-field">
       <label for="price">Price (&#8377;)</label>
-      <input class="mm-input num" type="number" id="price" name="price" step="0.01" min="0" required placeholder="450.00">
+      <input class="mm-input num" type="number" id="price" name="price" step="0.01" min="0" required data-validation="required" placeholder="450.00">
     </div>
 
     <div class="mm-field">
       <label for="image">Product image</label>
-      <input class="mm-input" type="file" id="image" name="image" accept="image/*" required>
+      <input class="mm-input" type="file" id="image" name="image" accept="image/*" required data-validation="required file filesize" data-filesize="2048" data-filetypes="jpg,jpeg,png,webp">
       <p class="mb-0 mt-2" style="font-size:.76rem;color:var(--ink-40)">
         Square works best. Shoot the front of the pack on a plain background.
       </p>

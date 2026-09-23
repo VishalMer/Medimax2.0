@@ -29,19 +29,19 @@
     <div class="mm-field">
       <label for="name">Full name</label>
       <input class="mm-input" type="text" id="name" name="name"
-             value="<?= htmlspecialchars($user['name'] ?? '') ?>" required autocomplete="name">
+             value="<?= htmlspecialchars($user['name'] ?? '') ?>" required data-validation="required alpha min" data-min="2" autocomplete="name">
     </div>
 
     <div class="mm-field">
       <label for="email">Email address</label>
       <input class="mm-input" type="email" id="email" name="email"
-             value="<?= htmlspecialchars($user['email'] ?? '') ?>" required autocomplete="email">
+             value="<?= htmlspecialchars($user['email'] ?? '') ?>" required data-validation="required email" autocomplete="email">
     </div>
 
     <div class="mm-field">
       <label for="role">Role</label>
       <input class="mm-input" type="text" id="role" name="role" list="roleOptions"
-             value="<?= htmlspecialchars($user['role'] ?? '') ?>" required>
+             value="<?= htmlspecialchars($user['role'] ?? '') ?>" required data-validation="required alpha">
       <datalist id="roleOptions">
         <option value="customer">
         <option value="admin">
