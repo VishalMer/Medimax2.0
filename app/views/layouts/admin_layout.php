@@ -37,7 +37,7 @@ $sectionLabel = $sections[$currentPage] ?? 'Console';
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
-  <a class="skip-link" href="#adminMain">Skip to content</a>
+
 
   <div class="admin-shell">
 

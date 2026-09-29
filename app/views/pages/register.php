@@ -19,7 +19,6 @@
 
   <aside class="auth-aside">
     <a class="auth-aside__brand" href="<?= url() ?>">
-      <img src="<?= asset('images/MediMax_Logo.png') ?>" alt="">
       MediMax
     </a>
 
@@ -41,7 +40,6 @@
   <main class="auth-main">
     <div class="auth-card">
       <a class="auth-card__brand" href="<?= url() ?>">
-        <img src="<?= asset('images/MediMax_Logo.png') ?>" alt="">
         MediMax
       </a>
 

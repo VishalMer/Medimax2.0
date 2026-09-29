@@ -6,7 +6,6 @@
 
       <div>
         <a class="mm-footer__brand" href="<?= url() ?>">
-          <img src="<?= asset('images/MediMax_Logo.png') ?>" alt="">
           MediMax
         </a>
         <p class="mt-3" style="max-width:34ch">

@@ -1064,6 +1064,10 @@ h4, h5, h6 { font-family: var(--font-body); font-weight: 700; letter-spacing: -.
   color: rgba(255, 255, 255, .8);
   background: linear-gradient(185deg, var(--navy-deep), var(--ink));
   border-right: 1px solid rgba(255, 255, 255, .06);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
 }
 .admin-rail__brand {
   display: flex; align-items: center; gap: .65rem;

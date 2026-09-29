@@ -32,7 +32,6 @@ $navUserFirst = strtok($navUser['name'] ?? 'Guest', ' ');
   <div class="mm-container d-flex flex-wrap align-items-center justify-content-between">
 
     <a class="navbar-brand" href="<?= url() ?>">
-      <img src="<?= asset('images/MediMax_Logo.png') ?>" alt="">
       <span>MediMax<small>Licensed chemist</small></span>
     </a>
 
@@ -43,7 +42,6 @@ $navUserFirst = strtok($navUser['name'] ?? 'Guest', ' ');
     <div class="offcanvas offcanvas-end" tabindex="-1" id="navOffcanvas" aria-labelledby="navOffcanvasLabel">
       <div class="offcanvas-header">
         <span class="navbar-brand m-0" id="navOffcanvasLabel">
-          <img src="<?= asset('images/MediMax_Logo.png') ?>" alt="">
           <span>MediMax<small>Licensed chemist</small></span>
         </span>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close menu"></button>

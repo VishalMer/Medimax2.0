@@ -29,7 +29,6 @@ $groups = [
 ];
 ?>
 <a class="admin-rail__brand" href="<?= url('admin') ?>">
-  <img src="<?= asset('images/MediMax_Logo.png') ?>" alt="">
   <span>MediMax<small>Console</small></span>
 </a>
 
