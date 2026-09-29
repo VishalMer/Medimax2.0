@@ -4,6 +4,7 @@ ob_start();
 $shortcuts = [
     ['page' => 'admin-products',        'icon' => 'fa-boxes-stacked', 'label' => 'Products list',    'hint' => 'Edit or retire a product'],
     ['page' => 'admin-add-product',     'icon' => 'fa-circle-plus',   'label' => 'Add a product',    'hint' => 'Put new stock on the shelf'],
+    ['page' => 'admin-discounts',       'icon' => 'fa-ticket',        'label' => 'Discounts',        'hint' => 'Manage active coupons'],
     ['page' => 'admin-orders',          'icon' => 'fa-truck-fast',    'label' => 'Orders',           'hint' => 'Mark payment and delivery'],
     ['page' => 'admin-users',           'icon' => 'fa-address-book',  'label' => 'Users list',       'hint' => 'Roles and contact details'],
     ['page' => 'admin-add-user',        'icon' => 'fa-user-plus',     'label' => 'Add a user',       'hint' => 'Invite staff or a customer'],
@@ -68,6 +69,46 @@ foreach ($orders as $o) {
         'icon'  => 'fas fa-hourglass-half',
         'tone'  => 'amber',
         'link'  => url('admin-orders'),
+    ]); ?>
+  </div>
+</section>
+
+<!-- Marketing ----------------------------------------------------------- -->
+<section class="mb-5">
+  <div class="admin-section-head">
+    <div>
+      <p class="eyebrow">Marketing</p>
+      <h2 class="title-section mt-2 mb-0">Discounts & Coupons</h2>
+    </div>
+    <a class="btn-mm btn-mm-ghost btn-mm-sm" href="<?= url('admin-discounts') ?>">
+      <span>Manage discounts</span><i class="fas fa-arrow-right" aria-hidden="true"></i>
+    </a>
+  </div>
+
+  <div class="stat-grid">
+    <?php Controller::component('stat_card', [
+        'title' => 'Active Coupons',
+        'value' => 12,
+        'icon'  => 'fas fa-ticket',
+        'link'  => url('admin-discounts'),
+    ]); ?>
+    <?php Controller::component('stat_card', [
+        'title' => 'Total Redemptions',
+        'value' => 428,
+        'icon'  => 'fas fa-hand-holding-heart',
+        'tone'  => 'navy',
+    ]); ?>
+    <?php Controller::component('stat_card', [
+        'title' => 'Discount Given',
+        'value' => '₹38,450',
+        'icon'  => 'fas fa-percent',
+        'tone'  => 'amber',
+    ]); ?>
+    <?php Controller::component('stat_card', [
+        'title' => 'Scheduled Offers',
+        'value' => 4,
+        'icon'  => 'fas fa-calendar-check',
+        'tone'  => 'navy',
     ]); ?>
   </div>
 </section>

@@ -12,6 +12,9 @@ $groups = [
         ['page' => 'admin-products',        'icon' => 'fa-boxes-stacked', 'label' => 'Products'],
         ['page' => 'admin-add-product',     'icon' => 'fa-plus',          'label' => 'Add product'],
     ],
+    'Marketing' => [
+        ['page' => 'admin-discounts',       'icon' => 'fa-ticket',        'label' => 'Discounts / Coupons'],
+    ],
     'Fulfilment' => [
         ['page' => 'admin-orders',          'icon' => 'fa-truck-fast',    'label' => 'Orders'],
     ],

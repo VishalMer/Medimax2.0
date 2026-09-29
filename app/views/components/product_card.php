@@ -6,16 +6,23 @@
  */
 $name     = $product['name'] ?? 'Unknown product';
 $price    = $product['price'] ?? 0;
+$original = $product['original_price'] ?? null;
 $image    = $product['image'] ?? 'placeholder.png';
 $category = $product['category'] ?? 'Pharmacy';
 $id       = $product['id'] ?? 0;
 $index    = $index ?? 0;
 ?>
-<article class="product-card"
+<article class="product-card position-relative"
          data-category="<?= htmlspecialchars($category) ?>"
          data-price="<?= htmlspecialchars((string) $price) ?>"
          data-name="<?= htmlspecialchars($name) ?>"
          data-index="<?= (int) $index ?>">
+
+  <?php if ($original && $original > $price): 
+      $discountPct = round((($original - $price) / $original) * 100);
+  ?>
+  <span class="badge position-absolute top-0 start-0 m-2" style="background-color: var(--accent-orange, rgb(230, 120, 52)); z-index: 10; font-size: 0.8rem;"><?= $discountPct ?>% OFF</span>
+  <?php endif; ?>
 
   <div class="product-card__label">
     <span class="product-card__cat"><?= htmlspecialchars($category) ?></span>
@@ -34,7 +41,17 @@ $index    = $index ?? 0;
   <div class="product-card__foot">
     <div class="product-card__price">
       <span class="eyebrow eyebrow--plain eyebrow--muted">Price</span>
-      <span class="num">&#8377;<?= number_format((float) $price) ?></span>
+      <div class="d-flex flex-column">
+        <div class="d-flex align-items-center gap-1">
+          <?php if ($original && $original > $price): ?>
+            <span class="text-muted text-decoration-line-through num" style="font-size: 0.8em;">&#8377;<?= number_format((float) $original) ?></span>
+          <?php endif; ?>
+          <span class="num">&#8377;<?= number_format((float) $price) ?></span>
+        </div>
+        <?php if ($original && $original > $price): ?>
+          <span style="color: var(--primary-teal, #70ABAF); font-size: 0.75rem; font-weight: bold;">Save &#8377;<?= number_format((float) ($original - $price)) ?></span>
+        <?php endif; ?>
+      </div>
     </div>
     <div class="product-card__acts">
       <button class="icon-btn" type="button" data-act="cart" data-name="<?= htmlspecialchars($name) ?>"
@@ -48,3 +65,4 @@ $index    = $index ?? 0;
     </div>
   </div>
 </article>
+

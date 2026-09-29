@@ -90,4 +90,34 @@ class AdminController extends Controller {
             'pageTitle' => 'Update Password'
         ]);
     }
+
+    public function discounts() {
+        $coupons = DummyData::getCoupons();
+        $this->view('pages/admin/discounts', [
+            'coupons' => $coupons,
+            'adminUser' => $this->adminUser,
+            'pageTitle' => 'Manage Discounts'
+        ]);
+    }
+
+    public function addDiscount() {
+        $this->view('pages/admin/add_discount', [
+            'adminUser' => $this->adminUser,
+            'pageTitle' => 'Add Discount'
+        ]);
+    }
+
+    public function editDiscount() {
+        $id = $_GET['id'] ?? 1;
+        $coupons = DummyData::getCoupons();
+        $coupon = null;
+        foreach($coupons as $c) {
+            if ($c['id'] == $id) { $coupon = $c; break; }
+        }
+        $this->view('pages/admin/edit_discount', [
+            'coupon' => $coupon,
+            'adminUser' => $this->adminUser,
+            'pageTitle' => 'Edit Discount'
+        ]);
+    }
 }

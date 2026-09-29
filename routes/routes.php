@@ -13,6 +13,8 @@ $router->register('about', 'AboutController', 'index');
 $router->register('contact', 'ContactController', 'index');
 $router->register('login', 'AuthController', 'login');
 $router->register('register', 'AuthController', 'register');
+$router->register('checkout', 'CheckoutController', 'index');
+$router->register('order-success', 'CheckoutController', 'success');
 
 // Admin routes
 $router->register('admin', 'AdminController', 'dashboard');
@@ -25,3 +27,6 @@ $router->register('admin-edit-user', 'AdminController', 'editUser');
 $router->register('admin-orders', 'AdminController', 'allOrders');
 $router->register('admin-update-profile', 'AdminController', 'updateProfile');
 $router->register('admin-update-password', 'AdminController', 'updatePassword');
+$router->register('admin-discounts', 'AdminController', 'discounts');
+$router->register('admin-add-discount', 'AdminController', 'addDiscount');
+$router->register('admin-edit-discount', 'AdminController', 'editDiscount');

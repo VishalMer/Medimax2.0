@@ -113,26 +113,56 @@ foreach ($items as $it) { $units += (int) ($it['quantity'] ?? 1); }
                 <span class="num" style="font-size:.72rem;color:var(--ink-40)"><?= date('d M Y') ?></span>
               </div>
 
-              <div class="receipt__rows">
+              <div class="receipt__rows" id="cartReceiptRows">
                 <div class="receipt__row">
                   <span>Items</span>
                   <span class="num"><?= $count ?></span>
                 </div>
                 <div class="receipt__row">
                   <span>Units</span>
-                  <span class="num"><?= $units ?></span>
+                  <span class="num" id="cartUnits"><?= $units ?></span>
                 </div>
                 <div class="receipt__row">
                   <span>Subtotal</span>
-                  <span class="num">&#8377;<?= number_format((float) ($grandTotal ?? 0), 2) ?></span>
+                  <span class="num" id="cartSubtotal">&#8377;<?= number_format((float) ($grandTotal ?? 0), 2) ?></span>
+                </div>
+                <div class="receipt__row text-success d-none" id="productDiscountRow">
+                  <span>Product Discounts</span>
+                  <span class="num" id="cartProductDiscount">-&#8377;0.00</span>
+                </div>
+                <div class="receipt__row text-success d-none" id="couponDiscountRow">
+                  <span>Coupon Discount <small id="appliedCouponCode" class="fw-bold"></small> <a href="#" id="removeCouponBtn" class="text-danger ms-1 text-decoration-none" style="font-size:0.7rem;">[Remove]</a></span>
+                  <span class="num" id="cartCouponDiscount">-&#8377;0.00</span>
                 </div>
                 <div class="receipt__row">
                   <span>Delivery</span>
-                  <span>Confirmed at checkout</span>
+                  <span class="num" id="cartDelivery">&#8377;49.00</span>
                 </div>
                 <div class="receipt__row receipt__row--total">
                   <span>Total</span>
-                  <span class="num">&#8377;<?= number_format((float) ($grandTotal ?? 0), 2) ?></span>
+                  <span class="num" id="cartTotal">&#8377;0.00</span>
+                </div>
+              </div>
+              
+              <div class="mb-3 p-2 rounded" style="background-color: rgba(112, 171, 175, 0.1); border: 1px dashed var(--primary-teal, #70ABAF);">
+                <label class="form-label" style="font-size: 0.85rem; font-weight: 600; color: var(--primary-dark, #26547C);">Have a coupon?</label>
+                <div class="input-group input-group-sm">
+                  <input type="text" id="couponInput" class="form-control" placeholder="Enter coupon code" style="text-transform: uppercase;">
+                  <button class="btn" id="applyCouponBtn" type="button" style="background-color: var(--primary-teal, #70ABAF); color: white; font-weight: bold;">Apply</button>
+                </div>
+                <div id="couponMessage" class="mt-2" style="font-size: 0.75rem; font-weight: 600;"></div>
+              </div>
+
+              <div id="savingsSection" class="mb-3 p-2 rounded text-success d-none" style="background-color: rgba(40, 167, 69, 0.1); font-size: 0.85rem;">
+                <strong>You saved <span id="totalSavingsValue">&#8377;0.00</span> on this order!</strong>
+              </div>
+
+              <div id="freeDeliveryProgress" class="mb-3" style="font-size: 0.8rem; color: var(--primary-dark, #26547C);">
+                <div class="d-flex justify-content-between mb-1">
+                  <span id="freeDeliveryText">Add &#8377;0.00 more to get FREE DELIVERY</span>
+                </div>
+                <div class="progress" style="height: 6px;">
+                  <div id="freeDeliveryBar" class="progress-bar" role="progressbar" style="width: 0%; background-color: var(--accent-orange, rgb(230, 120, 52));"></div>
                 </div>
               </div>
 
@@ -141,6 +171,15 @@ foreach ($items as $it) { $units += (int) ($it['quantity'] ?? 1); }
               </a>
 
               <hr class="label-rule">
+
+              <script>
+                // Injecting backend data to frontend for JS logic
+                window.mediMaxCartData = {
+                  items: <?= json_encode($items) ?>,
+                  coupons: <?= json_encode(DummyData::getCoupons()) ?>,
+                  products: <?= json_encode(DummyData::getProducts()) ?>
+                };
+              </script>
 
               <ul class="list-unstyled m-0" style="font-size:.8rem;color:var(--ink-60);display:grid;gap:.5rem">
                 <li><i class="fas fa-truck-medical me-2" style="color:var(--teal-700)" aria-hidden="true"></i>Free delivery over &#8377;499</li>
