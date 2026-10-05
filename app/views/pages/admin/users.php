@@ -104,16 +104,6 @@ $roleTone = static function (string $role): string {
   Deleting is not wired to a route in this build &mdash; the button confirms, then reports what would be removed.
 </p>
 
-<script>
-document.querySelectorAll('[data-delete-user]').forEach(function (btn) {
-  btn.addEventListener('click', function () {
-    var name = btn.getAttribute('data-user-name') || 'this user';
-    if (!window.confirm('Delete the account for ' + name + '? This cannot be undone.')) return;
-    if (window.MediMax) window.MediMax.toast('Delete requested for ' + name, 'fa-trash');
-  });
-});
-</script>
-
 <?php
 $pageContent = ob_get_clean();
 require APP_PATH . '/views/layouts/admin_layout.php';

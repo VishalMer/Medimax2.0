@@ -243,8 +243,8 @@ h4, h5, h6 { font-family: var(--font-body); font-weight: 700; letter-spacing: -.
 .btn-mm-amber:hover { --btn-bg: var(--amber-700); }
 .btn-mm-ghost { --btn-bg: transparent; --btn-fg: var(--ink); --btn-bd: var(--line-strong); }
 .btn-mm-ghost:hover { --btn-bg: var(--paper); --btn-bd: var(--navy); --btn-fg: var(--navy); }
-.btn-mm-light { --btn-bg: rgba(255,255,255,.14); --btn-fg: #fff; --btn-bd: rgba(255,255,255,.4); }
-.btn-mm-light:hover { --btn-bg: #fff; --btn-fg: var(--navy); --btn-bd: #fff; }
+.btn-mm-light { --btn-bg: #ffffff; --btn-fg: var(--navy); --btn-bd: var(--line-strong); }
+.btn-mm-light:hover { --btn-bg: var(--ice); --btn-fg: var(--navy-deep); --btn-bd: var(--navy); }
 .btn-mm-danger { --btn-bg: transparent; --btn-fg: var(--danger); --btn-bd: rgba(180,52,43,.35); }
 .btn-mm-danger:hover { --btn-bg: var(--danger); --btn-fg: #fff; --btn-bd: var(--danger); }
 .btn-mm-sm { padding: .55rem 1rem; font-size: .82rem; }

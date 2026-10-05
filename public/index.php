@@ -17,8 +17,6 @@ require_once __DIR__ . '/../config/app.php';
 require_once APP_PATH . '/core/Controller.php';
 require_once APP_PATH . '/core/Router.php';
 
-// Load model
-require_once APP_PATH . '/models/DummyData.php';
 
 // Create router and load routes
 $router = new Router();

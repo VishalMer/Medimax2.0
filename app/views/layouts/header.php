@@ -2,10 +2,10 @@
 $currentPage = $_GET['page'] ?? 'home';
 $pageTitle   = $pageTitle ?? 'MediMax';
 
-// Display-only counts for the header badges (reads the same dummy data the pages do).
-$navCartCount = class_exists('DummyData') ? count(DummyData::getCartItems()) : 0;
-$navFavCount  = class_exists('DummyData') ? count(DummyData::getWishlistItems()) : 0;
-$navUser      = class_exists('DummyData') ? DummyData::getAdminUser() : ['name' => 'Guest', 'email' => '', 'role' => ''];
+// Display-only counts for the header badges (static values).
+$navCartCount = 3;
+$navFavCount  = 4;
+$navUser      = ['id' => 1, 'name' => 'Vishal Mer', 'email' => 'vishal@medimax.com', 'role' => 'owner', 'image' => 'Rahul.jpg'];
 $navUserFirst = strtok($navUser['name'] ?? 'Guest', ' ');
 ?>
 <!DOCTYPE html>
@@ -74,7 +74,7 @@ $navUserFirst = strtok($navUser['name'] ?? 'Guest', ' ');
             <i class="fas fa-basket-shopping" aria-hidden="true"></i>
             <?php if ($navCartCount): ?><span class="icon-btn__count"><?= $navCartCount ?></span><?php endif; ?>
           </a>
-          <button class="account-btn" id="profileOptionsBtn" type="button" aria-haspopup="true">
+          <button class="account-btn" id="profileOptionsBtn" type="button" aria-haspopup="true" aria-expanded="false">
             <span class="avatar" data-avatar-tint="<?= htmlspecialchars($navUser['name'] ?? '') ?>"><?= strtoupper(substr($navUser['name'] ?? 'G', 0, 1)) ?></span>
             <span id="userName"><?= htmlspecialchars($navUserFirst) ?></span>
             <i class="fas fa-chevron-down" style="font-size:.62rem;opacity:.5" aria-hidden="true"></i>

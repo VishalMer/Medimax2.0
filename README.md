@@ -2,7 +2,7 @@
 
 MediMax is a responsive pharmacy and wellness storefront prototype built with plain PHP, HTML, CSS, and vanilla JavaScript. It includes a customer shopping experience, an administration interface, reusable PHP views, product imagery, and lightweight client-side interactions.
 
-> **Project status:** This repository is currently a front-end and server-rendered UI prototype. Product, cart, wishlist, order, and user records come from `app/models/DummyData.php`; there is no database, persistent session, real authentication, checkout processing, or API integration yet.
+> **Project status:** This repository is currently a front-end and server-rendered UI prototype. Product, cart, wishlist, order, and user records are provided via static values in controllers; there is no database, persistent session, real authentication, checkout processing, or API integration yet.
 
 ## Highlights
 
@@ -130,7 +130,7 @@ MediMax/
 1. A request enters through the root `index.php` or `public/index.php`.
 2. `config/app.php` defines application paths and URL helpers.
 3. `app/core/Router.php` reads the `page` query parameter and selects a registered controller method.
-4. Controllers retrieve data from `DummyData` and render a view through `app/core/Controller.php`.
+4. Controllers retrieve static demo data and render a view through `app/core/Controller.php`.
 5. Layouts and components assemble the final page.
 6. `public/js/app.js` adds presentation behavior such as filtering, sorting, toasts, quantity controls, menus, animations, and password visibility toggles.
 
@@ -142,7 +142,7 @@ This version intentionally focuses on the interface and routing foundation:
 - Login and registration do not authenticate users.
 - Cart and wishlist actions provide visual feedback but do not update server-side data.
 - Admin routes are not protected by authorization middleware.
-- Product, user, and order data is hard-coded in `DummyData.php`.
+- Product, user, and order data is hard-coded as static array values.
 - Images placed in `public/images/temp/` are treated as runtime uploads and are ignored by Git.
 
 Before using this as a production pharmacy application, add server-side validation, authentication, authorization, CSRF protection, secure password hashing, database persistence, file-upload validation, HTTPS, audit logging, and appropriate handling of health-related data.
@@ -161,7 +161,7 @@ For example, if the application is served from the domain root, use `/` instead.
 
 - Add or change routes in `routes/routes.php`.
 - Add controller behavior in `app/controllers/`.
-- Update demo records in `app/models/DummyData.php`.
+- Update static demo records in `app/controllers/`.
 - Add customer or admin pages under `app/views/pages/`.
 - Prefer shared layouts and components over duplicating markup.
 - Keep committed assets that are referenced by templates or CSS in `public/images/`.

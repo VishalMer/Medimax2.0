@@ -172,15 +172,6 @@ foreach ($items as $it) { $units += (int) ($it['quantity'] ?? 1); }
 
               <hr class="label-rule">
 
-              <script>
-                // Injecting backend data to frontend for JS logic
-                window.mediMaxCartData = {
-                  items: <?= json_encode($items) ?>,
-                  coupons: <?= json_encode(DummyData::getCoupons()) ?>,
-                  products: <?= json_encode(DummyData::getProducts()) ?>
-                };
-              </script>
-
               <ul class="list-unstyled m-0" style="font-size:.8rem;color:var(--ink-60);display:grid;gap:.5rem">
                 <li><i class="fas fa-truck-medical me-2" style="color:var(--teal-700)" aria-hidden="true"></i>Free delivery over &#8377;499</li>
                 <li><i class="fas fa-rotate-left me-2" style="color:var(--teal-700)" aria-hidden="true"></i>7-day returns on unopened packs</li>

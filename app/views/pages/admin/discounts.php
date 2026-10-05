@@ -75,16 +75,6 @@ $rows = $coupons ?? [];
   </div>
 </div>
 
-<script>
-document.querySelectorAll('[data-delete-discount]').forEach(function (btn) {
-  btn.addEventListener('click', function () {
-    var code = btn.getAttribute('data-discount-code') || 'this coupon';
-    if (!window.confirm('Delete coupon "' + code + '"? This cannot be undone.')) return;
-    if (window.MediMax) window.MediMax.toast('Delete requested for ' + code, 'fa-trash');
-  });
-});
-</script>
-
 <?php
 $pageContent = ob_get_clean();
 require APP_PATH . '/views/layouts/admin_layout.php';

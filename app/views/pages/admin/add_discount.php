@@ -47,7 +47,7 @@
       <label for="applicableCategory">Applicable Category</label>
       <select class="mm-input" id="applicableCategory" name="applicableCategory">
         <option value="All">All Products</option>
-        <?php foreach (DummyData::getCategories() as $cat): ?>
+        <?php foreach (['Vitamins', 'Supplements', 'Skincare', 'Personal Care', 'First Aid', 'Baby Care', 'Hair Care', 'Beverages'] as $cat): ?>
           <option value="<?= htmlspecialchars($cat) ?>"><?= htmlspecialchars($cat) ?></option>
         <?php endforeach; ?>
       </select>

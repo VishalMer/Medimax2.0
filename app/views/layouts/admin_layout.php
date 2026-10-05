@@ -1,6 +1,6 @@
 <?php
 $pageTitle   = $pageTitle   ?? 'Admin Panel';
-$adminUser   = $adminUser   ?? DummyData::getAdminUser();
+$adminUser   = $adminUser   ?? ['id' => 1, 'name' => 'Vishal Mer', 'email' => 'vishal@medimax.com', 'role' => 'owner', 'image' => 'Rahul.jpg'];
 $pageContent = $pageContent ?? '';
 $currentPage = $_GET['page'] ?? 'admin';
 

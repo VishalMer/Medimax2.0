@@ -318,15 +318,6 @@ foreach ($items as $it) { $units += (int) ($it['quantity'] ?? 1); }
         </div>
       </div>
 
-      <script>
-        // Injecting backend data to frontend for JS logic
-        window.mediMaxCartData = {
-          items: <?= json_encode($items) ?>,
-          coupons: <?= json_encode(DummyData::getCoupons()) ?>,
-          products: <?= json_encode(DummyData::getProducts()) ?>
-        };
-      </script>
-
     <?php else: ?>
 
       <?php Controller::component('empty_state', [

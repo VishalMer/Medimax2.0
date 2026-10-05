@@ -126,30 +126,6 @@ foreach ($rows as $o) {
   Status changes and removals are not wired to routes in this build &mdash; the buttons confirm the intent and report it.
 </p>
 
-<script>
-// Prototype stubs: report the intent rather than faking a saved change.
-(function () {
-  var code = function (id) { return '#MX-' + ('000' + id).slice(-4); };
-
-  document.querySelectorAll('[data-mark]').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var what = btn.getAttribute('data-mark') === 'payment' ? 'Payment' : 'Delivery';
-      if (window.MediMax) {
-        window.MediMax.toast(what + ' update queued for ' + code(btn.getAttribute('data-order')), 'fa-check');
-      }
-    });
-  });
-
-  document.querySelectorAll('[data-remove-order]').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var id = btn.getAttribute('data-remove-order');
-      if (!window.confirm('Remove order ' + code(id) + ' from the list?')) return;
-      if (window.MediMax) window.MediMax.toast('Removal requested for ' + code(id), 'fa-trash');
-    });
-  });
-})();
-</script>
-
 <?php
 $pageContent = ob_get_clean();
 require APP_PATH . '/views/layouts/admin_layout.php';

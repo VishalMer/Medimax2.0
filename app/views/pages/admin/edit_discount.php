@@ -54,7 +54,7 @@ if (empty($c)) {
       <label for="applicableCategory">Applicable Category</label>
       <select class="mm-input" id="applicableCategory" name="applicableCategory">
         <option value="All" <?= $c['applicableCategory'] == 'All' ? 'selected' : '' ?>>All Products</option>
-        <?php foreach (DummyData::getCategories() as $cat): ?>
+        <?php foreach (['Vitamins', 'Supplements', 'Skincare', 'Personal Care', 'First Aid', 'Baby Care', 'Hair Care', 'Beverages'] as $cat): ?>
           <option value="<?= htmlspecialchars($cat) ?>" <?= $c['applicableCategory'] == $cat ? 'selected' : '' ?>><?= htmlspecialchars($cat) ?></option>
         <?php endforeach; ?>
       </select>
