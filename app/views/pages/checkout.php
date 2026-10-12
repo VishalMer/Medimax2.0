@@ -278,40 +278,22 @@ foreach ($items as $it) { $units += (int) ($it['quantity'] ?? 1); }
             <div class="p-3">
               <div class="d-flex justify-content-between mb-2" style="font-size: 0.9rem;">
                 <span class="text-muted">Subtotal (MRP)</span>
-                <span class="fw-bold" id="chkSubtotal">&#8377;0.00</span>
-              </div>
-              <div class="d-flex justify-content-between mb-2 text-success d-none" id="chkProductDiscountRow" style="font-size: 0.9rem;">
-                <span>Product Discounts</span>
-                <span class="fw-bold" id="chkProductDiscount">-&#8377;0.00</span>
-              </div>
-              <div class="d-flex justify-content-between mb-2 text-success d-none" id="chkCouponDiscountRow" style="font-size: 0.9rem;">
-                <span>Coupon (<span id="chkAppliedCouponCode"></span>)</span>
-                <span class="fw-bold" id="chkCouponDiscount">-&#8377;0.00</span>
+                <span class="fw-bold" id="chkSubtotal">&#8377;2,594.00</span>
               </div>
               <div class="d-flex justify-content-between mb-3" style="font-size: 0.9rem;">
                 <span class="text-muted">Delivery</span>
-                <span class="fw-bold" id="chkDelivery">&#8377;49.00</span>
-              </div>
-              
-              <div id="chkSavingsSection" class="p-2 mb-3 rounded text-center text-success fw-bold d-none" style="background-color: rgba(40, 167, 69, 0.1); font-size: 0.85rem;">
-                Total Savings: <span id="chkTotalSavingsValue">&#8377;0.00</span>
+                <span class="fw-bold" id="chkDelivery">&#8377;0.00 <span class="badge bg-success" style="font-size:0.65rem">FREE</span></span>
               </div>
 
               <hr>
 
               <div class="d-flex justify-content-between align-items-center mb-4">
                 <span class="fs-5 fw-bold" style="color: var(--primary-dark)">Total Payable</span>
-                <span class="fs-4 fw-bold" id="chkTotal" style="color: var(--accent-orange, rgb(230, 120, 52))">&#8377;0.00</span>
+                <span class="fs-4 fw-bold" id="chkTotal" style="color: var(--accent-orange, rgb(230, 120, 52))">&#8377;2,594.00</span>
               </div>
 
-              <!-- General Error Message -->
-              <div id="checkoutErrorMsg" class="alert alert-danger d-none p-2 mb-3" style="font-size: 0.85rem;"></div>
-
-              <button type="button" id="placeOrderBtn" class="btn btn-mm-amber btn-lg w-100 fw-bold d-flex justify-content-center align-items-center shadow">
+              <button type="button" id="placeOrderBtn" class="btn btn-mm-amber btn-lg w-100 fw-bold d-flex justify-content-center align-items-center shadow" onclick="window.location.href='<?= url('order-success') ?>&amp;order_id=MED-2026-<?= rand(10000, 99999) ?>&amp;amount=2594.00&amp;method=UPI'">
                 <span id="placeOrderBtnText">Place Order</span>
-                <div class="spinner-border spinner-border-sm text-light ms-2 d-none" id="placeOrderSpinner" role="status">
-                  <span class="visually-hidden">Loading...</span>
-                </div>
               </button>
             </div>
           </div>

@@ -106,7 +106,6 @@ MediMax/
 ├── app/
 │   ├── controllers/       Request handlers for storefront and admin pages
 │   ├── core/              Base controller and query-parameter router
-│   ├── models/            Static demo data
 │   └── views/
 │       ├── components/    Reusable UI fragments
 │       ├── layouts/       Shared customer and admin layouts
