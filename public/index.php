@@ -13,10 +13,15 @@ ini_set('display_errors', 0);
 // Load configuration
 require_once __DIR__ . '/../config/app.php';
 
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Load core classes
+require_once APP_PATH . '/core/Database.php';
 require_once APP_PATH . '/core/Controller.php';
 require_once APP_PATH . '/core/Router.php';
-
 
 // Create router and load routes
 $router = new Router();

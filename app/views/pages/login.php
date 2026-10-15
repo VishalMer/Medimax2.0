@@ -49,11 +49,26 @@
       <h1>Sign in</h1>
       <p class="lede">Use the username or email you registered with.</p>
 
+      <?php if (!empty($errorMessage)): ?>
+        <div class="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-3 rounded-3" role="alert" style="font-size: .88rem; line-height: 1.4;">
+          <i class="fas fa-circle-exclamation flex-shrink-0 text-danger"></i>
+          <div><?= $errorMessage ?></div>
+        </div>
+      <?php endif; ?>
+
+      <?php if (!empty($successMessage)): ?>
+        <div class="alert alert-success d-flex align-items-center gap-2 py-2 px-3 mb-3 rounded-3" role="alert" style="font-size: .88rem; line-height: 1.4;">
+          <i class="fas fa-circle-check flex-shrink-0 text-success"></i>
+          <div><?= $successMessage ?></div>
+        </div>
+      <?php endif; ?>
+
       <form method="post" id="loginForm" action="<?= url('login') ?>" novalidate>
         <div class="mm-field">
           <label for="identifier">Username or email</label>
           <input class="mm-input" type="text" id="identifier" name="identifier"
-               autocomplete="username" placeholder="you@example.com" required data-validation="required">
+               autocomplete="username" placeholder="you@example.com" required data-validation="required"
+               value="<?= htmlspecialchars($old['identifier'] ?? '') ?>">
         </div>
         <p class="error-text" id="identifierError" aria-live="polite"></p>
 

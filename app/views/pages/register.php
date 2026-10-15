@@ -47,18 +47,34 @@
       <h1>Create your account</h1>
       <p class="lede">You only need a name, an email and a password.</p>
 
+      <?php if (!empty($errorMessage)): ?>
+        <div class="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-3 rounded-3" role="alert" style="font-size: .88rem; line-height: 1.4;">
+          <i class="fas fa-circle-exclamation flex-shrink-0 text-danger"></i>
+          <div><?= $errorMessage ?></div>
+        </div>
+      <?php endif; ?>
+
+      <?php if (!empty($successMessage)): ?>
+        <div class="alert alert-success d-flex align-items-center gap-2 py-2 px-3 mb-3 rounded-3" role="alert" style="font-size: .88rem; line-height: 1.4;">
+          <i class="fas fa-circle-check flex-shrink-0 text-success"></i>
+          <div><?= $successMessage ?></div>
+        </div>
+      <?php endif; ?>
+
       <form method="post" id="registrationForm" action="<?= url('register') ?>" novalidate>
         <div class="mm-field">
           <label for="username">Your name</label>
           <input class="mm-input" type="text" id="username" name="name"
-               autocomplete="name" placeholder="Yash Patel" required data-validation="required alpha min" data-min="2">
+               autocomplete="name" placeholder="Yash Patel" required data-validation="required alpha min" data-min="2"
+               value="<?= htmlspecialchars($old['name'] ?? '') ?>">
         </div>
         <p class="error-text" id="usernameError" aria-live="polite"></p>
 
         <div class="mm-field">
           <label for="email">Email</label>
           <input class="mm-input" type="email" id="email" name="email"
-               autocomplete="email" placeholder="you@example.com" required data-validation="required email">
+               autocomplete="email" placeholder="you@example.com" required data-validation="required email"
+               value="<?= htmlspecialchars($old['email'] ?? '') ?>">
         </div>
         <p class="error-text" id="emailError" aria-live="polite"></p>
 

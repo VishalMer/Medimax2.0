@@ -5,7 +5,7 @@ $pageTitle   = $pageTitle ?? 'MediMax';
 // Display-only counts for the header badges (static values).
 $navCartCount = 3;
 $navFavCount  = 4;
-$navUser      = ['id' => 1, 'name' => 'Vishal Mer', 'email' => 'vishal@medimax.com', 'role' => 'owner', 'image' => 'Rahul.jpg'];
+$navUser      = $_SESSION['user'] ?? ['id' => 1, 'name' => 'Vishal Mer', 'email' => 'vishal@medimax.com', 'role' => 'owner', 'image' => 'Rahul.jpg'];
 $navUserFirst = strtok($navUser['name'] ?? 'Guest', ' ');
 ?>
 <!DOCTYPE html>
@@ -101,7 +101,7 @@ $navUserFirst = strtok($navUser['name'] ?? 'Guest', ' ');
   <a href="<?= url('admin') ?>"><i class="fas fa-user-tie" aria-hidden="true"></i> Admin panel</a>
   <a href="<?= url('contact') ?>"><i class="fas fa-headset" aria-hidden="true"></i> Support</a>
   <hr class="label-rule my-1">
-  <a class="is-exit" href="<?= url('login') ?>"><i class="fas fa-right-from-bracket" aria-hidden="true"></i> Log out</a>
+  <a class="is-exit" href="<?= url('logout') ?>"><i class="fas fa-right-from-bracket" aria-hidden="true"></i> Log out</a>
 </div>
 
 <main id="main">

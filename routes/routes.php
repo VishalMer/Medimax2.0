@@ -13,6 +13,7 @@ $router->register('about', 'AboutController', 'index');
 $router->register('contact', 'ContactController', 'index');
 $router->register('login', 'AuthController', 'login');
 $router->register('register', 'AuthController', 'register');
+$router->register('logout', 'AuthController', 'logout');
 $router->register('checkout', 'CheckoutController', 'index');
 $router->register('order-success', 'CheckoutController', 'success');
 
