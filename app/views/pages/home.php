@@ -37,7 +37,7 @@ $shelves = [
 
       <div class="hero__figure rise" data-step="3">
         <div class="hero__frame">
-          <img src="<?= asset('images/MediMax-BG.jpeg') ?>" alt="Medicines and instruments laid out on a pharmacy counter">
+          <img src="<?= asset('images/assets/MediMax-BG.jpeg') ?>" alt="Medicines and instruments laid out on a pharmacy counter">
         </div>
         <div class="hero__tag rise" data-step="5">
           <p class="eyebrow mb-2">In stock today</p>
@@ -130,7 +130,7 @@ $shelves = [
       <div class="row g-0 align-items-stretch">
         <div class="col-lg-5">
           <div class="h-100 d-flex align-items-center justify-content-center p-4" style="background:linear-gradient(170deg,var(--mist),#fff)">
-            <img src="<?= asset('images/Medical.gif') ?>" alt="" style="max-height:300px;border-radius:var(--r-md)">
+            <img src="<?= asset('images/assets/Medical.gif') ?>" alt="" style="max-height:300px;border-radius:var(--r-md)">
           </div>
         </div>
         <div class="col-lg-7">

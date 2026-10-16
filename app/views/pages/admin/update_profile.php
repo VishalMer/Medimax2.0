@@ -39,7 +39,7 @@
           <?php if (!empty($adminUser['image'])): ?>
             <img src="<?= asset('images/' . $adminUser['image']) ?>" alt="Your profile picture"
                  style="width:132px;height:132px;object-fit:cover;border-radius:50%;border:3px solid var(--paper);box-shadow:var(--sh-2)"
-                 data-fallback="<?= asset('images/MediMax_Logo.png') ?>">
+                 data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
           <?php else: ?>
             <span class="d-grid" style="place-items:center;width:132px;height:132px;border-radius:50%;background:var(--navy);color:#fff;font-family:var(--font-display);font-size:2.6rem;font-weight:600;border:3px solid var(--paper);box-shadow:var(--sh-2)">
               <?= strtoupper(substr((string) ($adminUser['name'] ?? 'A'), 0, 1)) ?>

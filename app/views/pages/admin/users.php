@@ -58,7 +58,7 @@ $roleTone = static function (string $role): string {
                 <div class="cell-product">
                   <?php if ($uImage !== ''): ?>
                     <img class="mm-table__thumb" style="border-radius:50%" src="<?= asset('images/' . $uImage) ?>"
-                         alt="" loading="lazy" data-fallback="<?= asset('images/MediMax_Logo.png') ?>">
+                         alt="" loading="lazy" data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
                   <?php else: ?>
                     <span class="avatar" data-avatar-tint="<?= htmlspecialchars($uName) ?>" aria-hidden="true">
                       <?= strtoupper(substr((string) $uName, 0, 1)) ?>

@@ -31,13 +31,15 @@
       </p>
     </div>
 
-    <div class="mm-field mm-field--pw">
+    <div class="mm-field">
       <label for="password">Temporary password</label>
-            <input class="mm-input" type="password" id="password" name="password" required data-validation="required strongPassword min max" data-min="8" data-max="25"
-              placeholder="At least 8 characters" autocomplete="new-password">
-      <button class="pw-toggle" type="button" data-pw-toggle="password" aria-label="Show password">
-        <i class="far fa-eye" aria-hidden="true"></i>
-      </button>
+      <div class="mm-field--pw">
+        <input class="mm-input" type="password" id="password" name="password" required data-validation="required strongPassword min max" data-min="8" data-max="25"
+          placeholder="At least 8 characters" autocomplete="new-password">
+        <button class="pw-toggle" type="button" data-pw-toggle="password" aria-label="Show password">
+          <i class="far fa-eye" aria-hidden="true"></i>
+        </button>
+      </div>
     </div>
 
     <div class="form-actions">

@@ -50,7 +50,7 @@ foreach ($items as $it) { $units += (int) ($it['quantity'] ?? 1); }
                 <article class="line-item">
                   <div class="line-item__media">
                     <img src="<?= asset('images/' . $iImg) ?>" alt="<?= htmlspecialchars($iName) ?>" loading="lazy"
-                         data-fallback="<?= asset('images/MediMax_Logo.png') ?>">
+                         data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
                   </div>
 
                   <div>

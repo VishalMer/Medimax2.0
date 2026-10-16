@@ -55,7 +55,7 @@ Controller::partial('layouts/header', ['pageTitle' => $pageTitle ?? 'Products - 
         </div>
         <div class="product-card__media">
           <span class="badge position-absolute top-0 start-0 m-2" style="background-color: var(--accent-orange, rgb(230, 120, 52)); z-index: 10; font-size: 0.8rem;">14% OFF</span>
-          <img src="<?= asset('images/Vitamin C.jpeg') ?>" alt="Vitamin C Tablets" loading="lazy" data-fallback="<?= asset('images/MediMax_Logo.png') ?>">
+          <img src="<?= asset('images/Vitamin C.jpeg') ?>" alt="Vitamin C Tablets" loading="lazy" data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
         </div>
         <div class="product-card__body">
           <h3 class="product-card__name" title="Vitamin C Tablets">Vitamin C Tablets</h3>
@@ -89,7 +89,7 @@ Controller::partial('layouts/header', ['pageTitle' => $pageTitle ?? 'Products - 
           <span class="product-card__sku">MM002</span>
         </div>
         <div class="product-card__media">
-          <img src="<?= asset('images/Fish Oil.jpg') ?>" alt="Fish Oil" loading="lazy" data-fallback="<?= asset('images/MediMax_Logo.png') ?>">
+          <img src="<?= asset('images/Fish Oil.jpg') ?>" alt="Fish Oil" loading="lazy" data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
         </div>
         <div class="product-card__body">
           <h3 class="product-card__name" title="Fish Oil">Fish Oil Omega-3</h3>
@@ -119,7 +119,7 @@ Controller::partial('layouts/header', ['pageTitle' => $pageTitle ?? 'Products - 
           <span class="product-card__sku">MM003</span>
         </div>
         <div class="product-card__media">
-          <img src="<?= asset('images/Creatine.jpeg') ?>" alt="Creatine" loading="lazy" data-fallback="<?= asset('images/MediMax_Logo.png') ?>">
+          <img src="<?= asset('images/Creatine.jpeg') ?>" alt="Creatine" loading="lazy" data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
         </div>
         <div class="product-card__body">
           <h3 class="product-card__name" title="Creatine">Creatine Monohydrate</h3>
@@ -149,7 +149,7 @@ Controller::partial('layouts/header', ['pageTitle' => $pageTitle ?? 'Products - 
           <span class="product-card__sku">MM004</span>
         </div>
         <div class="product-card__media">
-          <img src="<?= asset('images/Protein Shake.jpeg') ?>" alt="Protein Shake" loading="lazy" data-fallback="<?= asset('images/MediMax_Logo.png') ?>">
+          <img src="<?= asset('images/Protein Shake.jpeg') ?>" alt="Protein Shake" loading="lazy" data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
         </div>
         <div class="product-card__body">
           <h3 class="product-card__name" title="Protein Shake">Protein Shake 1kg</h3>
@@ -179,7 +179,7 @@ Controller::partial('layouts/header', ['pageTitle' => $pageTitle ?? 'Products - 
           <span class="product-card__sku">MM006</span>
         </div>
         <div class="product-card__media">
-          <img src="<?= asset('images/Hair Vitamins.jpg') ?>" alt="Hair Vitamins" loading="lazy" data-fallback="<?= asset('images/MediMax_Logo.png') ?>">
+          <img src="<?= asset('images/Hair Vitamins.jpg') ?>" alt="Hair Vitamins" loading="lazy" data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
         </div>
         <div class="product-card__body">
           <h3 class="product-card__name" title="Hair Vitamins">Hair Vitamins Gummies</h3>
@@ -209,7 +209,7 @@ Controller::partial('layouts/header', ['pageTitle' => $pageTitle ?? 'Products - 
           <span class="product-card__sku">MM007</span>
         </div>
         <div class="product-card__media">
-          <img src="<?= asset('images/Calcium Syrup.jpeg') ?>" alt="Calcium Syrup" loading="lazy" data-fallback="<?= asset('images/MediMax_Logo.png') ?>">
+          <img src="<?= asset('images/Calcium Syrup.jpeg') ?>" alt="Calcium Syrup" loading="lazy" data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
         </div>
         <div class="product-card__body">
           <h3 class="product-card__name" title="Calcium Syrup">Calcium Syrup 200ml</h3>
@@ -239,7 +239,7 @@ Controller::partial('layouts/header', ['pageTitle' => $pageTitle ?? 'Products - 
           <span class="product-card__sku">MM009</span>
         </div>
         <div class="product-card__media">
-          <img src="<?= asset('images/Acne Control Gel.jpeg') ?>" alt="Acne Control Gel" loading="lazy" data-fallback="<?= asset('images/MediMax_Logo.png') ?>">
+          <img src="<?= asset('images/Acne Control Gel.jpeg') ?>" alt="Acne Control Gel" loading="lazy" data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
         </div>
         <div class="product-card__body">
           <h3 class="product-card__name" title="Acne Control Gel">Acne Control Gel</h3>
@@ -269,7 +269,7 @@ Controller::partial('layouts/header', ['pageTitle' => $pageTitle ?? 'Products - 
           <span class="product-card__sku">MM010</span>
         </div>
         <div class="product-card__media">
-          <img src="<?= asset('images/Argan oil.jpeg') ?>" alt="Argan Oil" loading="lazy" data-fallback="<?= asset('images/MediMax_Logo.png') ?>">
+          <img src="<?= asset('images/Argan oil.jpeg') ?>" alt="Argan Oil" loading="lazy" data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
         </div>
         <div class="product-card__body">
           <h3 class="product-card__name" title="Argan Oil">Pure Moroccan Argan Oil</h3>
@@ -299,7 +299,7 @@ Controller::partial('layouts/header', ['pageTitle' => $pageTitle ?? 'Products - 
           <span class="product-card__sku">MM015</span>
         </div>
         <div class="product-card__media">
-          <img src="<?= asset('images/dettol.jpg') ?>" alt="Dettol" loading="lazy" data-fallback="<?= asset('images/MediMax_Logo.png') ?>">
+          <img src="<?= asset('images/dettol.jpg') ?>" alt="Dettol" loading="lazy" data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
         </div>
         <div class="product-card__body">
           <h3 class="product-card__name" title="Dettol">Dettol Antiseptic Liquid</h3>
@@ -329,7 +329,7 @@ Controller::partial('layouts/header', ['pageTitle' => $pageTitle ?? 'Products - 
           <span class="product-card__sku">MM024</span>
         </div>
         <div class="product-card__media">
-          <img src="<?= asset('images/simple-facewash.jpg') ?>" alt="Simple Face Wash" loading="lazy" data-fallback="<?= asset('images/MediMax_Logo.png') ?>">
+          <img src="<?= asset('images/simple-facewash.jpg') ?>" alt="Simple Face Wash" loading="lazy" data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
         </div>
         <div class="product-card__body">
           <h3 class="product-card__name" title="Simple Face Wash">Simple Refreshing Face Wash</h3>

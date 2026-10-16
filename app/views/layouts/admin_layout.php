@@ -27,7 +27,7 @@ $sectionLabel = $sections[$currentPage] ?? 'Console';
     <title><?= htmlspecialchars($pageTitle) ?> - MediMax</title>
     <meta name="theme-color" content="#1B3E5E">
     <meta name="robots" content="noindex">
-    <link rel="icon" href="<?= asset('images/MediMax_Logo.png') ?>">
+    <link rel="icon" href="<?= asset('images/assets/MediMax_Logo.png') ?>">
     <!-- Bootstrap 5.3.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome 6.6.0 -->

@@ -5,8 +5,9 @@ $pageTitle   = $pageTitle ?? 'MediMax';
 // Display-only counts for the header badges (static values).
 $navCartCount = 3;
 $navFavCount  = 4;
-$navUser      = $_SESSION['user'] ?? ['id' => 1, 'name' => 'Vishal Mer', 'email' => 'vishal@medimax.com', 'role' => 'owner', 'image' => 'Rahul.jpg'];
-$navUserFirst = strtok($navUser['name'] ?? 'Guest', ' ');
+$isLoggedIn   = !empty($_SESSION['user']);
+$navUser      = $_SESSION['user'] ?? null;
+$navUserFirst = $navUser ? strtok($navUser['name'] ?? 'User', ' ') : 'Sign in';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,7 +17,7 @@ $navUserFirst = strtok($navUser['name'] ?? 'Guest', ' ');
     <meta name="theme-color" content="#F2F8F9">
     <meta name="description" content="MediMax — a licensed online chemist for medicines, supplements, skincare and first aid, delivered across India.">
     <title><?= htmlspecialchars($pageTitle) ?></title>
-    <link rel="icon" href="<?= asset('images/MediMax_Logo.png') ?>">
+    <link rel="icon" href="<?= asset('images/assets/MediMax_Logo.png') ?>">
     <!-- Bootstrap 5.3.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome 6.6.0 -->
@@ -75,8 +76,13 @@ $navUserFirst = strtok($navUser['name'] ?? 'Guest', ' ');
             <?php if ($navCartCount): ?><span class="icon-btn__count"><?= $navCartCount ?></span><?php endif; ?>
           </a>
           <button class="account-btn" id="profileOptionsBtn" type="button" aria-haspopup="true" aria-expanded="false">
-            <span class="avatar" data-avatar-tint="<?= htmlspecialchars($navUser['name'] ?? '') ?>"><?= strtoupper(substr($navUser['name'] ?? 'G', 0, 1)) ?></span>
-            <span id="userName"><?= htmlspecialchars($navUserFirst) ?></span>
+            <?php if ($isLoggedIn): ?>
+              <span class="avatar" data-avatar-tint="<?= htmlspecialchars($navUser['name'] ?? '') ?>"><?= strtoupper(substr($navUser['name'] ?? 'U', 0, 1)) ?></span>
+              <span id="userName"><?= htmlspecialchars($navUserFirst) ?></span>
+            <?php else: ?>
+              <span class="avatar"><i class="far fa-user" aria-hidden="true"></i></span>
+              <span id="userName">Sign in</span>
+            <?php endif; ?>
             <i class="fas fa-chevron-down" style="font-size:.62rem;opacity:.5" aria-hidden="true"></i>
           </button>
         </div>
@@ -87,21 +93,46 @@ $navUserFirst = strtok($navUser['name'] ?? 'Guest', ' ');
 </nav>
 
 <div class="account-menu d-none" id="profileOptions">
-  <div class="account-menu__head">
-    <p class="eyebrow eyebrow--muted mb-1">Signed in</p>
-    <strong style="font-size:.92rem"><?= htmlspecialchars($navUser['name'] ?? 'Guest') ?></strong>
-    <?php if (!empty($navUser['email'])): ?>
-      <div class="num" style="font-size:.72rem;color:var(--ink-40)"><?= htmlspecialchars($navUser['email']) ?></div>
+  <?php if ($isLoggedIn): ?>
+    <div class="account-menu__head">
+      <p class="eyebrow eyebrow--muted mb-1">Signed in</p>
+      <strong style="font-size:.92rem"><?= htmlspecialchars($navUser['name'] ?? 'User') ?></strong>
+      <?php if (!empty($navUser['email'])): ?>
+        <div class="num" style="font-size:.72rem;color:var(--ink-40)"><?= htmlspecialchars($navUser['email']) ?></div>
+      <?php endif; ?>
+    </div>
+    <hr class="label-rule my-1">
+    <a href="<?= url('orders') ?>"><i class="fas fa-box-open" aria-hidden="true"></i> My orders</a>
+    <?php if (in_array($navUser['role'] ?? '', ['admin', 'owner'])): ?>
+      <a href="<?= url('admin') ?>"><i class="fas fa-user-tie" aria-hidden="true"></i> Admin panel</a>
+      <a href="<?= url('admin-update-profile') ?>"><i class="fas fa-address-card" aria-hidden="true"></i> Update profile</a>
+      <a href="<?= url('admin-update-password') ?>"><i class="fas fa-key" aria-hidden="true"></i> Change password</a>
     <?php endif; ?>
-  </div>
-  <hr class="label-rule my-1">
-  <a href="<?= url('admin-update-profile') ?>"><i class="fas fa-address-card" aria-hidden="true"></i> Update profile</a>
-  <a href="<?= url('admin-update-password') ?>"><i class="fas fa-key" aria-hidden="true"></i> Change password</a>
-  <a href="<?= url('orders') ?>"><i class="fas fa-box-open" aria-hidden="true"></i> My orders</a>
-  <a href="<?= url('admin') ?>"><i class="fas fa-user-tie" aria-hidden="true"></i> Admin panel</a>
-  <a href="<?= url('contact') ?>"><i class="fas fa-headset" aria-hidden="true"></i> Support</a>
-  <hr class="label-rule my-1">
-  <a class="is-exit" href="<?= url('logout') ?>"><i class="fas fa-right-from-bracket" aria-hidden="true"></i> Log out</a>
+    <a href="<?= url('contact') ?>"><i class="fas fa-headset" aria-hidden="true"></i> Support</a>
+    <hr class="label-rule my-1">
+    <a class="is-exit" href="<?= url('logout') ?>"><i class="fas fa-right-from-bracket" aria-hidden="true"></i> Log out</a>
+  <?php else: ?>
+    <div class="account-menu__head">
+      <p class="eyebrow eyebrow--muted mb-1">Welcome to MediMax</p>
+      <strong style="font-size:.92rem">Account</strong>
+      <div style="font-size:.76rem;color:var(--ink-60)">Sign in or create an account</div>
+    </div>
+    <hr class="label-rule my-1">
+    <a href="<?= url('login') ?>"><i class="fas fa-arrow-right-to-bracket" aria-hidden="true"></i> Sign in</a>
+    <a href="<?= url('register') ?>"><i class="fas fa-user-plus" aria-hidden="true"></i> Create account</a>
+    <a href="<?= url('contact') ?>"><i class="fas fa-headset" aria-hidden="true"></i> Support</a>
+  <?php endif; ?>
 </div>
 
 <main id="main">
+
+<?php if (!empty($_SESSION['flash_success'])): ?>
+  <div class="mm-container pt-3">
+    <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 py-2 px-3 rounded-3 shadow-sm mb-3" role="alert" style="font-size: .9rem;">
+      <i class="fas fa-circle-check flex-shrink-0 text-success"></i>
+      <div class="flex-grow-1"><?= htmlspecialchars($_SESSION['flash_success']) ?></div>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  </div>
+  <?php unset($_SESSION['flash_success']); ?>
+<?php endif; ?>

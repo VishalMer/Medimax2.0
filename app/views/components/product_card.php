@@ -30,7 +30,7 @@ $index    = $index ?? 0;
     <span class="badge position-absolute top-0 start-0 m-2" style="background-color: var(--accent-orange, rgb(230, 120, 52)); z-index: 10; font-size: 0.8rem;"><?= $discountPct ?>% OFF</span>
     <?php endif; ?>
     <img src="<?= asset('images/' . $image) ?>" alt="<?= htmlspecialchars($name) ?>" loading="lazy"
-         data-fallback="<?= asset('images/MediMax_Logo.png') ?>">
+         data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
   </div>
 
   <div class="product-card__body">

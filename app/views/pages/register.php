@@ -6,7 +6,7 @@
   <title><?= $pageTitle ?? 'Register - MediMax.com' ?></title>
   <meta name="theme-color" content="#26547C">
   <meta name="description" content="Create a MediMax account to order medicine, track deliveries and save a wishlist.">
-  <link rel="icon" href="<?= asset('images/MediMax_Logo.png') ?>">
+  <link rel="icon" href="<?= asset('images/assets/MediMax_Logo.png') ?>">
   <!-- Bootstrap CSS CDN -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Font Awesome CDN -->
@@ -78,13 +78,15 @@
         </div>
         <p class="error-text" id="emailError" aria-live="polite"></p>
 
-        <div class="mm-field mm-field--pw">
+        <div class="mm-field">
           <label for="password">Password</label>
-          <input class="mm-input" type="password" id="password" name="password"
-               autocomplete="new-password" placeholder="At least 8 characters" required data-validation="required strongPassword min max" data-min="8" data-max="25">
-          <button class="pw-toggle" type="button" data-pw-toggle="password" aria-label="Show password">
-            <i class="far fa-eye" aria-hidden="true"></i>
-          </button>
+          <div class="mm-field--pw">
+            <input class="mm-input" type="password" id="password" name="password"
+                 autocomplete="new-password" placeholder="At least 8 characters" required data-validation="required strongPassword min max" data-min="8" data-max="25">
+            <button class="pw-toggle" type="button" data-pw-toggle="password" aria-label="Show password">
+              <i class="far fa-eye" aria-hidden="true"></i>
+            </button>
+          </div>
         </div>
         <p class="error-text" id="passwordError" aria-live="polite"></p>
 

@@ -29,8 +29,4 @@ vendor/
 *.db
 phpunit.xml
 coverage/
-
-# Runtime uploads: keep the directory, but do not commit user-uploaded files.
-# Existing tracked images remain available until explicitly removed from Git.
-public/images/temp/*
-!public/images/temp/.gitkeep
+

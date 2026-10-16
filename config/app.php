@@ -22,9 +22,46 @@ define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_CHARSET', 'utf8mb4');
 
-// Asset helper function
+// Asset helper function with automatic subfolder resolution for images
 function asset($path) {
-    return BASE_URL . 'public/' . ltrim($path, '/');
+    $cleanPath = ltrim($path, '/');
+    
+    // Automatically map legacy images/filename if not already in a specific subfolder
+    if (str_starts_with($cleanPath, 'images/') && substr_count($cleanPath, '/') === 1) {
+        $file = substr($cleanPath, 7);
+        if (!empty($file)) {
+            if (file_exists(PUBLIC_PATH . '/images/assets/' . $file)) {
+                return BASE_URL . 'public/images/assets/' . $file;
+            }
+            if (file_exists(PUBLIC_PATH . '/images/profiles/' . $file)) {
+                return BASE_URL . 'public/images/profiles/' . $file;
+            }
+            if (file_exists(PUBLIC_PATH . '/images/products/' . $file)) {
+                return BASE_URL . 'public/images/products/' . $file;
+            }
+        }
+    }
+    
+    return BASE_URL . 'public/' . $cleanPath;
+}
+
+// Helpers for specific image categories
+function productImage($filename) {
+    if (empty($filename)) {
+        return asset('images/assets/placeholder.png');
+    }
+    return asset('images/products/' . ltrim($filename, '/'));
+}
+
+function profileImage($filename) {
+    if (empty($filename)) {
+        return asset('images/profiles/Rahul.jpg');
+    }
+    return asset('images/profiles/' . ltrim($filename, '/'));
+}
+
+function brandAsset($filename) {
+    return asset('images/assets/' . ltrim($filename, '/'));
 }
 
 // URL helper function

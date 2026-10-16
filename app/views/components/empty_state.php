@@ -12,7 +12,7 @@ $icon       = $icon       ?? 'fa-box-open';
 ?>
 <div class="empty-state">
   <?php if ($image): ?>
-    <img src="<?= asset('images/' . $image) ?>" alt="" data-fallback="<?= asset('images/MediMax_Logo.png') ?>">
+    <img src="<?= asset('images/' . $image) ?>" alt="" data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
   <?php else: ?>
     <i class="fas <?= htmlspecialchars($icon) ?> empty-state__icon" aria-hidden="true"></i>
   <?php endif; ?>

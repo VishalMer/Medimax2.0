@@ -263,7 +263,7 @@ foreach ($items as $it) { $units += (int) ($it['quantity'] ?? 1); }
                 <div class="d-flex gap-2 mb-2 pb-2 border-bottom">
                   <img src="<?= asset('images/' . $iImg) ?>" alt="<?= htmlspecialchars($iName) ?>" 
                        style="width: 50px; height: 50px; object-fit: contain;"
-                       data-fallback="<?= asset('images/MediMax_Logo.png') ?>">
+                       data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
                   <div class="flex-grow-1">
                     <div class="fw-bold" style="font-size: 0.85rem; color: var(--primary-dark)"><?= htmlspecialchars($iName) ?></div>
                     <div class="d-flex justify-content-between align-items-center mt-1">

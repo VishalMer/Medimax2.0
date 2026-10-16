@@ -14,7 +14,7 @@
       <?php if (!empty($user['image'])): ?>
         <img src="<?= asset('images/' . $user['image']) ?>" alt="" width="52" height="52"
              style="border-radius:50%;object-fit:cover;border:1px solid var(--line)"
-             data-fallback="<?= asset('images/MediMax_Logo.png') ?>">
+             data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
       <?php else: ?>
         <span class="avatar" data-avatar-tint="<?= htmlspecialchars($user['name'] ?? '') ?>" aria-hidden="true">
           <?= strtoupper(substr((string) ($user['name'] ?? 'U'), 0, 1)) ?>

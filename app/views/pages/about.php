@@ -35,7 +35,7 @@ $shelves = ['Vitamins', 'Supplements', 'Skincare', 'Hair Care', 'First Aid', 'Ba
 
       <div class="hero__figure rise" data-step="3">
         <div class="hero__frame">
-          <img src="<?= asset('images/Medical.gif') ?>" alt="Illustration of pharmacy supplies and medical instruments">
+          <img src="<?= asset('images/assets/Medical.gif') ?>" alt="Illustration of pharmacy supplies and medical instruments">
         </div>
         <div class="hero__tag rise" data-step="5">
           <p class="eyebrow mb-2">Dispensing since</p>

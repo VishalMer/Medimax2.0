@@ -43,7 +43,7 @@ foreach ($rows as $p) { $catalogueValue += (float) ($p['price'] ?? 0); }
                 <div class="cell-product">
                   <?php if ($pImage !== ''): ?>
                     <img class="mm-table__thumb" src="<?= asset('images/' . $pImage) ?>"
-                         alt="" loading="lazy" data-fallback="<?= asset('images/MediMax_Logo.png') ?>">
+                         alt="" loading="lazy" data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
                   <?php else: ?>
                     <span class="mm-table__thumb d-grid" style="place-items:center;color:var(--ink-40)">
                       <i class="fa-regular fa-image" aria-hidden="true"></i>

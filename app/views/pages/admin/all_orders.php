@@ -68,7 +68,7 @@ foreach ($rows as $o) {
               <td>
                 <div class="cell-product">
                   <img class="mm-table__thumb" src="<?= asset('images/' . ($order['image'] ?? '')) ?>" alt="" loading="lazy"
-                       data-fallback="<?= asset('images/MediMax_Logo.png') ?>">
+                       data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
                   <div>
                     <strong><?= htmlspecialchars($oName) ?></strong>
                     <span>&#8377;<?= number_format((float) ($order['price'] ?? 0), 2) ?> each</span>

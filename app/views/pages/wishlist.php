@@ -47,7 +47,7 @@ foreach ($items as $it) { $saved += (float) ($it['price'] ?? 0); }
             <article class="line-item">
               <div class="line-item__media">
                 <img src="<?= asset('images/' . $iImg) ?>" alt="<?= htmlspecialchars($iName) ?>" loading="lazy"
-                     data-fallback="<?= asset('images/MediMax_Logo.png') ?>">
+                     data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
               </div>
 
               <div>
@@ -59,15 +59,17 @@ foreach ($items as $it) { $saved += (float) ($it['price'] ?? 0); }
                 </p>
               </div>
 
-              <div class="line-item__side">
+              <div class="line-item__side line-item__side--row">
                 <form action="<?= url('cart/add') ?>" method="POST" class="m-0">
                   <input type="hidden" name="product_id" value="<?= $iPid ?>">
                   <input type="hidden" name="quantity" value="1">
-                  <button type="submit" class="btn-mm btn-mm-teal btn-mm-sm">
-                    <i class="fas fa-cart-plus" aria-hidden="true"></i><span>Move to cart</span>
+                  <button type="submit" class="icon-btn icon-btn--cart"
+                          aria-label="Move <?= htmlspecialchars($iName) ?> to cart"
+                          title="Move to cart">
+                    <i class="fas fa-cart-plus" aria-hidden="true"></i>
                   </button>
                 </form>
-                <a class="icon-btn" href="<?= url('wishlist/remove&id=' . $iId) ?>"
+                <a class="icon-btn icon-btn--danger" href="<?= url('wishlist/remove&id=' . $iId) ?>"
                    data-confirm="Remove <?= htmlspecialchars($iName) ?> from your wishlist?"
                    aria-label="Remove <?= htmlspecialchars($iName) ?>" title="Remove from wishlist">
                   <i class="fa-regular fa-trash-can" aria-hidden="true"></i>

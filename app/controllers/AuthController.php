@@ -10,6 +10,16 @@ class AuthController extends Controller {
      * Display login form or process login authentication
      */
     public function login() {
+        // If user is already authenticated, redirect them away from the login page
+        if (!empty($_SESSION['user'])) {
+            if (in_array($_SESSION['user']['role'] ?? '', ['admin', 'owner'])) {
+                header('Location: ' . url('admin'));
+            } else {
+                header('Location: ' . url());
+            }
+            exit;
+        }
+
         $errorMessage = '';
         $successMessage = $_SESSION['flash_success'] ?? '';
         unset($_SESSION['flash_success']);
@@ -19,39 +29,45 @@ class AuthController extends Controller {
             $password = $_POST['password'] ?? '';
 
             if (empty($identifier) || empty($password)) {
-                $errorMessage = 'Please provide both username/email and password.';
+                $errorMessage = 'Please provide both your username or email and password.';
             } else {
                 $pdo = Database::getConnection();
                 if (!$pdo) {
-                    $errorMessage = 'Could not connect to database. Please ensure MySQL is running in XAMPP.';
+                    $errorMessage = 'Could not connect to database. Please make sure MySQL is running in XAMPP.';
                 } else {
                     try {
-                        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :identifier OR name = :identifier LIMIT 1");
-                        $stmt->execute([':identifier' => $identifier]);
+                        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email OR name = :name LIMIT 1");
+                        $stmt->execute([
+                            ':email' => $identifier,
+                            ':name'  => $identifier
+                        ]);
                         $user = $stmt->fetch();
 
-                        if ($user && password_verify($password, $user['password'])) {
-                            if ($user['status'] !== 'active') {
-                                $errorMessage = 'Your account is currently inactive or suspended.';
-                            } else {
-                                $_SESSION['user'] = [
-                                    'id'    => (int)$user['id'],
-                                    'name'  => $user['name'],
-                                    'email' => $user['email'],
-                                    'role'  => $user['role'],
-                                    'image' => $user['image'] ?: 'Rahul.jpg'
-                                ];
-
-                                // Redirect to admin dashboard if role is admin/owner, else storefront home
-                                if (in_array($user['role'], ['admin', 'owner'])) {
-                                    header('Location: ' . url('admin'));
-                                } else {
-                                    header('Location: ' . url());
-                                }
-                                exit;
-                            }
+                        if (!$user) {
+                            $errorMessage = 'No account found with this email or username. Please check your credentials or create a new account.';
+                        } elseif (!password_verify($password, $user['password'])) {
+                            $errorMessage = 'Incorrect password. Please verify your password and try again.';
+                        } elseif ($user['status'] !== 'active') {
+                            $errorMessage = 'Your account is currently ' . htmlspecialchars($user['status']) . '. Please contact support.';
                         } else {
-                            $errorMessage = 'Invalid username/email or password.';
+                            // User exists, password is valid, account is active
+                            $_SESSION['user'] = [
+                                'id'    => (int)$user['id'],
+                                'name'  => $user['name'],
+                                'email' => $user['email'],
+                                'role'  => $user['role'],
+                                'image' => $user['image'] ?: 'Rahul.jpg'
+                            ];
+
+                            $_SESSION['flash_success'] = 'Welcome back, ' . htmlspecialchars($user['name']) . '!';
+
+                            // Redirect to admin console if admin/owner, else storefront home
+                            if (in_array($user['role'], ['admin', 'owner'])) {
+                                header('Location: ' . url('admin'));
+                            } else {
+                                header('Location: ' . url());
+                            }
+                            exit;
                         }
                     } catch (PDOException $e) {
                         error_log("Login error: " . $e->getMessage());
@@ -73,6 +89,12 @@ class AuthController extends Controller {
      * Display registration form or process new user registration
      */
     public function register() {
+        // If user is already authenticated, redirect them away from the register page
+        if (!empty($_SESSION['user'])) {
+            header('Location: ' . url());
+            exit;
+        }
+
         $errorMessage = '';
         $successMessage = '';
         $old = [
@@ -141,11 +163,22 @@ class AuthController extends Controller {
                                 ':password' => $hashedPassword
                             ]);
 
-                            $successMessage = 'Account created successfully! You can now <a href="' . url('login') . '" class="alert-link fw-semibold">Sign in here</a>.';
-                            
-                            // Reset form fields after successful registration
-                            $old['name'] = '';
-                            $old['email'] = '';
+                            $newUserId = (int)$pdo->lastInsertId();
+
+                            // Automatically log in the newly registered user
+                            $_SESSION['user'] = [
+                                'id'    => $newUserId,
+                                'name'  => $name,
+                                'email' => $email,
+                                'role'  => 'customer',
+                                'image' => 'Rahul.jpg'
+                            ];
+
+                            $_SESSION['flash_success'] = 'Welcome to MediMax, ' . htmlspecialchars($name) . '! Your account has been created successfully.';
+
+                            // Redirect to home page immediately upon successful registration
+                            header('Location: ' . url());
+                            exit;
                         }
                     } catch (PDOException $e) {
                         error_log("Registration DB error: " . $e->getMessage());

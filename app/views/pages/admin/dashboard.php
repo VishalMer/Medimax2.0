@@ -159,7 +159,7 @@ foreach ($orders as $o) {
                 <td>
                   <div class="cell-product">
                     <img class="mm-table__thumb" src="<?= asset('images/' . ($o['image'] ?? '')) ?>" alt="" loading="lazy"
-                         data-fallback="<?= asset('images/MediMax_Logo.png') ?>">
+                         data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
                     <div>
                       <strong><?= htmlspecialchars($o['name'] ?? 'Product') ?></strong>
                       <span>user <?= htmlspecialchars((string) ($o['user_id'] ?? '—')) ?></span>

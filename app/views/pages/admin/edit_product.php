@@ -32,7 +32,7 @@
            style="background:var(--mist);border-radius:var(--r-md);border:1px solid var(--line)">
         <img src="<?= asset('images/' . $product['image']) ?>" alt="Current product image"
              style="height:76px;width:76px;object-fit:contain;background:#fff;border-radius:var(--r-sm);border:1px solid var(--line)"
-             data-fallback="<?= asset('images/MediMax_Logo.png') ?>">
+             data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
         <div>
           <p class="mm-label mb-1">Currently on the shelf</p>
           <p class="mb-0 num" style="font-size:.78rem;color:var(--ink-60)"><?= htmlspecialchars($product['image']) ?></p>
