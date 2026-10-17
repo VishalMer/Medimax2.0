@@ -47,8 +47,8 @@ class AuthController extends Controller {
                             $errorMessage = 'No account found with this email or username. Please check your credentials or create a new account.';
                         } elseif (!password_verify($password, $user['password'])) {
                             $errorMessage = 'Incorrect password. Please verify your password and try again.';
-                        } elseif ($user['status'] !== 'active') {
-                            $errorMessage = 'Your account is currently ' . htmlspecialchars($user['status']) . '. Please contact support.';
+                        } elseif ($user['status'] !== 'active' || (isset($user['is_active']) && (int)$user['is_active'] === 0)) {
+                            $errorMessage = 'Your account is currently inactive. Please contact support or an administrator to reactivate your account.';
                         } else {
                             // User exists, password is valid, account is active
                             $_SESSION['user'] = [
@@ -58,6 +58,10 @@ class AuthController extends Controller {
                                 'role'  => $user['role'],
                                 'image' => $user['image'] ?: 'Rahul.jpg'
                             ];
+
+                            // Migrate guest wishlist and cart items to database account
+                            WishlistController::syncSessionWishlistToDb((int)$user['id']);
+                            CartController::syncSessionCartToDb((int)$user['id']);
 
                             $_SESSION['flash_success'] = 'Welcome back, ' . htmlspecialchars($user['name']) . '!';
 
@@ -154,8 +158,8 @@ class AuthController extends Controller {
 
                             // Insert new user into database
                             $insertStmt = $pdo->prepare(
-                                "INSERT INTO users (name, email, password, role, image, phone, status, created_at, updated_at) 
-                                 VALUES (:name, :email, :password, 'customer', NULL, NULL, 'active', NOW(), NOW())"
+                                "INSERT INTO users (name, email, password, role, image, phone, status, is_active, created_at, updated_at) 
+                                 VALUES (:name, :email, :password, 'customer', NULL, NULL, 'active', 1, NOW(), NOW())"
                             );
                             $insertStmt->execute([
                                 ':name'     => $name,
@@ -194,6 +198,41 @@ class AuthController extends Controller {
             'successMessage' => $successMessage,
             'old'            => $old
         ]);
+    }
+
+    /**
+     * Soft-deactivate current logged-in user profile (sets is_active=0, status=inactive)
+     */
+    public function deactivateProfile() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $currentUserId = $_SESSION['user']['id'] ?? null;
+        if (!$currentUserId) {
+            header('Location: ' . url('login'));
+            exit;
+        }
+
+        $pdo = Database::getConnection();
+        if ($pdo) {
+            try {
+                $stmt = $pdo->prepare("UPDATE users SET is_active = 0, status = 'inactive', updated_at = NOW() WHERE id = :id");
+                $stmt->execute([':id' => $currentUserId]);
+            } catch (PDOException $e) {
+                error_log("Profile deactivation error: " . $e->getMessage());
+            }
+        }
+
+        // Destroy session so user is logged out immediately
+        unset($_SESSION['user']);
+        session_destroy();
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $_SESSION['flash_success'] = 'Your profile has been deactivated. Your account data has been safely preserved, but you cannot log in until an administrator reactivates your account.';
+        header('Location: ' . url('login'));
+        exit;
     }
 
     /**

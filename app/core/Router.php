@@ -14,10 +14,14 @@ class Router {
     }
     
     /**
-     * Dispatch the current request
-     */
     public function dispatch() {
         $page = $_GET['page'] ?? 'home';
+        $page = explode('?', $page)[0];
+        $page = explode('&', $page)[0];
+        $page = trim($page, '/');
+        if (empty($page)) {
+            $page = 'home';
+        }
         
         if (isset($this->routes[$page])) {
             $route = $this->routes[$page];

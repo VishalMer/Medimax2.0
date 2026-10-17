@@ -26,36 +26,22 @@ class AdminController extends Controller {
     }
 
     public function productList() {
-        $products = [
-            ['id' => 1, 'name' => 'Vitamin C Tablets', 'price' => 299, 'category' => 'Vitamins', 'image' => 'Vitamin C.jpeg'],
-            ['id' => 2, 'name' => 'Fish Oil', 'price' => 680, 'category' => 'Supplements', 'image' => 'Fish Oil.jpg'],
-            ['id' => 3, 'name' => 'Creatine', 'price' => 1250, 'category' => 'Supplements', 'image' => 'Creatine.jpeg'],
-            ['id' => 4, 'name' => 'Protein Shake', 'price' => 1899, 'category' => 'Supplements', 'image' => 'Protein Shake.jpeg'],
-            ['id' => 5, 'name' => 'Multisource Protein', 'price' => 2100, 'category' => 'Supplements', 'image' => 'Multisource Protein.jpeg'],
-            ['id' => 6, 'name' => 'Hair Vitamins', 'price' => 599, 'category' => 'Hair Care', 'image' => 'Hair Vitamins.jpg'],
-            ['id' => 7, 'name' => 'Calcium Syrup', 'price' => 320, 'category' => 'Vitamins', 'image' => 'Calcium Syrup.jpeg'],
-            ['id' => 8, 'name' => 'Turmeric Supplement', 'price' => 275, 'category' => 'Vitamins', 'image' => 'Turmeric.jpg'],
-            ['id' => 9, 'name' => 'Acne Control Gel', 'price' => 399, 'category' => 'Skincare', 'image' => 'Acne Control Gel.jpeg'],
-            ['id' => 10, 'name' => 'Argan Oil', 'price' => 550, 'category' => 'Hair Care', 'image' => 'Argan oil.jpeg'],
-            ['id' => 11, 'name' => 'Nourishing Cream', 'price' => 485, 'category' => 'Skincare', 'image' => 'Nourishing cream.jpeg'],
-            ['id' => 12, 'name' => 'Floslek Suncare', 'price' => 780, 'category' => 'Skincare', 'image' => 'Floslek sun care.jpeg'],
-            ['id' => 13, 'name' => 'Bandage Roll', 'price' => 120, 'category' => 'First Aid', 'image' => 'Bandage Roll.jpg'],
-            ['id' => 14, 'name' => 'Bandage', 'price' => 85, 'category' => 'First Aid', 'image' => 'Bandage.jpg'],
-            ['id' => 15, 'name' => 'Dettol', 'price' => 195, 'category' => 'First Aid', 'image' => 'dettol.jpg'],
-            ['id' => 16, 'name' => 'Diaper Care Cream', 'price' => 350, 'category' => 'Baby Care', 'image' => 'Diaper Care Cream.jpg'],
-            ['id' => 17, 'name' => 'Conditioner', 'price' => 420, 'category' => 'Hair Care', 'image' => 'Conditioner.jpg'],
-            ['id' => 18, 'name' => 'Dove Shampoo', 'price' => 375, 'category' => 'Hair Care', 'image' => 'dove-shampoo.jpg'],
-            ['id' => 19, 'name' => 'Green Tea', 'price' => 299, 'category' => 'Beverages', 'image' => 'green-tea.jpg'],
-            ['id' => 20, 'name' => 'Nescafe Coffee', 'price' => 450, 'category' => 'Beverages', 'image' => 'nescafe-cofee.jpg'],
-            ['id' => 21, 'name' => 'Peppermint Oil', 'price' => 310, 'category' => 'Personal Care', 'image' => 'Peperment.jpg'],
-            ['id' => 22, 'name' => 'Rose Water', 'price' => 220, 'category' => 'Skincare', 'image' => 'rose-water.jpg'],
-            ['id' => 23, 'name' => 'Olive Oil', 'price' => 340, 'category' => 'Personal Care', 'image' => 'olive-oil.jpg'],
-            ['id' => 24, 'name' => 'Simple Face Wash', 'price' => 465, 'category' => 'Skincare', 'image' => 'simple-facewash.jpg'],
-            ['id' => 25, 'name' => 'OHBT Spray', 'price' => 290, 'category' => 'Personal Care', 'image' => 'OHBT-spray.jpg'],
-            ['id' => 26, 'name' => 'Paracetamol 500mg', 'price' => 99, 'category' => 'First Aid', 'image' => 'placeholder.png'],
-            ['id' => 27, 'name' => 'Blood Pressure Monitor', 'price' => 1699, 'category' => 'Medical Devices', 'image' => 'placeholder.png'],
-            ['id' => 28, 'name' => 'First Aid Kit', 'price' => 649, 'category' => 'First Aid', 'image' => 'placeholder.png'],
-        ];
+        $pdo = Database::getConnection();
+        $products = [];
+        if ($pdo) {
+            try {
+                $stmt = $pdo->query("
+                    SELECT p.id, p.category_id, p.sku, p.name, p.slug, p.price, p.original_price, 
+                           p.stock_quantity, p.image, p.is_active, c.name AS category 
+                    FROM products p 
+                    LEFT JOIN categories c ON p.category_id = c.id 
+                    ORDER BY p.id ASC
+                ");
+                $products = $stmt->fetchAll();
+            } catch (PDOException $e) {
+                error_log("Product list query error: " . $e->getMessage());
+            }
+        }
         $this->view('pages/admin/product_list', [
             'products' => $products,
             'adminUser' => $this->adminUser,
@@ -71,14 +57,29 @@ class AdminController extends Controller {
     }
 
     public function editProduct() {
-        $id = $_GET['id'] ?? 1;
-        $product = [
-            'id' => $id,
-            'name' => 'Vitamin C Tablets',
-            'price' => 299,
-            'image' => 'Vitamin C.jpeg',
-            'category' => 'Vitamins'
-        ];
+        $id = (int)($_GET['id'] ?? 1);
+        $product = null;
+        $pdo = Database::getConnection();
+        if ($pdo) {
+            $stmt = $pdo->prepare("
+                SELECT p.*, c.name AS category 
+                FROM products p 
+                LEFT JOIN categories c ON p.category_id = c.id 
+                WHERE p.id = :id
+            ");
+            $stmt->execute([':id' => $id]);
+            $product = $stmt->fetch();
+        }
+        if (!$product) {
+            $product = [
+                'id' => $id,
+                'name' => 'Vitamin C Tablets',
+                'price' => 299,
+                'image' => 'vitamin-c.jpeg',
+                'category' => 'Vitamins',
+                'is_active' => 1
+            ];
+        }
         $this->view('pages/admin/edit_product', [
             'product' => $product,
             'adminUser' => $this->adminUser,
@@ -87,13 +88,16 @@ class AdminController extends Controller {
     }
 
     public function users() {
-        $users = [
-            ['id' => 1, 'name' => 'Vishal Mer', 'email' => 'vishal@medimax.com', 'role' => 'owner', 'image' => 'Rahul.jpg'],
-            ['id' => 2, 'name' => 'Rahul Sharma', 'email' => 'rahul@gmail.com', 'role' => 'customer', 'image' => ''],
-            ['id' => 3, 'name' => 'Priya Patel', 'email' => 'priya@gmail.com', 'role' => 'customer', 'image' => 'User PP (11).jpeg'],
-            ['id' => 4, 'name' => 'Amit Kumar', 'email' => 'amit@gmail.com', 'role' => 'admin', 'image' => 'User PP (16).jpeg'],
-            ['id' => 5, 'name' => 'Neha Singh', 'email' => 'neha@gmail.com', 'role' => 'customer', 'image' => ''],
-        ];
+        $pdo = Database::getConnection();
+        $users = [];
+        if ($pdo) {
+            try {
+                $stmt = $pdo->query("SELECT id, name, email, role, image, status, is_active FROM users ORDER BY id ASC");
+                $users = $stmt->fetchAll();
+            } catch (PDOException $e) {
+                error_log("Users query error: " . $e->getMessage());
+            }
+        }
         $this->view('pages/admin/users', [
             'users' => $users,
             'adminUser' => $this->adminUser,
@@ -157,13 +161,30 @@ class AdminController extends Controller {
     }
 
     public function discounts() {
-        $coupons = [
-            ['id' => 1, 'code' => 'MEDI10', 'title' => '10% OFF', 'description' => 'Get 10% off on your order', 'discountType' => 'percentage', 'discountValue' => 10, 'minimumOrderValue' => 499, 'maximumDiscount' => 100, 'applicableCategory' => 'All', 'expiryDate' => '2027-12-31', 'usageLimit' => 100, 'isActive' => true],
-            ['id' => 2, 'code' => 'MEDI20', 'title' => '20% OFF', 'description' => 'Get 20% off on your order', 'discountType' => 'percentage', 'discountValue' => 20, 'minimumOrderValue' => 999, 'maximumDiscount' => 300, 'applicableCategory' => 'All', 'expiryDate' => '2027-12-31', 'usageLimit' => 50, 'isActive' => true],
-            ['id' => 3, 'code' => 'SAVE50', 'title' => '₹50 OFF', 'description' => 'Flat ₹50 off', 'discountType' => 'fixed', 'discountValue' => 50, 'minimumOrderValue' => 499, 'maximumDiscount' => null, 'applicableCategory' => 'All', 'expiryDate' => '2027-12-31', 'usageLimit' => 200, 'isActive' => true],
-            ['id' => 4, 'code' => 'HEALTH15', 'title' => '15% OFF', 'description' => '15% off on healthcare', 'discountType' => 'percentage', 'discountValue' => 15, 'minimumOrderValue' => 799, 'maximumDiscount' => 200, 'applicableCategory' => 'First Aid', 'expiryDate' => '2027-12-31', 'usageLimit' => 100, 'isActive' => true],
-            ['id' => 5, 'code' => 'WELCOME100', 'title' => '₹100 OFF', 'description' => 'Welcome discount', 'discountType' => 'fixed', 'discountValue' => 100, 'minimumOrderValue' => 999, 'maximumDiscount' => null, 'applicableCategory' => 'All', 'expiryDate' => '2027-12-31', 'usageLimit' => 10, 'isActive' => true],
-        ];
+        $pdo = Database::getConnection();
+        $coupons = [];
+        if ($pdo) {
+            try {
+                $stmt = $pdo->query("
+                    SELECT id, code, title, description, discount_type as discountType, discount_value as discountValue, 
+                           minimum_order_value as minimumOrderValue, maximum_discount as maximumDiscount, 
+                           expiry_date as expiryDate, is_active as isActive 
+                    FROM coupons ORDER BY id ASC
+                ");
+                $coupons = $stmt->fetchAll();
+            } catch (PDOException $e) {
+                error_log("Discounts query error: " . $e->getMessage());
+            }
+        }
+        if (empty($coupons)) {
+            $coupons = [
+                ['id' => 1, 'code' => 'MEDI10', 'title' => '10% OFF', 'description' => 'Get 10% off on your order', 'discountType' => 'percentage', 'discountValue' => 10, 'minimumOrderValue' => 499, 'maximumDiscount' => 100, 'applicableCategory' => 'All', 'expiryDate' => '2027-12-31', 'usageLimit' => 100, 'isActive' => 1],
+                ['id' => 2, 'code' => 'MEDI20', 'title' => '20% OFF', 'description' => 'Get 20% off on your order', 'discountType' => 'percentage', 'discountValue' => 20, 'minimumOrderValue' => 999, 'maximumDiscount' => 300, 'applicableCategory' => 'All', 'expiryDate' => '2027-12-31', 'usageLimit' => 50, 'isActive' => 1],
+                ['id' => 3, 'code' => 'SAVE50', 'title' => '₹50 OFF', 'description' => 'Flat ₹50 off', 'discountType' => 'fixed', 'discountValue' => 50, 'minimumOrderValue' => 499, 'maximumDiscount' => null, 'applicableCategory' => 'All', 'expiryDate' => '2027-12-31', 'usageLimit' => 200, 'isActive' => 1],
+                ['id' => 4, 'code' => 'HEALTH15', 'title' => '15% OFF', 'description' => '15% off on healthcare', 'discountType' => 'percentage', 'discountValue' => 15, 'minimumOrderValue' => 799, 'maximumDiscount' => 200, 'applicableCategory' => 'First Aid', 'expiryDate' => '2027-12-31', 'usageLimit' => 100, 'isActive' => 1],
+                ['id' => 5, 'code' => 'WELCOME100', 'title' => '₹100 OFF', 'description' => 'Welcome discount', 'discountType' => 'fixed', 'discountValue' => 100, 'minimumOrderValue' => 999, 'maximumDiscount' => null, 'applicableCategory' => 'All', 'expiryDate' => '2027-12-31', 'usageLimit' => 10, 'isActive' => 1],
+            ];
+        }
         $this->view('pages/admin/discounts', [
             'coupons' => $coupons,
             'adminUser' => $this->adminUser,
@@ -179,7 +200,7 @@ class AdminController extends Controller {
     }
 
     public function editDiscount() {
-        $id = $_GET['id'] ?? 1;
+        $id = (int)($_GET['id'] ?? 1);
         $coupon = [
             'id' => $id,
             'code' => 'MEDI10',
@@ -192,12 +213,105 @@ class AdminController extends Controller {
             'applicableCategory' => 'All',
             'expiryDate' => '2027-12-31',
             'usageLimit' => 100,
-            'isActive' => true
+            'isActive' => 1
         ];
         $this->view('pages/admin/edit_discount', [
             'coupon' => $coupon,
             'adminUser' => $this->adminUser,
             'pageTitle' => 'Edit Discount'
         ]);
+    }
+
+    /**
+     * Universal status toggler & soft-delete handler for Users, Products, and Coupons
+     */
+    public function toggleStatus() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $type   = $_REQUEST['type'] ?? '';
+        $id     = (int)($_REQUEST['id'] ?? 0);
+        $action = $_REQUEST['action'] ?? 'toggle'; // toggle, deactivate, activate
+        $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') || isset($_GET['ajax']);
+
+        $pdo = Database::getConnection();
+        if (!$pdo || $id <= 0) {
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => 'Invalid request or database connection error.']);
+                exit;
+            }
+            header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? url('admin')));
+            exit;
+        }
+
+        $newStatus = 1;
+        $message = '';
+
+        if ($type === 'user') {
+            $stmt = $pdo->prepare("SELECT is_active, status, name FROM users WHERE id = :id");
+            $stmt->execute([':id' => $id]);
+            $user = $stmt->fetch();
+            if ($user) {
+                if ($action === 'deactivate') {
+                    $newStatus = 0;
+                } elseif ($action === 'activate') {
+                    $newStatus = 1;
+                } else {
+                    $newStatus = ((int)$user['is_active'] === 1) ? 0 : 1;
+                }
+                $statusEnum = $newStatus ? 'active' : 'inactive';
+                $upd = $pdo->prepare("UPDATE users SET is_active = :active, status = :status, updated_at = NOW() WHERE id = :id");
+                $upd->execute([':active' => $newStatus, ':status' => $statusEnum, ':id' => $id]);
+                $message = "User '{$user['name']}' is now " . ($newStatus ? 'Active' : 'Inactive') . '.';
+            }
+        } elseif ($type === 'product') {
+            $stmt = $pdo->prepare("SELECT is_active, name FROM products WHERE id = :id");
+            $stmt->execute([':id' => $id]);
+            $prod = $stmt->fetch();
+            if ($prod) {
+                if ($action === 'deactivate') {
+                    $newStatus = 0;
+                } elseif ($action === 'activate') {
+                    $newStatus = 1;
+                } else {
+                    $newStatus = ((int)$prod['is_active'] === 1) ? 0 : 1;
+                }
+                $upd = $pdo->prepare("UPDATE products SET is_active = :active, updated_at = NOW() WHERE id = :id");
+                $upd->execute([':active' => $newStatus, ':id' => $id]);
+                $message = "Product '{$prod['name']}' is now " . ($newStatus ? 'Active' : 'Inactive') . '.';
+            }
+        } elseif ($type === 'discount' || $type === 'coupon') {
+            $stmt = $pdo->prepare("SELECT is_active, code FROM coupons WHERE id = :id");
+            $stmt->execute([':id' => $id]);
+            $coup = $stmt->fetch();
+            if ($coup) {
+                if ($action === 'deactivate') {
+                    $newStatus = 0;
+                } elseif ($action === 'activate') {
+                    $newStatus = 1;
+                } else {
+                    $newStatus = ((int)$coup['is_active'] === 1) ? 0 : 1;
+                }
+                $upd = $pdo->prepare("UPDATE coupons SET is_active = :active, updated_at = NOW() WHERE id = :id");
+                $upd->execute([':active' => $newStatus, ':id' => $id]);
+                $message = "Discount '{$coup['code']}' is now " . ($newStatus ? 'Active' : 'Inactive') . '.';
+            }
+        }
+
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success'   => true, 
+                'is_active' => $newStatus, 
+                'status'    => $newStatus ? 'active' : 'inactive',
+                'message'   => $message
+            ]);
+            exit;
+        }
+
+        $_SESSION['flash_success'] = $message;
+        header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? url('admin')));
+        exit;
     }
 }

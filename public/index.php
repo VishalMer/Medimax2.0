@@ -23,6 +23,20 @@ require_once APP_PATH . '/core/Database.php';
 require_once APP_PATH . '/core/Controller.php';
 require_once APP_PATH . '/core/Router.php';
 
+// Class autoloader for controllers and core classes
+spl_autoload_register(function ($class) {
+    $controllerFile = APP_PATH . '/controllers/' . $class . '.php';
+    if (file_exists($controllerFile)) {
+        require_once $controllerFile;
+        return;
+    }
+    $coreFile = APP_PATH . '/core/' . $class . '.php';
+    if (file_exists($coreFile)) {
+        require_once $coreFile;
+        return;
+    }
+});
+
 // Create router and load routes
 $router = new Router();
 require_once __DIR__ . '/../routes/routes.php';

@@ -67,6 +67,25 @@
   </form>
 </div>
 
+<!-- Profile Deactivation (Soft Delete) Zone -->
+<div class="panel p-4 mt-4" style="border: 1px solid rgba(180, 52, 43, 0.25); background: #fffcfc; border-radius: var(--r-md); max-width: 860px; margin-inline: auto;">
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div>
+      <h3 style="color: var(--danger); font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem;">
+        <i class="fa-solid fa-triangle-exclamation me-1" aria-hidden="true"></i> Deactivate Profile
+      </h3>
+      <p class="mb-0" style="font-size: .86rem; color: var(--ink-60); max-width: 560px;">
+        Temporarily disable your profile. Your account will become inactive (soft delete) and you will be signed out immediately. All order history is safely retained, but you will not be able to log in until an administrator reactivates your account.
+      </p>
+    </div>
+    <form action="<?= url('user-deactivate-profile') ?>" method="POST" onsubmit="return confirm('Are you sure you want to deactivate your profile? You will be signed out immediately and your account will be marked inactive.');">
+      <button type="submit" class="btn-mm btn-mm-danger btn-mm-sm">
+        <i class="fa-solid fa-user-slash" aria-hidden="true"></i><span>Deactivate profile</span>
+      </button>
+    </form>
+  </div>
+</div>
+
 <?php
 $pageContent = ob_get_clean();
 require APP_PATH . '/views/layouts/admin_layout.php';

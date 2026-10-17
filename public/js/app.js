@@ -186,6 +186,251 @@
         });
       })(window.jQuery);
     }
+
+    /* --- Universal data-confirm handler ------------------------------ */
+    document.addEventListener('click', function (e) {
+      var confirmEl = e.target.closest('[data-confirm]');
+      if (!confirmEl) return;
+      var promptMsg = confirmEl.getAttribute('data-confirm');
+      if (promptMsg && !window.confirm(promptMsg)) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        return false;
+      }
+    }, true);
+
+    /* --- Stepper buttons (- / +) ------------------------------------- */
+    document.addEventListener('click', function (e) {
+      var stepBtn = e.target.closest('.stepper button[data-step]');
+      if (!stepBtn) return;
+      var delta = parseInt(stepBtn.getAttribute('data-step'), 10) || 0;
+      var stepper = stepBtn.closest('.stepper');
+      if (!stepper) return;
+      var input = stepper.querySelector('input[type="number"]');
+      if (!input) return;
+      var curVal = parseInt(input.value, 10) || 1;
+      var minVal = parseInt(input.getAttribute('min'), 10) || 1;
+      var maxVal = parseInt(input.getAttribute('data-max') || input.getAttribute('max'), 10) || 99;
+      var newVal = Math.max(minVal, Math.min(maxVal, curVal + delta));
+      input.value = newVal;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
+    /* --- Wishlist Heart Toggle Handler (data-act="fav") --------------- */
+    function updateHeaderWishlistBadge(count) {
+      var badge = document.getElementById('headerWishlistCount');
+      if (!badge) return;
+      badge.textContent = count;
+      if (count > 0) {
+        badge.style.display = '';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    function updateHeaderCartBadge(count) {
+      var badge = document.getElementById('headerCartCount');
+      if (!badge) return;
+      badge.textContent = count;
+      if (count > 0) {
+        badge.style.display = '';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    document.addEventListener('click', function (e) {
+      var favBtn = e.target.closest('[data-act="fav"]');
+      if (!favBtn) return;
+      e.preventDefault();
+
+      var productId = favBtn.getAttribute('data-id');
+      var productName = favBtn.getAttribute('data-name') || 'Product';
+      if (!productId) return;
+
+      var baseUrl = window.BASE_URL || '/MediMax/';
+      var url = baseUrl + '?page=wishlist/toggle';
+
+      favBtn.disabled = true;
+
+      var fd = new FormData();
+      fd.append('product_id', productId);
+      fd.append('ajax', '1');
+
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: fd
+      })
+      .then(function (res) {
+        if (!res.ok) throw new Error('HTTP error ' + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        favBtn.disabled = false;
+        if (data && data.success) {
+          var allSameBtns = document.querySelectorAll('[data-act="fav"][data-id="' + productId + '"]');
+          allSameBtns.forEach(function (btn) {
+            var icon = btn.querySelector('i');
+            if (data.in_wishlist) {
+              btn.classList.add('is-fav');
+              btn.setAttribute('aria-pressed', 'true');
+              btn.setAttribute('title', 'Remove from wishlist');
+              btn.setAttribute('aria-label', 'Remove ' + productName + ' from wishlist');
+              if (icon) {
+                icon.className = 'fas fa-heart';
+              }
+            } else {
+              btn.classList.remove('is-fav');
+              btn.setAttribute('aria-pressed', 'false');
+              btn.setAttribute('title', 'Save to wishlist');
+              btn.setAttribute('aria-label', 'Save ' + productName + ' to wishlist');
+              if (icon) {
+                icon.className = 'far fa-heart';
+              }
+            }
+          });
+
+          updateHeaderWishlistBadge(data.count);
+
+          if (window.MediMax && window.MediMax.toast) {
+            if (data.in_wishlist) {
+              window.MediMax.toast('Saved "' + productName + '" to wishlist', 'fa-heart');
+            } else {
+              window.MediMax.toast('Removed "' + productName + '" from wishlist', 'fa-heart-crack');
+            }
+          }
+        } else {
+          if (window.MediMax && window.MediMax.toast) {
+            window.MediMax.toast((data && data.message) || 'Could not update wishlist', 'fa-circle-exclamation');
+          }
+        }
+      })
+      .catch(function (err) {
+        favBtn.disabled = false;
+        console.error('Wishlist toggle error:', err);
+        if (window.MediMax && window.MediMax.toast) {
+          window.MediMax.toast('Network error updating wishlist', 'fa-circle-exclamation');
+        }
+      });
+    });
+
+    /* --- Add to Cart Handler (data-act="cart") on Product Cards ------- */
+    document.addEventListener('click', function (e) {
+      var cartBtn = e.target.closest('[data-act="cart"]');
+      if (!cartBtn) return;
+      var productId = cartBtn.getAttribute('data-id');
+      var productName = cartBtn.getAttribute('data-name') || 'Product';
+      if (!productId) return;
+
+      e.preventDefault();
+      cartBtn.disabled = true;
+
+      var baseUrl = window.BASE_URL || '/MediMax/';
+      var url = baseUrl + '?page=cart/add';
+
+      var fd = new FormData();
+      fd.append('product_id', productId);
+      fd.append('quantity', '1');
+      fd.append('ajax', '1');
+
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: fd
+      })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        cartBtn.disabled = false;
+        if (data && data.success) {
+          updateHeaderCartBadge(data.count);
+          cartBtn.classList.add('is-done');
+          setTimeout(function () { cartBtn.classList.remove('is-done'); }, 1200);
+          if (window.MediMax && window.MediMax.toast) {
+            window.MediMax.toast('Added "' + productName + '" to cart', 'fa-cart-plus');
+          }
+        }
+      })
+      .catch(function (err) {
+        cartBtn.disabled = false;
+        console.error('Cart add error:', err);
+      });
+    });
+
+    /* --- Wishlist Page: Live Item Removal Handler --------------------- */
+    document.addEventListener('click', function (e) {
+      var removeBtn = e.target.closest('[data-act="remove-wishlist"]');
+      if (!removeBtn) return;
+      e.preventDefault();
+
+      var lineItem = removeBtn.closest('.line-item');
+      var href = removeBtn.getAttribute('href');
+      var productName = (lineItem && lineItem.getAttribute('data-name')) || 'Product';
+
+      fetch(href, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (data && data.success) {
+          if (lineItem) {
+            lineItem.style.transition = 'all 0.3s ease-out';
+            lineItem.style.opacity = '0';
+            lineItem.style.transform = 'translateX(20px)';
+            setTimeout(function () {
+              lineItem.remove();
+
+              var remaining = document.querySelectorAll('#wishlistBody .line-item');
+              var newCount = remaining.length;
+              var newSaved = 0;
+              remaining.forEach(function (el) {
+                newSaved += parseFloat(el.getAttribute('data-price') || 0);
+              });
+
+              updateHeaderWishlistBadge(data.count !== undefined ? data.count : newCount);
+
+              var panelCountEl = document.getElementById('wishlistPanelCount');
+              if (panelCountEl) panelCountEl.textContent = newCount + ' saved';
+
+              var summaryCountEl = document.getElementById('wishlistCountSummary');
+              if (summaryCountEl) summaryCountEl.textContent = newCount;
+
+              var pluralEl = document.getElementById('wishlistCountPlural');
+              if (pluralEl) pluralEl.textContent = newCount === 1 ? 'product' : 'products';
+
+              var totalSavedEl = document.getElementById('wishlistTotalSaved');
+              if (totalSavedEl) totalSavedEl.innerHTML = '&#8377;' + newSaved.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+              if (newCount === 0) {
+                var panel = document.getElementById('wishlistPanel');
+                if (panel) panel.style.display = 'none';
+
+                var emptyState = document.getElementById('wishlistEmptyState');
+                if (emptyState) emptyState.style.display = '';
+
+                var lede = document.getElementById('wishlistLede');
+                if (lede) lede.textContent = 'Tap the heart on any product to keep it here without buying it yet.';
+              }
+            }, 300);
+          }
+
+          if (window.MediMax && window.MediMax.toast) {
+            window.MediMax.toast('Removed "' + productName + '" from wishlist', 'fa-trash-can');
+          }
+        } else {
+          window.location.href = href;
+        }
+      })
+      .catch(function () {
+        // Fallback to browser navigation if AJAX fails
+        window.location.href = href;
+      });
+    });
+
   });
 
   /* --- Global MediMax helpers --- */

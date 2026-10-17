@@ -2,13 +2,14 @@
 $currentPage = $_GET['page'] ?? 'home';
 $pageTitle   = $pageTitle ?? 'MediMax';
 
-// Display-only counts for the header badges (static values).
-$navCartCount = 3;
-$navFavCount  = 4;
+// Dynamic counts for the header badges from real session/DB state
+$navCartCount = class_exists('CartController') ? CartController::getCount() : 0;
+$navFavCount  = class_exists('WishlistController') ? WishlistController::getCount() : 0;
 $isLoggedIn   = !empty($_SESSION['user']);
 $navUser      = $_SESSION['user'] ?? null;
 $navUserFirst = $navUser ? strtok($navUser['name'] ?? 'User', ' ') : 'Sign in';
 ?>
+<script>window.BASE_URL = <?= json_encode(BASE_URL) ?>;</script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -67,13 +68,13 @@ $navUserFirst = $navUser ? strtok($navUser['name'] ?? 'User', ' ') : 'Sign in';
         </form>
 
         <div class="d-flex align-items-center gap-2">
-          <a class="icon-btn" href="<?= url('wishlist') ?>" aria-label="Wishlist">
+          <a class="icon-btn" href="<?= url('wishlist') ?>" aria-label="Wishlist" title="Wishlist">
             <i class="far fa-heart" aria-hidden="true"></i>
-            <?php if ($navFavCount): ?><span class="icon-btn__count"><?= $navFavCount ?></span><?php endif; ?>
+            <span class="icon-btn__count" id="headerWishlistCount"<?= $navFavCount > 0 ? '' : ' style="display:none;"' ?>><?= $navFavCount ?></span>
           </a>
-          <a class="icon-btn" href="<?= url('cart') ?>" aria-label="Cart">
+          <a class="icon-btn" href="<?= url('cart') ?>" aria-label="Cart" title="Cart">
             <i class="fas fa-basket-shopping" aria-hidden="true"></i>
-            <?php if ($navCartCount): ?><span class="icon-btn__count"><?= $navCartCount ?></span><?php endif; ?>
+            <span class="icon-btn__count" id="headerCartCount"<?= $navCartCount > 0 ? '' : ' style="display:none;"' ?>><?= $navCartCount ?></span>
           </a>
           <button class="account-btn" id="profileOptionsBtn" type="button" aria-haspopup="true" aria-expanded="false">
             <?php if ($isLoggedIn): ?>

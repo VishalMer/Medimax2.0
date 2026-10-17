@@ -1361,3 +1361,67 @@ h4, h5, h6 { font-family: var(--font-body); font-weight: 700; letter-spacing: -.
   body { background: #fff; }
   .panel, .receipt, .mm-table-wrap { box-shadow: none; border-color: #ccc; }
 }
+
+/* ==========================================================================
+   Active / Inactive Status Toggle Buttons & Soft Delete Styles
+   ========================================================================== */
+.status-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  cursor: pointer;
+  background: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none !important;
+  user-select: none;
+}
+.status-toggle-btn.is-active {
+  background: var(--ok-bg, #e6f6ee);
+  color: var(--ok, #18794e);
+  border-color: rgba(24, 121, 78, 0.25);
+}
+.status-toggle-btn.is-active:hover {
+  background: #d4f2e2;
+  box-shadow: 0 2px 6px rgba(24, 121, 78, 0.15);
+  transform: translateY(-1px);
+}
+.status-toggle-btn.is-inactive {
+  background: var(--mist, #f1f3f5);
+  color: var(--ink-60, #6c757d);
+  border-color: var(--line-strong, #dee2e6);
+}
+.status-toggle-btn.is-inactive:hover {
+  background: #e9ecef;
+  color: var(--ink, #212529);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+.status-toggle-btn .status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+.status-toggle-btn.is-active .status-dot {
+  background: var(--ok, #18794e);
+  box-shadow: 0 0 0 2px rgba(24, 121, 78, 0.25);
+}
+.status-toggle-btn.is-inactive .status-dot {
+  background: #adb5bd;
+}
+
+tr.is-row-inactive {
+  opacity: 0.65;
+  background-color: rgba(0, 0, 0, 0.015);
+}
+tr.is-row-inactive:hover {
+  opacity: 0.95;
+}
+

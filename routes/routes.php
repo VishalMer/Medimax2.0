@@ -7,7 +7,24 @@
 $router->register('home', 'HomeController', 'index');
 $router->register('products', 'ProductController', 'index');
 $router->register('cart', 'CartController', 'index');
+$router->register('cart/add', 'CartController', 'add');
+$router->register('cart/update', 'CartController', 'update');
+$router->register('cart/remove', 'CartController', 'remove');
+$router->register('cart/clear', 'CartController', 'clear');
+$router->register('cart-add', 'CartController', 'add');
+$router->register('cart-update', 'CartController', 'update');
+$router->register('cart-remove', 'CartController', 'remove');
+$router->register('cart-clear', 'CartController', 'clear');
+
 $router->register('wishlist', 'WishlistController', 'index');
+$router->register('wishlist/add', 'WishlistController', 'add');
+$router->register('wishlist/remove', 'WishlistController', 'remove');
+$router->register('wishlist/toggle', 'WishlistController', 'toggle');
+$router->register('wishlist/clear', 'WishlistController', 'clear');
+$router->register('wishlist-add', 'WishlistController', 'add');
+$router->register('wishlist-remove', 'WishlistController', 'remove');
+$router->register('wishlist-toggle', 'WishlistController', 'toggle');
+$router->register('wishlist-clear', 'WishlistController', 'clear');
 $router->register('orders', 'OrderController', 'index');
 $router->register('about', 'AboutController', 'index');
 $router->register('contact', 'ContactController', 'index');
@@ -31,3 +48,6 @@ $router->register('admin-update-password', 'AdminController', 'updatePassword');
 $router->register('admin-discounts', 'AdminController', 'discounts');
 $router->register('admin-add-discount', 'AdminController', 'addDiscount');
 $router->register('admin-edit-discount', 'AdminController', 'editDiscount');
+$router->register('admin-toggle-status', 'AdminController', 'toggleStatus');
+$router->register('user-deactivate-profile', 'AuthController', 'deactivateProfile');
+

@@ -11,11 +11,13 @@ $image    = $product['image'] ?? 'placeholder.png';
 $category = $product['category'] ?? 'Pharmacy';
 $id       = $product['id'] ?? 0;
 $index    = $index ?? 0;
+$isFav    = class_exists('WishlistController') && WishlistController::has($id);
 ?>
 <article class="product-card position-relative"
          data-category="<?= htmlspecialchars($category) ?>"
          data-price="<?= htmlspecialchars((string) $price) ?>"
          data-name="<?= htmlspecialchars($name) ?>"
+         data-id="<?= (int) $id ?>"
          data-index="<?= (int) $index ?>">
 
   <div class="product-card__label">
@@ -53,13 +55,18 @@ $index    = $index ?? 0;
       </div>
     </div>
     <div class="product-card__acts flex-shrink-0">
-      <button class="icon-btn" type="button" data-act="cart" data-name="<?= htmlspecialchars($name) ?>"
+      <button class="icon-btn" type="button" data-act="cart" data-id="<?= (int)$id ?>" data-name="<?= htmlspecialchars($name) ?>"
               aria-label="Add <?= htmlspecialchars($name) ?> to cart" title="Add to cart">
         <i class="fas fa-cart-plus" aria-hidden="true"></i>
       </button>
-      <button class="icon-btn" type="button" data-act="fav" data-name="<?= htmlspecialchars($name) ?>"
-              aria-pressed="false" aria-label="Save <?= htmlspecialchars($name) ?> to wishlist" title="Save to wishlist">
-        <i class="far fa-heart" aria-hidden="true"></i>
+      <button class="icon-btn <?= $isFav ? 'is-fav' : '' ?>" type="button" 
+              data-act="fav" 
+              data-id="<?= (int)$id ?>" 
+              data-name="<?= htmlspecialchars($name) ?>"
+              aria-pressed="<?= $isFav ? 'true' : 'false' ?>" 
+              aria-label="<?= $isFav ? 'Remove ' . htmlspecialchars($name) . ' from wishlist' : 'Save ' . htmlspecialchars($name) . ' to wishlist' ?>" 
+              title="<?= $isFav ? 'Remove from wishlist' : 'Save to wishlist' ?>">
+        <i class="<?= $isFav ? 'fas' : 'far' ?> fa-heart" aria-hidden="true"></i>
       </button>
     </div>
   </div>
