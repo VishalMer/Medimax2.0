@@ -137,3 +137,14 @@ $navUserFirst = $navUser ? strtok($navUser['name'] ?? 'User', ' ') : 'Sign in';
   </div>
   <?php unset($_SESSION['flash_success']); ?>
 <?php endif; ?>
+
+<?php if (!empty($_SESSION['flash_error'])): ?>
+  <div class="mm-container pt-3">
+    <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 py-2 px-3 rounded-3 shadow-sm mb-3" role="alert" style="font-size: .9rem;">
+      <i class="fas fa-circle-exclamation flex-shrink-0 text-danger"></i>
+      <div class="flex-grow-1"><?= htmlspecialchars($_SESSION['flash_error']) ?></div>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  </div>
+  <?php unset($_SESSION['flash_error']); ?>
+<?php endif; ?>

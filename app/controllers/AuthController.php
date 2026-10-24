@@ -20,7 +20,8 @@ class AuthController extends Controller {
             exit;
         }
 
-        $errorMessage = '';
+        $errorMessage = $_SESSION['flash_error'] ?? '';
+        unset($_SESSION['flash_error']);
         $successMessage = $_SESSION['flash_success'] ?? '';
         unset($_SESSION['flash_success']);
 

@@ -5,6 +5,11 @@ $items = $cartItems ?? [];
 $count = count($items);
 $units = 0;
 foreach ($items as $it) { $units += (int) ($it['quantity'] ?? 1); }
+$subtotal = (float)($subtotal ?? 0.0);
+$deliveryFee = (float)($deliveryFee ?? 0.0);
+$discountAmount = (float)($discountAmount ?? 0.0);
+$grandTotal = (float)($grandTotal ?? 0.0);
+$appliedCoupon = $appliedCoupon ?? ($_SESSION['applied_coupon'] ?? null);
 ?>
 
 <div class="page bg-light pt-4 pb-5">
@@ -54,42 +59,43 @@ foreach ($items as $it) { $units += (int) ($it['quantity'] ?? 1); }
               </div>
 
               <!-- Address Form -->
-              <form id="checkoutForm">
+              <form id="checkoutForm" action="<?= url('checkout/place-order') ?>" method="POST">
+                <input type="hidden" name="payment_method" id="selectedPaymentMethod" value="UPI">
                 <div class="row g-3">
                   <div class="col-md-6 mm-field mb-3">
                     <label class="form-label fw-bold" style="font-size: 0.85rem;">Full Name <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="delName" required>
+                    <input type="text" class="form-control" name="shipping_name" id="delName" required value="<?= htmlspecialchars($_SESSION['user']['name'] ?? '') ?>">
                   </div>
                   <div class="col-md-6 mm-field mb-3">
                     <label class="form-label fw-bold" style="font-size: 0.85rem;">Mobile Number <span class="text-danger">*</span></label>
-                    <input type="tel" class="form-control" id="delMobile" required pattern="[0-9]{10}" placeholder="10 digit number">
+                    <input type="tel" class="form-control" name="shipping_mobile" id="delMobile" required pattern="[0-9]{10}" placeholder="10 digit number">
                   </div>
                   
                   <div class="col-md-12 mm-field mb-3">
                     <label class="form-label fw-bold" style="font-size: 0.85rem;">Email <span class="text-danger">*</span></label>
-                    <input type="email" class="form-control" id="delEmail" required>
+                    <input type="email" class="form-control" name="shipping_email" id="delEmail" required value="<?= htmlspecialchars($_SESSION['user']['email'] ?? '') ?>">
                   </div>
 
                   <div class="col-12 mm-field mb-3">
                     <label class="form-label fw-bold" style="font-size: 0.85rem;">Flat, House no., Building, Company, Apartment <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="delAddress" required>
+                    <input type="text" class="form-control" name="shipping_address_line1" id="delAddress" required>
                   </div>
 
                   <div class="col-12 mm-field mb-3">
                     <label class="form-label fw-bold" style="font-size: 0.85rem;">Area, Street, Sector, Village</label>
-                    <input type="text" class="form-control" id="delArea">
+                    <input type="text" class="form-control" name="shipping_address_line2" id="delArea">
                   </div>
 
                   <div class="col-md-4 mm-field mb-3">
                     <label class="form-label fw-bold" style="font-size: 0.85rem;">Town/City <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="delCity" required>
+                    <input type="text" class="form-control" name="shipping_city" id="delCity" required>
                   </div>
 
                   <div class="col-md-4 mm-field mb-3">
                     <label class="form-label fw-bold" style="font-size: 0.85rem;">State <span class="text-danger">*</span></label>
-                    <select class="form-select" id="delState" required>
+                    <select class="form-select" name="shipping_state" id="delState" required>
                       <option value="">Select State</option>
-                      <option value="Gujarat">Gujarat</option>
+                      <option value="Gujarat" selected>Gujarat</option>
                       <option value="Maharashtra">Maharashtra</option>
                       <option value="Delhi">Delhi</option>
                       <option value="Karnataka">Karnataka</option>
@@ -99,7 +105,7 @@ foreach ($items as $it) { $units += (int) ($it['quantity'] ?? 1); }
 
                   <div class="col-md-4 mm-field mb-3">
                     <label class="form-label fw-bold" style="font-size: 0.85rem;">Pincode <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="delPincode" required pattern="[0-9]{6}" placeholder="6 digits">
+                    <input type="text" class="form-control" name="shipping_pincode" id="delPincode" required pattern="[0-9]{6}" placeholder="6 digits">
                   </div>
                 </div>
               </form>
@@ -278,22 +284,34 @@ foreach ($items as $it) { $units += (int) ($it['quantity'] ?? 1); }
             <div class="p-3">
               <div class="d-flex justify-content-between mb-2" style="font-size: 0.9rem;">
                 <span class="text-muted">Subtotal (MRP)</span>
-                <span class="fw-bold" id="chkSubtotal">&#8377;2,594.00</span>
+                <span class="fw-bold" id="chkSubtotal">&#8377;<?= number_format($subtotal, 2) ?></span>
               </div>
+              <?php if ($discountAmount > 0): ?>
+              <div class="d-flex justify-content-between mb-2 text-success" style="font-size: 0.9rem;">
+                <span><i class="fas fa-ticket me-1"></i>Coupon Discount (<?= htmlspecialchars($appliedCoupon['code'] ?? '') ?>)</span>
+                <span class="fw-bold" id="chkDiscount">-&#8377;<?= number_format($discountAmount, 2) ?></span>
+              </div>
+              <?php endif; ?>
               <div class="d-flex justify-content-between mb-3" style="font-size: 0.9rem;">
                 <span class="text-muted">Delivery</span>
-                <span class="fw-bold" id="chkDelivery">&#8377;0.00 <span class="badge bg-success" style="font-size:0.65rem">FREE</span></span>
+                <span class="fw-bold" id="chkDelivery">
+                  <?php if ($deliveryFee === 0.00): ?>
+                    &#8377;0.00 <span class="badge bg-success" style="font-size:0.65rem">FREE</span>
+                  <?php else: ?>
+                    &#8377;<?= number_format($deliveryFee, 2) ?>
+                  <?php endif; ?>
+                </span>
               </div>
 
               <hr>
 
               <div class="d-flex justify-content-between align-items-center mb-4">
                 <span class="fs-5 fw-bold" style="color: var(--primary-dark)">Total Payable</span>
-                <span class="fs-4 fw-bold" id="chkTotal" style="color: var(--accent-orange, rgb(230, 120, 52))">&#8377;2,594.00</span>
+                <span class="fs-4 fw-bold" id="chkTotal" style="color: var(--accent-orange, rgb(230, 120, 52))">&#8377;<?= number_format($grandTotal, 2) ?></span>
               </div>
 
-              <button type="button" id="placeOrderBtn" class="btn btn-mm-amber btn-lg w-100 fw-bold d-flex justify-content-center align-items-center shadow" onclick="window.location.href='<?= url('order-success') ?>&amp;order_id=MED-2026-<?= rand(10000, 99999) ?>&amp;amount=2594.00&amp;method=UPI'">
-                <span id="placeOrderBtnText">Place Order</span>
+              <button type="submit" form="checkoutForm" id="placeOrderBtn" class="btn btn-mm-amber btn-lg w-100 fw-bold d-flex justify-content-center align-items-center shadow">
+                <i class="fas fa-lock me-2"></i><span id="placeOrderBtnText">Place Order &amp; Pay &#8377;<?= number_format($grandTotal, 2) ?></span>
               </button>
             </div>
           </div>
@@ -314,5 +332,41 @@ foreach ($items as $it) { $units += (int) ($it['quantity'] ?? 1); }
 
   </div>
 </div>
+
+<script>
+window.selectPayment = function (method) {
+  var hidden = document.getElementById('selectedPaymentMethod');
+  if (hidden) hidden.value = method;
+  var radio = document.getElementById('radio' + method);
+  if (radio) radio.checked = true;
+};
+
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.saved-addr-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.saved-addr-btn').forEach(function(b){ b.classList.remove('active', 'btn-primary'); b.classList.add('btn-outline-secondary'); });
+      btn.classList.add('active', 'btn-primary');
+      btn.classList.remove('btn-outline-secondary');
+      if (document.getElementById('delName')) document.getElementById('delName').value = btn.dataset.name || '';
+      if (document.getElementById('delMobile')) document.getElementById('delMobile').value = btn.dataset.mobile || '';
+      if (document.getElementById('delEmail')) document.getElementById('delEmail').value = btn.dataset.email || '';
+      if (document.getElementById('delAddress')) document.getElementById('delAddress').value = (btn.dataset.address || '') + (btn.dataset.apt ? ', ' + btn.dataset.apt : '');
+      if (document.getElementById('delArea')) document.getElementById('delArea').value = btn.dataset.area || '';
+      if (document.getElementById('delCity')) document.getElementById('delCity').value = btn.dataset.city || '';
+      if (document.getElementById('delState')) document.getElementById('delState').value = btn.dataset.state || '';
+      if (document.getElementById('delPincode')) document.getElementById('delPincode').value = btn.dataset.pincode || '';
+    });
+  });
+
+  var clearBtn = document.getElementById('clearAddrBtn');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function () {
+      document.querySelectorAll('.saved-addr-btn').forEach(function(b){ b.classList.remove('active', 'btn-primary'); b.classList.add('btn-outline-secondary'); });
+      var form = document.getElementById('checkoutForm');
+      if (form) form.reset();
+    });
+  }
+});
+</script>
 
 <?php Controller::partial('layouts/footer'); ?>

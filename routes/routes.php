@@ -11,10 +11,16 @@ $router->register('cart/add', 'CartController', 'add');
 $router->register('cart/update', 'CartController', 'update');
 $router->register('cart/remove', 'CartController', 'remove');
 $router->register('cart/clear', 'CartController', 'clear');
+$router->register('cart/move-to-wishlist', 'CartController', 'moveToWishlist');
+$router->register('cart/apply-coupon', 'CartController', 'applyCoupon');
+$router->register('cart/remove-coupon', 'CartController', 'removeCoupon');
 $router->register('cart-add', 'CartController', 'add');
 $router->register('cart-update', 'CartController', 'update');
 $router->register('cart-remove', 'CartController', 'remove');
 $router->register('cart-clear', 'CartController', 'clear');
+$router->register('cart-move-to-wishlist', 'CartController', 'moveToWishlist');
+$router->register('cart-apply-coupon', 'CartController', 'applyCoupon');
+$router->register('cart-remove-coupon', 'CartController', 'removeCoupon');
 
 $router->register('wishlist', 'WishlistController', 'index');
 $router->register('wishlist/add', 'WishlistController', 'add');
@@ -32,6 +38,8 @@ $router->register('login', 'AuthController', 'login');
 $router->register('register', 'AuthController', 'register');
 $router->register('logout', 'AuthController', 'logout');
 $router->register('checkout', 'CheckoutController', 'index');
+$router->register('checkout/place-order', 'CheckoutController', 'placeOrder');
+$router->register('checkout-place-order', 'CheckoutController', 'placeOrder');
 $router->register('order-success', 'CheckoutController', 'success');
 
 // Admin routes

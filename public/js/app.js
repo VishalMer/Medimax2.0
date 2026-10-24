@@ -317,6 +317,14 @@
       });
     });
 
+    /* --- Format Indian currency helper ------------------------------ */
+    function formatINR(val) {
+      return parseFloat(val || 0).toLocaleString('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
     /* --- Add to Cart Handler (data-act="cart") on Product Cards ------- */
     document.addEventListener('click', function (e) {
       var cartBtn = e.target.closest('[data-act="cart"]');
@@ -347,17 +355,393 @@
       .then(function (data) {
         cartBtn.disabled = false;
         if (data && data.success) {
-          updateHeaderCartBadge(data.count);
+          updateHeaderCartBadge(data.units !== undefined ? data.units : data.count);
           cartBtn.classList.add('is-done');
           setTimeout(function () { cartBtn.classList.remove('is-done'); }, 1200);
           if (window.MediMax && window.MediMax.toast) {
             window.MediMax.toast('Added "' + productName + '" to cart', 'fa-cart-plus');
+          }
+        } else {
+          if (window.MediMax && window.MediMax.toast) {
+            window.MediMax.toast((data && data.message) || 'Could not add product to cart', 'fa-circle-exclamation');
           }
         }
       })
       .catch(function (err) {
         cartBtn.disabled = false;
         console.error('Cart add error:', err);
+        if (window.MediMax && window.MediMax.toast) {
+          window.MediMax.toast('Network error adding to cart', 'fa-circle-exclamation');
+        }
+      });
+    });
+
+    /* --- Live Cart Receipt & Summary Updater ------------------------- */
+    function updateCartReceipt(data) {
+      if (!data) return;
+
+      // Update Header badge
+      if (data.units !== undefined) {
+        updateHeaderCartBadge(data.units);
+      } else if (data.count !== undefined) {
+        updateHeaderCartBadge(data.count);
+      }
+
+      // Check if cart is now empty
+      if (data.is_empty || (data.count !== undefined && data.count === 0)) {
+        var cartMainRow = document.getElementById('cartMainRow');
+        if (cartMainRow) cartMainRow.style.display = 'none';
+
+        var cartEmptyState = document.getElementById('cartEmptyState');
+        if (cartEmptyState) cartEmptyState.style.display = '';
+
+        var cartLede = document.getElementById('cartLede');
+        if (cartLede) cartLede.textContent = 'Nothing here yet. Add medicines or wellness products from the shelf and they will land here.';
+        return;
+      }
+
+      // Summary counts in header
+      var countSummary = document.getElementById('cartCountSummary');
+      if (countSummary && data.count !== undefined) countSummary.textContent = data.count;
+
+      var countPlural = document.getElementById('cartCountPlural');
+      if (countPlural && data.count !== undefined) countPlural.textContent = (data.count === 1 ? 'line' : 'lines');
+
+      var unitsSummary = document.getElementById('cartUnitsSummary');
+      if (unitsSummary && data.units !== undefined) unitsSummary.textContent = data.units;
+
+      var unitsPlural = document.getElementById('cartUnitsPlural');
+      if (unitsPlural && data.units !== undefined) unitsPlural.textContent = (data.units === 1 ? 'unit' : 'units');
+
+      var panelUnitsBadge = document.getElementById('panelUnitsBadge');
+      if (panelUnitsBadge && data.units !== undefined) panelUnitsBadge.textContent = data.units + ' units';
+
+      var receiptItemCount = document.getElementById('receiptItemCount');
+      if (receiptItemCount && data.count !== undefined) receiptItemCount.textContent = data.count;
+
+      var cartUnits = document.getElementById('cartUnits');
+      if (cartUnits && data.units !== undefined) cartUnits.textContent = data.units;
+
+      // Subtotal
+      var cartSubtotal = document.getElementById('cartSubtotal');
+      if (cartSubtotal && data.subtotal !== undefined) cartSubtotal.innerHTML = '&#8377;' + formatINR(data.subtotal);
+
+      // Delivery Banner & Row
+      var cartDelivery = document.getElementById('cartDelivery');
+      var freeDeliveryBanner = document.getElementById('freeDeliveryBanner');
+      var freeDeliveryText = document.getElementById('freeDeliveryText');
+      var freeDeliveryProgressBar = document.getElementById('freeDeliveryProgressBar');
+
+      if (data.deliveryFee === 0 || data.isFreeDelivery) {
+        if (cartDelivery) cartDelivery.innerHTML = '<span class="badge bg-success" style="font-size:0.65rem">FREE</span>';
+        if (freeDeliveryBanner) {
+          freeDeliveryBanner.style.background = '#E4F3EC';
+          freeDeliveryBanner.style.borderColor = 'rgba(31,122,85,.3)';
+          freeDeliveryBanner.style.color = '#1F7A55';
+        }
+        if (freeDeliveryText) {
+          freeDeliveryText.innerHTML = '<strong>Congratulations!</strong> Your order qualifies for <strong>FREE Delivery</strong> across India.';
+        }
+        if (freeDeliveryProgressBar) {
+          freeDeliveryProgressBar.style.width = '100%';
+          freeDeliveryProgressBar.style.background = '#1F7A55';
+        }
+      } else {
+        if (cartDelivery) cartDelivery.innerHTML = '&#8377;' + formatINR(data.deliveryFee);
+        if (freeDeliveryBanner) {
+          freeDeliveryBanner.style.background = '#E5F0F8';
+          freeDeliveryBanner.style.borderColor = 'rgba(44,110,155,.2)';
+          freeDeliveryBanner.style.color = '#2C6E9B';
+        }
+        if (freeDeliveryText) {
+          freeDeliveryText.innerHTML = 'Add <strong>&#8377;' + formatINR(data.freeDeliveryRemaining) + '</strong> more to unlock <strong>FREE Delivery</strong>!';
+        }
+        if (freeDeliveryProgressBar) {
+          freeDeliveryProgressBar.style.width = (data.freeDeliveryPercent || 0) + '%';
+          freeDeliveryProgressBar.style.background = 'var(--teal-700, #2C7A80)';
+        }
+      }
+
+      // Coupon Discount row
+      var cartDiscountRow = document.getElementById('cartDiscountRow');
+      var cartDiscount = document.getElementById('cartDiscount');
+      if (data.discountAmount && data.discountAmount > 0) {
+        if (cartDiscountRow) cartDiscountRow.style.display = '';
+        if (cartDiscount) cartDiscount.innerHTML = '-&#8377;' + formatINR(data.discountAmount);
+      } else {
+        if (cartDiscountRow) cartDiscountRow.style.display = 'none';
+      }
+
+      // Grand Total
+      var cartTotal = document.getElementById('cartTotal');
+      if (cartTotal && data.grandTotal !== undefined) {
+        cartTotal.innerHTML = '&#8377;' + formatINR(data.grandTotal);
+      }
+    }
+
+    /* --- Live Cart Quantity Stepper & Change Debounce ---------------- */
+    var cartUpdateTimeout = null;
+
+    function triggerCartQuantityUpdate(input) {
+      if (!input) return;
+      var cartId = input.getAttribute('data-cart-id');
+      var newQty = parseInt(input.value, 10) || 1;
+      var lineItem = input.closest('.line-item');
+      var maxStock = parseInt(lineItem ? lineItem.getAttribute('data-max-stock') : 10, 10) || 10;
+
+      if (newQty > maxStock) {
+        newQty = maxStock;
+        input.value = newQty;
+        if (window.MediMax && window.MediMax.toast) {
+          window.MediMax.toast('Maximum available stock is ' + maxStock + ' units.', 'fa-triangle-exclamation');
+        }
+      } else if (newQty < 1) {
+        newQty = 1;
+        input.value = newQty;
+      }
+
+      var baseUrl = window.BASE_URL || '/MediMax/';
+      var url = baseUrl + '?page=cart/update';
+
+      var fd = new FormData();
+      fd.append('cart_id', cartId);
+      fd.append('quantity', newQty);
+      fd.append('ajax', '1');
+
+      if (cartUpdateTimeout) clearTimeout(cartUpdateTimeout);
+      cartUpdateTimeout = setTimeout(function () {
+        fetch(url, {
+          method: 'POST',
+          headers: { 'X-Requested-With': 'XMLHttpRequest' },
+          body: fd
+        })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data && data.success) {
+            var lineSubEl = document.getElementById('lineSubtotal-' + cartId);
+            if (lineSubEl && data.line_subtotal !== undefined) {
+              lineSubEl.innerHTML = '&#8377;' + formatINR(data.line_subtotal);
+            }
+            updateCartReceipt(data);
+          } else if (data && !data.success) {
+            if (window.MediMax && window.MediMax.toast) {
+              window.MediMax.toast(data.message || 'Could not update quantity', 'fa-circle-exclamation');
+            }
+          }
+        })
+        .catch(function (err) {
+          console.error('Cart quantity update error:', err);
+        });
+      }, 250);
+    }
+
+    document.addEventListener('change', function (e) {
+      if (e.target && e.target.classList.contains('cart-qty-input')) {
+        triggerCartQuantityUpdate(e.target);
+      }
+    });
+
+    document.addEventListener('click', function (e) {
+      var stepBtn = e.target.closest('.line-item .stepper button[data-step]');
+      if (!stepBtn) return;
+      var input = stepBtn.closest('.stepper').querySelector('.cart-qty-input');
+      if (input) {
+        // Handled by earlier stepper listener, trigger AJAX shortly after
+        setTimeout(function () {
+          triggerCartQuantityUpdate(input);
+        }, 50);
+      }
+    });
+
+    /* --- Live Cart Item Removal Handler (data-act="remove-cart") ------ */
+    document.addEventListener('click', function (e) {
+      var removeBtn = e.target.closest('[data-act="remove-cart"]');
+      if (!removeBtn) return;
+      e.preventDefault();
+
+      var lineItem = removeBtn.closest('.line-item');
+      var cartId = removeBtn.getAttribute('data-cart-id');
+      var href = removeBtn.getAttribute('href');
+      var productName = (lineItem && lineItem.getAttribute('data-name')) || 'Product';
+
+      var baseUrl = window.BASE_URL || '/MediMax/';
+      var url = baseUrl + '?page=cart/remove';
+
+      var fd = new FormData();
+      fd.append('cart_id', cartId);
+      fd.append('id', cartId);
+      fd.append('ajax', '1');
+
+      fetch(url, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        body: fd
+      })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (data && data.success) {
+          if (lineItem) {
+            lineItem.style.transition = 'all 0.3s ease-out';
+            lineItem.style.opacity = '0';
+            lineItem.style.transform = 'translateX(20px)';
+            setTimeout(function () {
+              lineItem.remove();
+              updateCartReceipt(data);
+            }, 300);
+          } else {
+            updateCartReceipt(data);
+          }
+
+          if (window.MediMax && window.MediMax.toast) {
+            window.MediMax.toast('Removed "' + productName + '" from cart', 'fa-trash-can');
+          }
+        } else {
+          window.location.href = href;
+        }
+      })
+      .catch(function () {
+        window.location.href = href;
+      });
+    });
+
+    /* --- Move to Wishlist from Cart (data-act="cart-to-wishlist") ----- */
+    document.addEventListener('click', function (e) {
+      var moveBtn = e.target.closest('[data-act="cart-to-wishlist"]');
+      if (!moveBtn) return;
+      e.preventDefault();
+
+      var lineItem = moveBtn.closest('.line-item');
+      var cartId = moveBtn.getAttribute('data-cart-id');
+      var productId = moveBtn.getAttribute('data-product-id');
+      var productName = moveBtn.getAttribute('data-name') || 'Product';
+
+      var baseUrl = window.BASE_URL || '/MediMax/';
+      var url = baseUrl + '?page=cart/move-to-wishlist';
+
+      var fd = new FormData();
+      fd.append('cart_id', cartId);
+      fd.append('product_id', productId);
+      fd.append('ajax', '1');
+
+      moveBtn.disabled = true;
+
+      fetch(url, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        body: fd
+      })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        moveBtn.disabled = false;
+        if (data && data.success) {
+          if (data.wishlist_count !== undefined) {
+            updateHeaderWishlistBadge(data.wishlist_count);
+          }
+          if (lineItem) {
+            lineItem.style.transition = 'all 0.3s ease-out';
+            lineItem.style.opacity = '0';
+            lineItem.style.transform = 'translateX(20px)';
+            setTimeout(function () {
+              lineItem.remove();
+              updateCartReceipt(data);
+            }, 300);
+          }
+
+          if (window.MediMax && window.MediMax.toast) {
+            window.MediMax.toast('Saved "' + productName + '" to your wishlist', 'fa-heart');
+          }
+        } else {
+          if (window.MediMax && window.MediMax.toast) {
+            window.MediMax.toast((data && data.message) || 'Could not move product', 'fa-circle-exclamation');
+          }
+        }
+      })
+      .catch(function (err) {
+        moveBtn.disabled = false;
+        console.error('Move to wishlist error:', err);
+      });
+    });
+
+    /* --- Coupon Form & Quick Chips Handler ---------------------------- */
+    document.addEventListener('click', function (e) {
+      var chip = e.target.closest('.coupon-chip');
+      if (!chip) return;
+      var code = chip.getAttribute('data-code');
+      var input = document.getElementById('couponInput');
+      if (input && code) {
+        input.value = code;
+        var form = document.getElementById('couponForm');
+        if (form) {
+          form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        }
+      }
+    });
+
+    document.addEventListener('submit', function (e) {
+      var couponForm = e.target.closest('#couponForm');
+      if (!couponForm) return;
+      e.preventDefault();
+
+      var input = document.getElementById('couponInput');
+      var code = input ? input.value.trim().toUpperCase() : '';
+      if (!code) return;
+
+      var baseUrl = window.BASE_URL || '/MediMax/';
+      var url = baseUrl + '?page=cart/apply-coupon';
+
+      var fd = new FormData();
+      fd.append('coupon_code', code);
+      fd.append('ajax', '1');
+
+      fetch(url, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        body: fd
+      })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (data && data.success) {
+          updateCartReceipt(data);
+          if (window.MediMax && window.MediMax.toast) {
+            window.MediMax.toast(data.message, 'fa-ticket');
+          }
+          // Reload page to display applied coupon banner cleanly or refresh UI
+          setTimeout(function () { window.location.reload(); }, 600);
+        } else {
+          if (window.MediMax && window.MediMax.toast) {
+            window.MediMax.toast((data && data.message) || 'Invalid coupon code', 'fa-circle-exclamation');
+          }
+        }
+      })
+      .catch(function (err) {
+        console.error('Coupon apply error:', err);
+      });
+    });
+
+    document.addEventListener('click', function (e) {
+      var removeCouponBtn = e.target.closest('#removeCouponBtn');
+      if (!removeCouponBtn) return;
+      e.preventDefault();
+
+      var baseUrl = window.BASE_URL || '/MediMax/';
+      var url = baseUrl + '?page=cart/remove-coupon';
+
+      fetch(url, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (data && data.success) {
+          updateCartReceipt(data);
+          if (window.MediMax && window.MediMax.toast) {
+            window.MediMax.toast('Coupon removed', 'fa-info-circle');
+          }
+          setTimeout(function () { window.location.reload(); }, 600);
+        }
+      })
+      .catch(function (err) {
+        console.error('Coupon remove error:', err);
       });
     });
 

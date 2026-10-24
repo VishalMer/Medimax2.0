@@ -1,14 +1,71 @@
 <?php
+/**
+ * MediMax - Order Controller
+ * 
+ * Fetches real customer orders, line items, and tracking status from MySQL database.
+ */
 class OrderController extends Controller {
+
     public function index() {
-        $userOrders = [
-            ['id' => 1, 'user_id' => 2, 'name' => 'Vitamin C', 'price' => 450, 'quantity' => 2, 'image' => 'Vitamin C.jpeg', 'payment' => 'Completed', 'delivery' => 'Delivered', 'placed_on' => '2025-06-10 14:30:00'],
-            ['id' => 3, 'user_id' => 2, 'name' => 'Fish Oil', 'price' => 680, 'quantity' => 3, 'image' => 'Fish Oil.jpg', 'payment' => 'Pending', 'delivery' => 'Processing', 'placed_on' => '2025-06-14 16:45:00'],
-            ['id' => 7, 'user_id' => 2, 'name' => 'Nescafe Coffee', 'price' => 450, 'quantity' => 1, 'image' => 'nescafe-cofee.jpg', 'payment' => 'Completed', 'delivery' => 'Shipped', 'placed_on' => '2025-06-22 10:30:00'],
-        ];
-        
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // Require customer to be logged in to access order history
+        if (empty($_SESSION['user']['id'])) {
+            $_SESSION['flash_error'] = 'Please sign in to view your order history and track deliveries.';
+            header('Location: ' . url('login'));
+            exit;
+        }
+
+        $userId = (int)$_SESSION['user']['id'];
+        $pdo = Database::getConnection();
+        $orders = [];
+
+        if ($pdo) {
+            try {
+                $stmt = $pdo->prepare("
+                    SELECT o.*,
+                           c.code AS coupon_code,
+                           c.title AS coupon_title
+                    FROM orders o
+                    LEFT JOIN coupons c ON o.coupon_id = c.id
+                    WHERE o.user_id = :uid
+                    ORDER BY o.id DESC
+                ");
+                $stmt->execute([':uid' => $userId]);
+                $orders = $stmt->fetchAll();
+
+                if (!empty($orders)) {
+                    $orderIds = array_column($orders, 'id');
+                    $placeholders = implode(',', array_fill(0, count($orderIds), '?'));
+                    $itemStmt = $pdo->prepare("
+                        SELECT * FROM order_items 
+                        WHERE order_id IN ($placeholders) 
+                        ORDER BY id ASC
+                    ");
+                    $itemStmt->execute($orderIds);
+                    $allItems = $itemStmt->fetchAll();
+
+                    $itemsByOrder = [];
+                    foreach ($allItems as $item) {
+                        $itemsByOrder[$item['order_id']][] = $item;
+                    }
+
+                    foreach ($orders as &$ord) {
+                        $ord['items'] = $itemsByOrder[$ord['id']] ?? [];
+                        $ord['item_count'] = count($ord['items']);
+                        $ord['units_count'] = array_sum(array_column($ord['items'], 'quantity'));
+                    }
+                    unset($ord);
+                }
+            } catch (PDOException $e) {
+                error_log("OrderController index DB error: " . $e->getMessage());
+            }
+        }
+
         $this->view('pages/orders', [
-            'orders' => $userOrders,
+            'orders'    => $orders,
             'pageTitle' => 'My Orders - MediMax.com'
         ]);
     }

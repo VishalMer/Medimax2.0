@@ -11,6 +11,8 @@ $image    = $product['image'] ?? 'placeholder.png';
 $category = $product['category'] ?? 'Pharmacy';
 $id       = $product['id'] ?? 0;
 $index    = $index ?? 0;
+$stock    = (int)($product['stock_quantity'] ?? 1);
+$inStock  = $stock > 0;
 $isFav    = class_exists('WishlistController') && WishlistController::has($id);
 ?>
 <article class="product-card position-relative"
@@ -18,6 +20,7 @@ $isFav    = class_exists('WishlistController') && WishlistController::has($id);
          data-price="<?= htmlspecialchars((string) $price) ?>"
          data-name="<?= htmlspecialchars($name) ?>"
          data-id="<?= (int) $id ?>"
+         data-stock="<?= $stock ?>"
          data-index="<?= (int) $index ?>">
 
   <div class="product-card__label">
@@ -31,8 +34,11 @@ $isFav    = class_exists('WishlistController') && WishlistController::has($id);
     ?>
     <span class="badge position-absolute top-0 start-0 m-2" style="background-color: var(--accent-orange, rgb(230, 120, 52)); z-index: 10; font-size: 0.8rem;"><?= $discountPct ?>% OFF</span>
     <?php endif; ?>
+    <?php if (!$inStock): ?>
+    <span class="badge position-absolute top-0 end-0 m-2 bg-secondary" style="z-index: 10; font-size: 0.75rem;"><i class="fas fa-circle-xmark me-1"></i>Out of stock</span>
+    <?php endif; ?>
     <img src="<?= asset('images/' . $image) ?>" alt="<?= htmlspecialchars($name) ?>" loading="lazy"
-         data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
+         data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>" style="<?= !$inStock ? 'filter: grayscale(80%); opacity: 0.85;' : '' ?>">
   </div>
 
   <div class="product-card__body">
@@ -55,10 +61,17 @@ $isFav    = class_exists('WishlistController') && WishlistController::has($id);
       </div>
     </div>
     <div class="product-card__acts flex-shrink-0">
-      <button class="icon-btn" type="button" data-act="cart" data-id="<?= (int)$id ?>" data-name="<?= htmlspecialchars($name) ?>"
-              aria-label="Add <?= htmlspecialchars($name) ?> to cart" title="Add to cart">
-        <i class="fas fa-cart-plus" aria-hidden="true"></i>
-      </button>
+      <?php if ($inStock): ?>
+        <button class="icon-btn" type="button" data-act="cart" data-id="<?= (int)$id ?>" data-name="<?= htmlspecialchars($name) ?>" data-stock="<?= $stock ?>"
+                aria-label="Add <?= htmlspecialchars($name) ?> to cart" title="Add to cart">
+          <i class="fas fa-cart-plus" aria-hidden="true"></i>
+        </button>
+      <?php else: ?>
+        <button class="icon-btn" type="button" disabled aria-disabled="true" title="Out of stock"
+                style="opacity: 0.55; cursor: not-allowed; background: var(--mist);">
+          <i class="fas fa-ban" aria-hidden="true"></i>
+        </button>
+      <?php endif; ?>
       <button class="icon-btn <?= $isFav ? 'is-fav' : '' ?>" type="button" 
               data-act="fav" 
               data-id="<?= (int)$id ?>" 

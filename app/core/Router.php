@@ -14,6 +14,8 @@ class Router {
     }
     
     /**
+     * Dispatch the current request based on ?page= parameter
+     */
     public function dispatch() {
         $page = $_GET['page'] ?? 'home';
         $page = explode('?', $page)[0];

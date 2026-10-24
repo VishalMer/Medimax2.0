@@ -1,25 +1,118 @@
 <?php
 class AdminController extends Controller {
     
-    private $adminUser;
+    private array $adminUser;
     
     public function __construct() {
-        $this->adminUser = [
-            'id' => 1,
-            'name' => 'Vishal Mer',
-            'email' => 'vishal@medimax.com',
-            'role' => 'owner',
-            'image' => 'Rahul.jpg'
-        ];
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $user = $_SESSION['user'] ?? null;
+
+        // 1. Enforce authentication: redirect guests to login with alert
+        if (empty($user)) {
+            $_SESSION['flash_error'] = 'Administrator authentication required. Please sign in to access the management portal.';
+            header('Location: ' . url('login'));
+            exit;
+        }
+
+        // 2. Enforce authorization: forbid customers, allow admin/owner only
+        $role = strtolower(trim((string)($user['role'] ?? '')));
+        if (!in_array($role, ['admin', 'owner'], true)) {
+            $_SESSION['flash_error'] = 'Access restricted: You do not have permission to access the management portal.';
+            header('Location: ' . url());
+            exit;
+        }
+
+        // 3. Load latest record from database to verify active status
+        $pdo = Database::getConnection();
+        if ($pdo) {
+            try {
+                $stmt = $pdo->prepare("SELECT id, name, email, role, image, status, is_active FROM users WHERE id = :id LIMIT 1");
+                $stmt->execute([':id' => (int)$user['id']]);
+                $dbUser = $stmt->fetch();
+                if ($dbUser && (int)$dbUser['is_active'] === 1 && in_array(strtolower($dbUser['role']), ['admin', 'owner'], true)) {
+                    $this->adminUser = [
+                        'id'    => (int)$dbUser['id'],
+                        'name'  => $dbUser['name'],
+                        'email' => $dbUser['email'],
+                        'role'  => $dbUser['role'],
+                        'image' => $dbUser['image'] ?: 'Rahul.jpg'
+                    ];
+                    $_SESSION['user'] = array_merge($_SESSION['user'], $this->adminUser);
+                } else {
+                    $_SESSION['flash_error'] = 'Access denied: Your administrative privileges have been revoked or deactivated.';
+                    unset($_SESSION['user']);
+                    header('Location: ' . url('login'));
+                    exit;
+                }
+            } catch (PDOException $e) {
+                error_log("AdminController user verification error: " . $e->getMessage());
+                $this->adminUser = $user;
+            }
+        } else {
+            $this->adminUser = $user;
+        }
     }
     
     public function dashboard() {
+        $pdo = Database::getConnection();
+        $totalOrders = 0;
+        $totalCustomers = 0;
+        $totalTurnover = 0.0;
+        $pendingPayments = 0;
+        $inTransitCount = 0;
+        $dashboardOrders = [];
+
+        if ($pdo) {
+            try {
+                $totalOrders = (int)$pdo->query("SELECT COUNT(*) FROM orders")->fetchColumn();
+                $totalCustomers = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE role = 'customer'")->fetchColumn();
+                $totalTurnover = (float)$pdo->query("SELECT COALESCE(SUM(total_amount), 0) FROM orders WHERE payment_status = 'Completed'")->fetchColumn();
+                $pendingPayments = (int)$pdo->query("SELECT COUNT(*) FROM orders WHERE payment_status != 'Completed'")->fetchColumn();
+                $inTransitCount = (int)$pdo->query("SELECT COUNT(*) FROM orders WHERE delivery_status NOT IN ('Delivered', 'Cancelled')")->fetchColumn();
+
+                $stmt = $pdo->query("
+                    SELECT o.*,
+                           u.name AS customer_name,
+                           u.email AS customer_email,
+                           (SELECT COUNT(*) FROM order_items oi WHERE oi.order_id = o.id) AS item_count,
+                           (SELECT product_name FROM order_items oi WHERE oi.order_id = o.id ORDER BY id ASC LIMIT 1) AS primary_product_name,
+                           (SELECT product_image FROM order_items oi WHERE oi.order_id = o.id ORDER BY id ASC LIMIT 1) AS primary_product_image
+                    FROM orders o
+                    LEFT JOIN users u ON o.user_id = u.id
+                    ORDER BY o.id DESC LIMIT 8
+                ");
+                $rawOrders = $stmt->fetchAll();
+
+                foreach ($rawOrders as $ro) {
+                    $dashboardOrders[] = [
+                        'id'          => $ro['id'],
+                        'order_number'=> $ro['order_number'],
+                        'user_id'     => $ro['user_id'],
+                        'name'        => $ro['primary_product_name'] ?: 'Order #' . $ro['order_number'],
+                        'price'       => (float)$ro['total_amount'],
+                        'quantity'    => max(1, (int)$ro['item_count']),
+                        'image'       => $ro['primary_product_image'] ?: 'placeholder.png',
+                        'payment'     => $ro['payment_status'],
+                        'delivery'    => $ro['delivery_status'],
+                        'placed_on'   => $ro['placed_at'],
+                        'customer'    => $ro['customer_name'] ?: $ro['shipping_name']
+                    ];
+                }
+            } catch (PDOException $e) {
+                error_log("AdminController dashboard DB error: " . $e->getMessage());
+            }
+        }
+
         $this->view('pages/admin/dashboard', [
             'stats' => [
-                'total_orders' => 8,
-                'total_customers' => 4,
-                'total_turnover' => 24500.00,
+                'total_orders'    => $totalOrders,
+                'total_customers' => $totalCustomers,
+                'total_turnover'  => $totalTurnover,
             ],
+            'orders'    => $dashboardOrders,
             'adminUser' => $this->adminUser,
             'pageTitle' => 'Admin Dashboard'
         ]);
@@ -129,18 +222,52 @@ class AdminController extends Controller {
     }
 
     public function allOrders() {
-        $orders = [
-            ['id' => 1, 'user_id' => 2, 'name' => 'Vitamin C', 'price' => 450, 'quantity' => 2, 'image' => 'Vitamin C.jpeg', 'payment' => 'Completed', 'delivery' => 'Delivered', 'placed_on' => '2025-06-10 14:30:00'],
-            ['id' => 2, 'user_id' => 3, 'name' => 'Creatine', 'price' => 1250, 'quantity' => 1, 'image' => 'Creatine.jpeg', 'payment' => 'Completed', 'delivery' => 'Shipped', 'placed_on' => '2025-06-12 09:15:00'],
-            ['id' => 3, 'user_id' => 2, 'name' => 'Fish Oil', 'price' => 680, 'quantity' => 3, 'image' => 'Fish Oil.jpg', 'payment' => 'Pending', 'delivery' => 'Processing', 'placed_on' => '2025-06-14 16:45:00'],
-            ['id' => 4, 'user_id' => 4, 'name' => 'Protein Shake', 'price' => 1899, 'quantity' => 1, 'image' => 'Protein Shake.jpeg', 'payment' => 'Completed', 'delivery' => 'Delivered', 'placed_on' => '2025-06-15 11:20:00'],
-            ['id' => 5, 'user_id' => 5, 'name' => 'Dove Shampoo', 'price' => 375, 'quantity' => 2, 'image' => 'dove-shampoo.jpg', 'payment' => 'Pending', 'delivery' => 'Processing', 'placed_on' => '2025-06-18 08:00:00'],
-            ['id' => 6, 'user_id' => 3, 'name' => 'Bandage Roll', 'price' => 120, 'quantity' => 5, 'image' => 'Bandage Roll.jpg', 'payment' => 'Completed', 'delivery' => 'Delivered', 'placed_on' => '2025-06-20 13:10:00'],
-            ['id' => 7, 'user_id' => 2, 'name' => 'Nescafe Coffee', 'price' => 450, 'quantity' => 1, 'image' => 'nescafe-cofee.jpg', 'payment' => 'Completed', 'delivery' => 'Shipped', 'placed_on' => '2025-06-22 10:30:00'],
-            ['id' => 8, 'user_id' => 4, 'name' => 'Acne Control Gel', 'price' => 399, 'quantity' => 1, 'image' => 'Acne Control Gel.jpeg', 'payment' => 'Pending', 'delivery' => 'Processing', 'placed_on' => '2025-06-25 17:00:00'],
-        ];
+        $pdo = Database::getConnection();
+        $orders = [];
+        if ($pdo) {
+            try {
+                $stmt = $pdo->query("
+                    SELECT o.*, 
+                           u.name AS customer_name, 
+                           u.email AS customer_email,
+                           c.code AS coupon_code,
+                           (SELECT COUNT(*) FROM order_items oi WHERE oi.order_id = o.id) AS item_count,
+                           (SELECT product_name FROM order_items oi WHERE oi.order_id = o.id ORDER BY id ASC LIMIT 1) AS primary_product_name,
+                           (SELECT product_image FROM order_items oi WHERE oi.order_id = o.id ORDER BY id ASC LIMIT 1) AS primary_product_image
+                    FROM orders o
+                    LEFT JOIN users u ON o.user_id = u.id
+                    LEFT JOIN coupons c ON o.coupon_id = c.id
+                    ORDER BY o.id DESC
+                ");
+                $raw = $stmt->fetchAll();
+
+                foreach ($raw as $ro) {
+                    $orders[] = [
+                        'id'             => (int)$ro['id'],
+                        'order_number'   => $ro['order_number'],
+                        'user_id'        => (int)$ro['user_id'],
+                        'name'           => $ro['primary_product_name'] ?: 'Order #' . $ro['order_number'],
+                        'price'          => (float)$ro['total_amount'],
+                        'total_amount'   => (float)$ro['total_amount'],
+                        'quantity'       => max(1, (int)$ro['item_count']),
+                        'image'          => $ro['primary_product_image'] ?: 'placeholder.png',
+                        'payment'        => $ro['payment_status'],
+                        'payment_status' => $ro['payment_status'],
+                        'payment_method' => $ro['payment_method'],
+                        'delivery'       => $ro['delivery_status'],
+                        'delivery_status'=> $ro['delivery_status'],
+                        'placed_on'      => $ro['placed_at'],
+                        'placed_at'      => $ro['placed_at'],
+                        'customer'       => $ro['customer_name'] ?: $ro['shipping_name']
+                    ];
+                }
+            } catch (PDOException $e) {
+                error_log("AdminController allOrders DB error: " . $e->getMessage());
+            }
+        }
+
         $this->view('pages/admin/all_orders', [
-            'orders' => $orders,
+            'orders'    => $orders,
             'adminUser' => $this->adminUser,
             'pageTitle' => 'Manage Orders'
         ]);
