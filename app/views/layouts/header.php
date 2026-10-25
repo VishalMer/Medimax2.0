@@ -6,8 +6,11 @@ $pageTitle   = $pageTitle ?? 'MediMax';
 $navCartCount = class_exists('CartController') ? CartController::getCount() : 0;
 $navFavCount  = class_exists('WishlistController') ? WishlistController::getCount() : 0;
 $isLoggedIn   = !empty($_SESSION['user']);
-$navUser      = $_SESSION['user'] ?? null;
-$navUserFirst = $navUser ? strtok($navUser['name'] ?? 'User', ' ') : 'Sign in';
+$navUser           = $_SESSION['user'] ?? null;
+$hasName           = !empty($navUser['name']);
+$displayHeaderName = $hasName ? $navUser['name'] : (!empty($navUser['username']) ? $navUser['username'] : 'User');
+$navUserFirst      = $navUser ? strtok($displayHeaderName, ' ') : 'Sign in';
+$avatarLetter      = strtoupper(substr($displayHeaderName, 0, 1));
 ?>
 <script>window.BASE_URL = <?= json_encode(BASE_URL) ?>;</script>
 <!DOCTYPE html>
@@ -78,7 +81,7 @@ $navUserFirst = $navUser ? strtok($navUser['name'] ?? 'User', ' ') : 'Sign in';
           </a>
           <button class="account-btn" id="profileOptionsBtn" type="button" aria-haspopup="true" aria-expanded="false">
             <?php if ($isLoggedIn): ?>
-              <span class="avatar" data-avatar-tint="<?= htmlspecialchars($navUser['name'] ?? '') ?>"><?= strtoupper(substr($navUser['name'] ?? 'U', 0, 1)) ?></span>
+              <span class="avatar" data-avatar-tint="<?= htmlspecialchars($displayHeaderName) ?>"><?= htmlspecialchars($avatarLetter) ?></span>
               <span id="userName"><?= htmlspecialchars($navUserFirst) ?></span>
             <?php else: ?>
               <span class="avatar"><i class="far fa-user" aria-hidden="true"></i></span>
@@ -97,12 +100,23 @@ $navUserFirst = $navUser ? strtok($navUser['name'] ?? 'User', ' ') : 'Sign in';
   <?php if ($isLoggedIn): ?>
     <div class="account-menu__head">
       <p class="eyebrow eyebrow--muted mb-1">Signed in</p>
-      <strong style="font-size:.92rem"><?= htmlspecialchars($navUser['name'] ?? 'User') ?></strong>
+      <strong style="font-size:.92rem"><?= htmlspecialchars($displayHeaderName) ?></strong>
+      <?php if (!empty($navUser['username'])): ?>
+        <div style="font-size:.78rem;color:var(--primary-teal,#26547C);font-weight:600">@<?= htmlspecialchars($navUser['username']) ?></div>
+      <?php endif; ?>
       <?php if (!empty($navUser['email'])): ?>
         <div class="num" style="font-size:.72rem;color:var(--ink-40)"><?= htmlspecialchars($navUser['email']) ?></div>
       <?php endif; ?>
     </div>
     <hr class="label-rule my-1">
+    <?php
+      $currentReqUri = $_SERVER['REQUEST_URI'] ?? '';
+      $profileUrl = url('profile');
+      if (!empty($currentReqUri) && strpos($currentReqUri, 'page=profile') === false) {
+          $profileUrl .= '&amp;return_to=' . urlencode($currentReqUri);
+      }
+    ?>
+    <a href="<?= $profileUrl ?>"><i class="fas fa-user-pen" aria-hidden="true"></i> Edit profile</a>
     <a href="<?= url('orders') ?>"><i class="fas fa-box-open" aria-hidden="true"></i> My orders</a>
     <?php if (in_array($navUser['role'] ?? '', ['admin', 'owner'])): ?>
       <a href="<?= url('admin') ?>"><i class="fas fa-user-tie" aria-hidden="true"></i> Admin panel</a>

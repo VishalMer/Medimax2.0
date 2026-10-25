@@ -37,6 +37,8 @@ $router->register('contact', 'ContactController', 'index');
 $router->register('login', 'AuthController', 'login');
 $router->register('register', 'AuthController', 'register');
 $router->register('logout', 'AuthController', 'logout');
+$router->register('profile', 'AuthController', 'profile');
+$router->register('edit-profile', 'AuthController', 'profile');
 $router->register('checkout', 'CheckoutController', 'index');
 $router->register('checkout/place-order', 'CheckoutController', 'placeOrder');
 $router->register('checkout-place-order', 'CheckoutController', 'placeOrder');

@@ -863,6 +863,41 @@ h4, h5, h6 { font-family: var(--font-body); font-weight: 700; letter-spacing: -.
 }
 .mm-input:disabled, .mm-field .form-control:disabled { background: var(--mist); color: var(--ink-40); cursor: not-allowed; }
 .mm-hint { display: block; margin-top: .4rem; font-size: .76rem; color: var(--ink-40); }
+
+/* --- Input Group & Prefixes (@username handle) --------------------- */
+.mm-input-group,
+.mm-field .input-group {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch;
+  width: 100%;
+}
+.mm-input-group .mm-input-prefix,
+.mm-field .input-group > .input-group-text {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: .78rem 1rem;
+  font-family: var(--font-mono);
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--teal-700);
+  background: var(--mist);
+  border: 1px solid var(--line-strong);
+  border-right: 0;
+  border-radius: var(--r-md) 0 0 var(--r-md);
+  user-select: none;
+}
+.mm-input-group > .mm-input,
+.mm-input-group > .form-control,
+.mm-field .input-group > .mm-input,
+.mm-field .input-group > .form-control {
+  flex: 1 1 auto !important;
+  width: 1% !important;
+  min-width: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
 .mm-field input[type="file"] { padding: .6rem .75rem; font-size: .84rem; }
 .mm-field input[type="file"]::file-selector-button {
   margin-right: .8rem; padding: .4rem .8rem;

@@ -185,7 +185,7 @@ class AdminController extends Controller {
         $users = [];
         if ($pdo) {
             try {
-                $stmt = $pdo->query("SELECT id, name, email, role, image, status, is_active FROM users ORDER BY id ASC");
+                $stmt = $pdo->query("SELECT id, username, name, email, role, image, status, is_active FROM users ORDER BY id ASC");
                 $users = $stmt->fetchAll();
             } catch (PDOException $e) {
                 error_log("Users query error: " . $e->getMessage());

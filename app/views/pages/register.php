@@ -45,7 +45,7 @@
 
       <p class="eyebrow">Get started</p>
       <h1>Create your account</h1>
-      <p class="lede">You only need a name, an email and a password.</p>
+      <p class="lede">You only need a username, an email and a password.</p>
 
       <?php if (!empty($errorMessage)): ?>
         <div class="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-3 rounded-3" role="alert" style="font-size: .88rem; line-height: 1.4;">
@@ -63,10 +63,11 @@
 
       <form method="post" id="registrationForm" action="<?= url('register') ?>" novalidate>
         <div class="mm-field">
-          <label for="username">Your name</label>
-          <input class="mm-input" type="text" id="username" name="name"
-               autocomplete="name" placeholder="Yash Patel" required data-validation="required alpha min" data-min="2"
-               value="<?= htmlspecialchars($old['name'] ?? '') ?>">
+          <label for="username">Username</label>
+          <input class="mm-input" type="text" id="username" name="username"
+               autocomplete="username" placeholder="e.g. yash_patel or yash123" required data-validation="required username min max" data-min="3" data-max="30"
+               value="<?= htmlspecialchars($old['username'] ?? '') ?>">
+          <p class="mb-0 mt-1" style="font-size: .75rem; color: var(--ink-40, #666);">Unique username for login. You can set your display name later in your profile.</p>
         </div>
         <p class="error-text" id="usernameError" aria-live="polite"></p>
 

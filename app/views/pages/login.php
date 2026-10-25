@@ -67,7 +67,7 @@
         <div class="mm-field">
           <label for="identifier">Username or email</label>
           <input class="mm-input" type="text" id="identifier" name="identifier"
-               autocomplete="username" placeholder="you@example.com" required data-validation="required"
+               autocomplete="username" placeholder="Username or email (e.g. userA)" required data-validation="required"
                value="<?= htmlspecialchars($old['identifier'] ?? '') ?>">
         </div>
         <p class="error-text" id="identifierError" aria-live="polite"></p>

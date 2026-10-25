@@ -55,7 +55,8 @@ $roleTone = static function (string $role): string {
           <?php foreach ($rows as $user): ?>
             <?php
               $uId      = (int)($user['id'] ?? 0);
-              $uName    = $user['name'] ?? '';
+              $uUsername= $user['username'] ?? '';
+              $uName    = !empty($user['name']) ? $user['name'] : ($uUsername ?: 'User');
               $uRole    = $user['role'] ?? 'customer';
               $uImage   = $user['image'] ?? '';
               $isActive = isset($user['is_active']) ? ((int)$user['is_active'] === 1) : (($user['status'] ?? 'active') === 'active');
@@ -74,7 +75,10 @@ $roleTone = static function (string $role): string {
                   <?php endif; ?>
                   <div>
                     <strong><?= htmlspecialchars($uName) ?></strong>
-                    <span><?= htmlspecialchars($uRole) ?></span>
+                    <?php if (!empty($uUsername)): ?>
+                      <span class="num text-primary" style="font-size: .75rem;">@<?= htmlspecialchars($uUsername) ?></span>
+                    <?php endif; ?>
+                    <span class="text-muted" style="font-size: .75rem;"><?= htmlspecialchars($uRole) ?></span>
                   </div>
                 </div>
               </td>

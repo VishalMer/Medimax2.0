@@ -123,6 +123,9 @@
           if (!errorMessage && value !== '' && validationType.includes('alpha') && !/^[A-Za-z\s]+$/.test(value)) {
             errorMessage = 'Only letters are allowed.';
           }
+          if (!errorMessage && value !== '' && validationType.includes('username') && !/^[A-Za-z0-9_]+$/.test(value)) {
+            errorMessage = 'Only letters, numbers, and underscores are allowed.';
+          }
           if (!errorMessage && value !== '' && validationType.includes('numeric') && !/^[0-9]+$/.test(value)) {
             errorMessage = 'Only numbers are allowed.';
           }
