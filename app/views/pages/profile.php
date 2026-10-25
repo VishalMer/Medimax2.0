@@ -70,6 +70,9 @@ $returnTo = $returnTo ?? url();
           <hr class="label-rule my-3">
 
           <div class="d-grid gap-2">
+            <a href="<?= url('change-password') ?>" class="btn-mm btn-mm-ghost btn-mm-sm text-center">
+              <i class="fas fa-key" aria-hidden="true"></i><span>Update password</span>
+            </a>
             <a href="<?= url('orders') ?>" class="btn-mm btn-mm-ghost btn-mm-sm text-center">
               <i class="fas fa-box-open" aria-hidden="true"></i><span>View order history</span>
             </a>

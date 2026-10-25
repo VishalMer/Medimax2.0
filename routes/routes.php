@@ -6,6 +6,8 @@
 // Frontend routes
 $router->register('home', 'HomeController', 'index');
 $router->register('products', 'ProductController', 'index');
+$router->register('product', 'ProductController', 'detail');
+$router->register('product-detail', 'ProductController', 'detail');
 $router->register('cart', 'CartController', 'index');
 $router->register('cart/add', 'CartController', 'add');
 $router->register('cart/update', 'CartController', 'update');
@@ -39,6 +41,8 @@ $router->register('register', 'AuthController', 'register');
 $router->register('logout', 'AuthController', 'logout');
 $router->register('profile', 'AuthController', 'profile');
 $router->register('edit-profile', 'AuthController', 'profile');
+$router->register('change-password', 'AuthController', 'changePassword');
+$router->register('update-password', 'AuthController', 'changePassword');
 $router->register('checkout', 'CheckoutController', 'index');
 $router->register('checkout/place-order', 'CheckoutController', 'placeOrder');
 $router->register('checkout-place-order', 'CheckoutController', 'placeOrder');
@@ -55,6 +59,7 @@ $router->register('admin-edit-user', 'AdminController', 'editUser');
 $router->register('admin-orders', 'AdminController', 'allOrders');
 $router->register('admin-update-profile', 'AdminController', 'updateProfile');
 $router->register('admin-update-password', 'AdminController', 'updatePassword');
+$router->register('admin-update-password-submit', 'AdminController', 'updatePassword');
 $router->register('admin-discounts', 'AdminController', 'discounts');
 $router->register('admin-add-discount', 'AdminController', 'addDiscount');
 $router->register('admin-edit-discount', 'AdminController', 'editDiscount');

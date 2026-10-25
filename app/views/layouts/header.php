@@ -115,13 +115,16 @@ $avatarLetter      = strtoupper(substr($displayHeaderName, 0, 1));
       if (!empty($currentReqUri) && strpos($currentReqUri, 'page=profile') === false) {
           $profileUrl .= '&amp;return_to=' . urlencode($currentReqUri);
       }
+      $changePasswordUrl = url('change-password');
+      if (!empty($currentReqUri) && strpos($currentReqUri, 'page=change-password') === false && strpos($currentReqUri, 'page=update-password') === false) {
+          $changePasswordUrl .= '&amp;return_to=' . urlencode($currentReqUri);
+      }
     ?>
     <a href="<?= $profileUrl ?>"><i class="fas fa-user-pen" aria-hidden="true"></i> Edit profile</a>
+    <a href="<?= $changePasswordUrl ?>"><i class="fas fa-key" aria-hidden="true"></i> Change password</a>
     <a href="<?= url('orders') ?>"><i class="fas fa-box-open" aria-hidden="true"></i> My orders</a>
     <?php if (in_array($navUser['role'] ?? '', ['admin', 'owner'])): ?>
       <a href="<?= url('admin') ?>"><i class="fas fa-user-tie" aria-hidden="true"></i> Admin panel</a>
-      <a href="<?= url('admin-update-profile') ?>"><i class="fas fa-address-card" aria-hidden="true"></i> Update profile</a>
-      <a href="<?= url('admin-update-password') ?>"><i class="fas fa-key" aria-hidden="true"></i> Change password</a>
     <?php endif; ?>
     <a href="<?= url('contact') ?>"><i class="fas fa-headset" aria-hidden="true"></i> Support</a>
     <hr class="label-rule my-1">

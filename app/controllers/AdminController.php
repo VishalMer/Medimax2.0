@@ -281,9 +281,78 @@ class AdminController extends Controller {
     }
 
     public function updatePassword() {
+        $errorMessage = '';
+        $successMessage = $_SESSION['flash_success'] ?? '';
+        unset($_SESSION['flash_success']);
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $oldPassword     = $_POST['old_password'] ?? '';
+            $newPassword     = $_POST['new_password'] ?? '';
+            $confirmPassword = $_POST['confirm_password'] ?? '';
+
+            $pdo = Database::getConnection();
+            $user = null;
+            if ($pdo) {
+                try {
+                    $stmt = $pdo->prepare("SELECT password FROM users WHERE id = :id LIMIT 1");
+                    $stmt->execute([':id' => $this->adminUser['id']]);
+                    $user = $stmt->fetch();
+                } catch (PDOException $e) {
+                    error_log("Admin password fetch error: " . $e->getMessage());
+                }
+            }
+
+            $errors = [];
+            if (empty($oldPassword)) {
+                $errors[] = 'Current password is required.';
+            } elseif (!$user || !password_verify($oldPassword, $user['password'])) {
+                $errors[] = 'Current password is incorrect. Please verify and try again.';
+            }
+
+            if (empty($newPassword)) {
+                $errors[] = 'New password is required.';
+            } elseif (strlen($newPassword) < 8 || strlen($newPassword) > 25) {
+                $errors[] = 'New password must be between 8 and 25 characters long.';
+            } elseif (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/', $newPassword)) {
+                $errors[] = 'New password must include uppercase, lowercase, number, and special character (@$!%*?&).';
+            } elseif (empty($errors) && $user && password_verify($newPassword, $user['password'])) {
+                $errors[] = 'New password cannot be the same as your current password.';
+            }
+
+            if (empty($confirmPassword)) {
+                $errors[] = 'Please confirm your new password.';
+            } elseif ($newPassword !== $confirmPassword) {
+                $errors[] = 'New password and confirmation password do not match.';
+            }
+
+            if (!empty($errors)) {
+                $errorMessage = implode('<br>', $errors);
+            } else {
+                if ($pdo) {
+                    try {
+                        $hashed = password_hash($newPassword, PASSWORD_BCRYPT);
+                        $upd = $pdo->prepare("UPDATE users SET password = :password, updated_at = NOW() WHERE id = :id");
+                        $upd->execute([
+                            ':password' => $hashed,
+                            ':id'       => $this->adminUser['id']
+                        ]);
+                        $_SESSION['flash_success'] = 'Administrator password has been successfully updated.';
+                        header('Location: ' . url('admin-update-password'));
+                        exit;
+                    } catch (PDOException $e) {
+                        $errorMessage = 'Database error updating password: ' . htmlspecialchars($e->getMessage());
+                    }
+                } else {
+                    $errorMessage = 'Database connection error. Please try again.';
+                }
+            }
+        }
+
         $this->view('pages/admin/update_password', [
-            'adminUser' => $this->adminUser,
-            'pageTitle' => 'Update Password'
+            'adminUser'      => $this->adminUser,
+            'errorMessage'   => $errorMessage,
+            'successMessage' => $successMessage,
+            'pageTitle'      => 'Update Password'
         ]);
     }
 

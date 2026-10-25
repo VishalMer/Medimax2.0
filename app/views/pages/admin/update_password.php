@@ -7,7 +7,21 @@
     <p>You stay signed in on this device. Other sessions are signed out.</p>
   </div>
 
-  <form action="<?= url('admin-update-password-submit') ?>" method="POST" id="passwordForm">
+  <?php if (!empty($errorMessage)): ?>
+    <div class="alert alert-danger d-flex align-items-center gap-2 py-2 px-3 mb-4 rounded-3 shadow-sm" role="alert">
+      <i class="fas fa-circle-exclamation flex-shrink-0 text-danger"></i>
+      <div><?= $errorMessage ?></div>
+    </div>
+  <?php endif; ?>
+
+  <?php if (!empty($successMessage)): ?>
+    <div class="alert alert-success d-flex align-items-center gap-2 py-2 px-3 mb-4 rounded-3 shadow-sm" role="alert">
+      <i class="fas fa-circle-check flex-shrink-0 text-success"></i>
+      <div><?= $successMessage ?></div>
+    </div>
+  <?php endif; ?>
+
+  <form action="<?= url('admin-update-password') ?>" method="POST" id="passwordForm">
     <div class="mm-field">
       <label for="old_password">Current password</label>
       <div class="mm-field--pw">

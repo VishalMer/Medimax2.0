@@ -23,28 +23,32 @@ $isFav    = class_exists('WishlistController') && WishlistController::has($id);
          data-stock="<?= $stock ?>"
          data-index="<?= (int) $index ?>">
 
-  <div class="product-card__label">
-    <span class="product-card__cat"><?= htmlspecialchars($category) ?></span>
-    <span class="product-card__sku">MM<?= str_pad((string) $id, 3, '0', STR_PAD_LEFT) ?></span>
-  </div>
+  <!-- Upper Clickable Area -> Navigates to Product Details Page -->
+  <a href="<?= url('product') ?>&amp;id=<?= (int) $id ?>" class="product-card__head-link text-decoration-none text-reset d-flex flex-column flex-grow-1" style="color: inherit; text-decoration: none; cursor: pointer;">
+    <div class="product-card__label">
+      <span class="product-card__cat"><?= htmlspecialchars($category) ?></span>
+      <span class="product-card__sku">MM<?= str_pad((string) $id, 3, '0', STR_PAD_LEFT) ?></span>
+    </div>
 
-  <div class="product-card__media">
-    <?php if ($original && $original > $price): 
-        $discountPct = round((($original - $price) / $original) * 100);
-    ?>
-    <span class="badge position-absolute top-0 start-0 m-2" style="background-color: var(--accent-orange, rgb(230, 120, 52)); z-index: 10; font-size: 0.8rem;"><?= $discountPct ?>% OFF</span>
-    <?php endif; ?>
-    <?php if (!$inStock): ?>
-    <span class="badge position-absolute top-0 end-0 m-2 bg-secondary" style="z-index: 10; font-size: 0.75rem;"><i class="fas fa-circle-xmark me-1"></i>Out of stock</span>
-    <?php endif; ?>
-    <img src="<?= asset('images/' . $image) ?>" alt="<?= htmlspecialchars($name) ?>" loading="lazy"
-         data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>" style="<?= !$inStock ? 'filter: grayscale(80%); opacity: 0.85;' : '' ?>">
-  </div>
+    <div class="product-card__media">
+      <?php if ($original && $original > $price): 
+          $discountPct = round((($original - $price) / $original) * 100);
+      ?>
+      <span class="badge position-absolute top-0 start-0 m-2" style="background-color: var(--accent-orange, rgb(230, 120, 52)); z-index: 10; font-size: 0.8rem;"><?= $discountPct ?>% OFF</span>
+      <?php endif; ?>
+      <?php if (!$inStock): ?>
+      <span class="badge position-absolute top-0 end-0 m-2 bg-secondary" style="z-index: 10; font-size: 0.75rem;"><i class="fas fa-circle-xmark me-1"></i>Out of stock</span>
+      <?php endif; ?>
+      <img src="<?= asset('images/' . $image) ?>" alt="<?= htmlspecialchars($name) ?>" loading="lazy"
+           data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>" style="<?= !$inStock ? 'filter: grayscale(80%); opacity: 0.85;' : '' ?>">
+    </div>
 
-  <div class="product-card__body">
-    <h3 class="product-card__name" title="<?= htmlspecialchars($name) ?>"><?= htmlspecialchars($name) ?></h3>
-  </div>
+    <div class="product-card__body">
+      <h3 class="product-card__name" title="<?= htmlspecialchars($name) ?>"><?= htmlspecialchars($name) ?></h3>
+    </div>
+  </a>
 
+  <!-- Lower Price & Actions Foot (Separated by horizontal dashed line) -->
   <div class="product-card__foot flex-wrap">
     <div class="product-card__price" style="min-width: 0;">
       <span class="eyebrow eyebrow--plain eyebrow--muted">Price</span>

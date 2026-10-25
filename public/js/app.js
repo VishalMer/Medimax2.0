@@ -342,9 +342,10 @@
       var baseUrl = window.BASE_URL || '/MediMax/';
       var url = baseUrl + '?page=cart/add';
 
+      var qty = parseInt(cartBtn.getAttribute('data-qty'), 10) || 1;
       var fd = new FormData();
       fd.append('product_id', productId);
-      fd.append('quantity', '1');
+      fd.append('quantity', qty);
       fd.append('ajax', '1');
 
       fetch(url, {
@@ -362,7 +363,8 @@
           cartBtn.classList.add('is-done');
           setTimeout(function () { cartBtn.classList.remove('is-done'); }, 1200);
           if (window.MediMax && window.MediMax.toast) {
-            window.MediMax.toast('Added "' + productName + '" to cart', 'fa-cart-plus');
+            var msg = qty > 1 ? 'Added ' + qty + 'x "' + productName + '" to cart' : 'Added "' + productName + '" to cart';
+            window.MediMax.toast(msg, 'fa-cart-plus');
           }
         } else {
           if (window.MediMax && window.MediMax.toast) {
@@ -376,6 +378,47 @@
         if (window.MediMax && window.MediMax.toast) {
           window.MediMax.toast('Network error adding to cart', 'fa-circle-exclamation');
         }
+      });
+    });
+
+    /* --- Buy Now Handler (data-act="buy-now") ------------------------- */
+    document.addEventListener('click', function (e) {
+      var buyBtn = e.target.closest('[data-act="buy-now"]');
+      if (!buyBtn) return;
+      var productId = buyBtn.getAttribute('data-id');
+      if (!productId) return;
+
+      e.preventDefault();
+      buyBtn.disabled = true;
+
+      var qty = parseInt(buyBtn.getAttribute('data-qty'), 10) || 1;
+      var baseUrl = window.BASE_URL || '/MediMax/';
+      var url = baseUrl + '?page=cart/add';
+
+      var fd = new FormData();
+      fd.append('product_id', productId);
+      fd.append('quantity', qty);
+      fd.append('ajax', '1');
+
+      fetch(url, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        body: fd
+      })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (data && data.success) {
+          window.location.href = baseUrl + '?page=checkout';
+        } else {
+          buyBtn.disabled = false;
+          if (window.MediMax && window.MediMax.toast) {
+            window.MediMax.toast((data && data.message) || 'Could not proceed to checkout', 'fa-circle-exclamation');
+          }
+        }
+      })
+      .catch(function (err) {
+        buyBtn.disabled = false;
+        window.location.href = baseUrl + '?page=cart';
       });
     });
 
@@ -821,24 +864,61 @@
   });
 
   /* --- Global MediMax helpers --- */
-  window.MediMax = window.MediMax || {
-    toast: function (msg, icon) {
-      icon = icon || 'fa-info-circle';
-      var container = document.querySelector('.toast-stack');
-      if (!container) {
-        container = document.createElement('div');
-        container.className = 'toast-stack position-fixed bottom-0 end-0 p-3';
-        container.style.zIndex = '1090';
-        document.body.appendChild(container);
-      }
-      var toastEl = document.createElement('div');
-      toastEl.className = 'alert alert-dark d-flex align-items-center gap-2 shadow-sm rounded-3 mb-2';
-      toastEl.style.cssText = 'background: #1B3E5E; color: #fff; border: 0; padding: .65rem 1rem; font-size: .88rem;';
-      toastEl.innerHTML = '<i class="fas ' + icon + '"></i><span>' + msg + '</span>';
-      container.appendChild(toastEl);
-      setTimeout(function () {
-        toastEl.remove();
-      }, 3000);
+  window.MediMax = window.MediMax || {};
+  window.MediMax.toast = function (msg, icon) {
+    icon = icon || 'fa-info-circle';
+    var container = document.querySelector('.toast-stack');
+    if (!container) {
+      container = document.createElement('div');
+      container.className = 'toast-stack';
+      document.body.appendChild(container);
     }
+
+    var toastEl = document.createElement('div');
+    toastEl.className = 'toast-msg';
+
+    // Contextual icon color tint
+    var iconClass = 'toast-msg__icon';
+    if (icon.indexOf('heart') !== -1) {
+      iconClass += ' is-heart';
+    } else if (icon.indexOf('cart') !== -1) {
+      iconClass += ' is-cart';
+    } else if (icon.indexOf('exclamation') !== -1 || icon.indexOf('ban') !== -1) {
+      iconClass += ' is-danger';
+    }
+
+    toastEl.innerHTML =
+      '<span class="' + iconClass + '"><i class="fas ' + icon + '"></i></span>' +
+      '<span class="toast-msg__text">' + msg + '</span>' +
+      '<button type="button" class="toast-msg__close" aria-label="Dismiss notification"><i class="fas fa-xmark"></i></button>';
+
+    container.appendChild(toastEl);
+
+    var isClosing = false;
+    function dismiss() {
+      if (isClosing) return;
+      isClosing = true;
+      clearTimeout(timer);
+      toastEl.classList.add('is-leaving');
+      setTimeout(function () {
+        if (toastEl.parentNode) {
+          toastEl.parentNode.removeChild(toastEl);
+        }
+      }, 230);
+    }
+
+    var timer = setTimeout(dismiss, 3200);
+
+    var closeBtn = toastEl.querySelector('.toast-msg__close');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        dismiss();
+      });
+    }
+
+    toastEl.addEventListener('click', function () {
+      dismiss();
+    });
   };
 })();

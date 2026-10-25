@@ -624,6 +624,21 @@ h4, h5, h6 { font-family: var(--font-body); font-weight: 700; letter-spacing: -.
   transition: transform .45s var(--ease);
 }
 .product-card:hover .product-card__media img { transform: scale(1.06); }
+.product-card__head-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  cursor: pointer;
+}
+.product-card__head-link:hover {
+  text-decoration: none;
+  color: inherit;
+}
+.product-card__head-link:hover .product-card__name {
+  color: var(--teal-800);
+}
 .product-card__body { padding: .9rem 1rem 0; flex: 1 1 auto; }
 .product-card__name {
   font-family: var(--font-body);
@@ -1067,30 +1082,110 @@ h4, h5, h6 { font-family: var(--font-body); font-weight: 700; letter-spacing: -.
 /* --- Toasts -------------------------------------------------------------- */
 .toast-stack {
   position: fixed;
-  top: calc(var(--nav-h) + 12px);
-  right: 16px;
-  z-index: 1090;
-  display: grid;
-  gap: .6rem;
-  width: min(330px, calc(100vw - 32px));
+  bottom: 24px;
+  right: 24px;
+  z-index: 1095;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  max-width: 420px;
+  width: auto;
+  pointer-events: none;
 }
 .toast-msg {
-  display: flex; align-items: flex-start; gap: .7rem;
-  padding: .85rem 1rem;
-  background: rgba(16, 41, 60, .95);
-  backdrop-filter: blur(10px);
-  color: #fff;
-  border-radius: var(--r-md);
-  box-shadow: var(--sh-3);
-  font-size: .86rem;
-  font-weight: 600;
-  cursor: pointer;
-  animation: toastIn .3s var(--ease);
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: #1B3E5E;
+  background: linear-gradient(145deg, #1B3E5E 0%, #15324c 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border-radius: var(--r-md, 10px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.28), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+  font-family: var(--font-body);
+  font-size: .88rem;
+  font-weight: 500;
+  line-height: 1.4;
+  height: auto !important;
+  max-height: none !important;
+  animation: mmToastIn .28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: opacity .2s ease, transform .2s ease;
 }
-.toast-msg i { color: var(--teal); margin-top: .12rem; }
-.toast-msg.is-leaving { animation: toastOut .25s var(--ease) forwards; }
-@keyframes toastIn { from { opacity: 0; transform: translateX(22px); } to { opacity: 1; transform: none; } }
-@keyframes toastOut { to { opacity: 0; transform: translateX(22px); } }
+.toast-msg__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .95rem;
+  flex-shrink: 0;
+  background: rgba(112, 171, 175, 0.2);
+  color: var(--teal, #70ABAF);
+}
+.toast-msg__icon.is-heart {
+  background: rgba(239, 68, 68, 0.2);
+  color: #F87171;
+}
+.toast-msg__icon.is-cart {
+  background: rgba(44, 122, 128, 0.28);
+  color: #4ECCD3;
+}
+.toast-msg__icon.is-danger {
+  background: rgba(220, 38, 38, 0.2);
+  color: #FCA5A5;
+}
+.toast-msg__text {
+  flex: 1 1 auto;
+  color: #ffffff;
+  word-break: break-word;
+}
+.toast-msg__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: .85rem;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0;
+  margin-left: 4px;
+  transition: color .15s ease, background .15s ease;
+}
+.toast-msg__close:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.15);
+}
+.toast-msg.is-leaving {
+  animation: mmToastOut .22s ease forwards;
+}
+@keyframes mmToastIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes mmToastOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+}
 
 /* --- Footer -------------------------------------------------------------- */
 .mm-footer {
@@ -1387,7 +1482,8 @@ h4, h5, h6 { font-family: var(--font-body); font-weight: 700; letter-spacing: -.
   .product-card__foot { flex-direction: column; align-items: stretch; gap: .6rem; }
   .product-card__acts { justify-content: stretch; }
   .product-card__acts .icon-btn { flex: 1 1 auto; width: auto; }
-  .toast-stack { left: 16px; right: 16px; width: auto; }
+  .toast-stack { left: 16px; right: 16px; bottom: 16px; width: auto; max-width: none; align-items: stretch; }
+  .toast-msg { width: 100%; }
 }
 
 /* Print — the receipt should print cleanly */

@@ -325,7 +325,7 @@ class AuthController extends Controller {
     /**
      * Sanitize and validate return_to URL to prevent open redirects and loops
      */
-    private function getSafeReturnUrl($rawReturn, $defaultUrl = null) {
+    private function getSafeReturnUrl($rawReturn, $defaultUrl = null, array $disallowedPages = ['profile', 'edit-profile']) {
         if ($defaultUrl === null) {
             $defaultUrl = url();
         }
@@ -362,17 +362,125 @@ class AuthController extends Controller {
             return $defaultUrl;
         }
 
-        // Prevent circular loop back to edit profile page
+        // Prevent circular loop back to current form pages
         $queryParams = [];
         if (!empty($parsed['query'])) {
             parse_str($parsed['query'], $queryParams);
         }
         $targetPage = strtolower($queryParams['page'] ?? '');
-        if ($targetPage === 'profile' || $targetPage === 'edit-profile') {
+        if (in_array($targetPage, $disallowedPages)) {
             return $defaultUrl;
         }
 
         return $localUrl;
+    }
+
+    /**
+     * Customer Change Password
+     */
+    public function changePassword() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (empty($_SESSION['user']['id'])) {
+            $_SESSION['flash_error'] = 'Please sign in to update your password.';
+            header('Location: ' . url('login'));
+            exit;
+        }
+
+        $userId = (int)$_SESSION['user']['id'];
+        $pdo = Database::getConnection();
+        $user = null;
+
+        if ($pdo) {
+            try {
+                $stmt = $pdo->prepare("SELECT id, username, name, email, password, role, phone, image, created_at FROM users WHERE id = :id LIMIT 1");
+                $stmt->execute([':id' => $userId]);
+                $user = $stmt->fetch();
+            } catch (PDOException $e) {
+                error_log("User lookup error: " . $e->getMessage());
+            }
+        }
+
+        if (!$user) {
+            header('Location: ' . url());
+            exit;
+        }
+
+        // Determine safe return URL (defaults to profile page)
+        $rawReturn = $_REQUEST['return_to'] ?? $_SERVER['HTTP_REFERER'] ?? '';
+        $returnTo = $this->getSafeReturnUrl($rawReturn, url('profile'), ['change-password', 'update-password']);
+
+        $errorMessage = '';
+        $successMessage = $_SESSION['flash_success'] ?? '';
+        unset($_SESSION['flash_success']);
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $oldPassword     = $_POST['old_password'] ?? '';
+            $newPassword     = $_POST['new_password'] ?? '';
+            $confirmPassword = $_POST['confirm_password'] ?? '';
+            $returnTo        = $this->getSafeReturnUrl($_POST['return_to'] ?? $rawReturn, url('profile'), ['change-password', 'update-password']);
+
+            $errors = [];
+
+            // 1. Validate Current Password
+            if (empty($oldPassword)) {
+                $errors[] = 'Current password is required.';
+            } elseif (!password_verify($oldPassword, $user['password'])) {
+                $errors[] = 'Current password is incorrect. Please verify and try again.';
+            }
+
+            // 2. Validate New Password
+            if (empty($newPassword)) {
+                $errors[] = 'New password is required.';
+            } elseif (strlen($newPassword) < 8 || strlen($newPassword) > 25) {
+                $errors[] = 'New password must be between 8 and 25 characters long.';
+            } elseif (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/', $newPassword)) {
+                $errors[] = 'New password must include uppercase, lowercase, number, and special character (@$!%*?&).';
+            } elseif (empty($errors) && password_verify($newPassword, $user['password'])) {
+                $errors[] = 'New password cannot be the same as your current password. Please choose a different password.';
+            }
+
+            // 3. Validate Confirm Password
+            if (empty($confirmPassword)) {
+                $errors[] = 'Please confirm your new password.';
+            } elseif ($newPassword !== $confirmPassword) {
+                $errors[] = 'New password and confirmation password do not match.';
+            }
+
+            if (!empty($errors)) {
+                $errorMessage = implode('<br>', $errors);
+            } else {
+                if ($pdo) {
+                    try {
+                        $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
+                        $upd = $pdo->prepare("UPDATE users SET password = :password, updated_at = NOW() WHERE id = :id");
+                        $upd->execute([
+                            ':password' => $hashedPassword,
+                            ':id'       => $userId
+                        ]);
+
+                        $_SESSION['flash_success'] = 'Your password has been changed successfully! Please use your new password next time you sign in.';
+                        header('Location: ' . $returnTo);
+                        exit;
+                    } catch (PDOException $e) {
+                        error_log("Password update DB error: " . $e->getMessage());
+                        $errorMessage = 'Database error updating password: ' . htmlspecialchars($e->getMessage());
+                    }
+                } else {
+                    $errorMessage = 'Database connection error. Please try again.';
+                }
+            }
+        }
+
+        $this->view('pages/change_password', [
+            'user'           => $user,
+            'errorMessage'   => $errorMessage,
+            'successMessage' => $successMessage,
+            'returnTo'       => $returnTo,
+            'pageTitle'      => 'Update Password - MediMax.com'
+        ]);
     }
 
     /**
