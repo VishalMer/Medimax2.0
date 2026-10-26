@@ -88,7 +88,6 @@ $checks = [
     ['id="detailWishlistBtn"', 'Wishlist button with data-act="fav"'],
     ['id="overview-tab"', 'Description & Uses information tab'],
     ['id="dosage-tab"', 'Dosage & Directions information tab'],
-    ['id="composition-tab"', 'Active Ingredients information tab'],
     ['id="safety-tab"', 'Safety & Warnings information tab'],
     ['Related Products &amp; Alternatives', 'Related products recommendations section']
 ];
@@ -100,6 +99,37 @@ foreach ($checks as [$needle, $label]) {
         echo "  FAIL: {$label} ('{$needle}') missing from rendered product detail page.\n";
         exit(1);
     }
+}
+
+// Check that removed items are indeed absent
+if (strpos($detailHtml, 'id="composition-tab"') === false && strpos($detailHtml, 'Active Ingredients') === false) {
+    echo "  PASS: 'Active Ingredients' tab has been successfully removed.\n";
+} else {
+    echo "  FAIL: 'Active Ingredients' still present in output.\n";
+    exit(1);
+}
+
+if (strpos($detailHtml, 'deliveryPincode') === false && strpos($detailHtml, 'checkPincodeBtn') === false) {
+    echo "  PASS: 'Fast Delivery to Pincode' option has been successfully removed.\n";
+} else {
+    echo "  FAIL: Pincode option still present in output.\n";
+    exit(1);
+}
+
+if (strpos($detailHtml, 'aria-label="Breadcrumb"') === false) {
+    echo "  PASS: Breadcrumb navigation line has been successfully removed.\n";
+} else {
+    echo "  FAIL: Breadcrumb navigation line is still present.\n";
+    exit(1);
+}
+
+// Check that 4 trust boxes have equal sizing classes
+$trustBoxCount = substr_count($detailHtml, 'col-3 d-flex');
+if ($trustBoxCount === 4 && substr_count($detailHtml, 'w-100 h-100 d-flex flex-column align-items-center justify-content-center text-center') === 4) {
+    echo "  PASS: All 4 trust badge boxes have equal col-3 dimensions and flex centering.\n";
+} else {
+    echo "  FAIL: Trust boxes do not match equal size configuration ($trustBoxCount found).\n";
+    exit(1);
 }
 
 // 4. Test Invalid product ID redirect in isolated runner

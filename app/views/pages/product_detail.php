@@ -21,16 +21,6 @@ $discountPct = ($original > $price) ? round(($savings / $original) * 100) : 0;
 <div class="page">
   <div class="mm-container">
 
-    <!-- Breadcrumb Navigation -->
-    <nav class="mb-4" aria-label="Breadcrumb">
-      <ol class="breadcrumb mb-0" style="font-size: .84rem;">
-        <li class="breadcrumb-item"><a href="<?= url() ?>" class="text-decoration-none text-muted"><i class="fas fa-house me-1"></i>Home</a></li>
-        <li class="breadcrumb-item"><a href="<?= url('products') ?>" class="text-decoration-none text-muted">Catalogue</a></li>
-        <li class="breadcrumb-item"><a href="<?= url('products') ?>&amp;category=<?= urlencode($category) ?>" class="text-decoration-none text-muted"><?= htmlspecialchars($category) ?></a></li>
-        <li class="breadcrumb-item active text-truncate text-dark fw-semibold" aria-current="page" style="max-width: 320px;"><?= htmlspecialchars($name) ?></li>
-      </ol>
-    </nav>
-
     <!-- Main Product Showcase Grid -->
     <div class="row g-4 mb-5">
 
@@ -74,28 +64,32 @@ $discountPct = ($original > $price) ? round(($savings / $original) * 100) : 0;
 
           <!-- Trust Badges Strip -->
           <div class="row g-2 pt-2 text-center" style="font-size: .78rem; color: var(--ink-60, #4B5563);">
-            <div class="col-6 col-sm-3">
-              <div class="p-2 rounded-2" style="background: var(--mist, #F4F6F8); border: 1px solid var(--line, #E5E7EB);">
-                <i class="fas fa-shield-halved text-success d-block mb-1" style="font-size: 1.1rem;"></i>
-                <span class="fw-semibold">100% Genuine</span>
+            <div class="col-3 d-flex">
+              <div class="p-2 rounded-2 w-100 h-100 d-flex flex-column align-items-center justify-content-center text-center"
+                   style="background: var(--mist, #F4F6F8); border: 1px solid var(--line, #E5E7EB); min-height: 76px;">
+                <i class="fas fa-shield-halved text-success mb-1" style="font-size: 1.15rem;"></i>
+                <span class="fw-semibold lh-sm">100% Genuine</span>
               </div>
             </div>
-            <div class="col-6 col-sm-3">
-              <div class="p-2 rounded-2" style="background: var(--mist, #F4F6F8); border: 1px solid var(--line, #E5E7EB);">
-                <i class="fas fa-user-doctor text-primary d-block mb-1" style="font-size: 1.1rem;"></i>
-                <span class="fw-semibold">Pharmacist Check</span>
+            <div class="col-3 d-flex">
+              <div class="p-2 rounded-2 w-100 h-100 d-flex flex-column align-items-center justify-content-center text-center"
+                   style="background: var(--mist, #F4F6F8); border: 1px solid var(--line, #E5E7EB); min-height: 76px;">
+                <i class="fas fa-user-doctor text-primary mb-1" style="font-size: 1.15rem;"></i>
+                <span class="fw-semibold lh-sm">Pharmacist Check</span>
               </div>
             </div>
-            <div class="col-6 col-sm-3">
-              <div class="p-2 rounded-2" style="background: var(--mist, #F4F6F8); border: 1px solid var(--line, #E5E7EB);">
-                <i class="fas fa-box text-warning d-block mb-1" style="font-size: 1.1rem;"></i>
-                <span class="fw-semibold">Tamper Proof</span>
+            <div class="col-3 d-flex">
+              <div class="p-2 rounded-2 w-100 h-100 d-flex flex-column align-items-center justify-content-center text-center"
+                   style="background: var(--mist, #F4F6F8); border: 1px solid var(--line, #E5E7EB); min-height: 76px;">
+                <i class="fas fa-box text-warning mb-1" style="font-size: 1.15rem;"></i>
+                <span class="fw-semibold lh-sm">Tamper Proof</span>
               </div>
             </div>
-            <div class="col-6 col-sm-3">
-              <div class="p-2 rounded-2" style="background: var(--mist, #F4F6F8); border: 1px solid var(--line, #E5E7EB);">
-                <i class="fas fa-truck-fast text-info d-block mb-1" style="font-size: 1.1rem;"></i>
-                <span class="fw-semibold">Fast Dispatch</span>
+            <div class="col-3 d-flex">
+              <div class="p-2 rounded-2 w-100 h-100 d-flex flex-column align-items-center justify-content-center text-center"
+                   style="background: var(--mist, #F4F6F8); border: 1px solid var(--line, #E5E7EB); min-height: 76px;">
+                <i class="fas fa-truck-fast text-info mb-1" style="font-size: 1.15rem;"></i>
+                <span class="fw-semibold lh-sm">Fast Dispatch</span>
               </div>
             </div>
           </div>
@@ -202,32 +196,20 @@ $discountPct = ($original > $price) ? round(($savings / $original) * 100) : 0;
               </div>
             </div>
 
-            <!-- Stock Status and Delivery Estimator -->
-            <div class="row g-3 align-items-center mb-4">
-              <div class="col-sm-6">
-                <span class="mm-label mb-1">Availability</span>
-                <?php if ($inStock): ?>
-                  <div class="text-success fw-semibold d-flex align-items-center gap-2" style="font-size: .92rem;">
-                    <i class="fas fa-circle-check"></i>
-                    <span>In Stock <span class="text-muted fw-normal">(<?= $stock ?> units available)</span></span>
-                  </div>
-                <?php else: ?>
-                  <div class="text-danger fw-semibold d-flex align-items-center gap-2" style="font-size: .92rem;">
-                    <i class="fas fa-circle-xmark"></i>
-                    <span>Currently Out of Stock</span>
-                  </div>
-                <?php endif; ?>
-              </div>
-              <div class="col-sm-6">
-                <span class="mm-label mb-1">Fast Delivery to Pincode</span>
-                <div class="input-group input-group-sm">
-                  <input type="text" class="form-control" id="deliveryPincode" placeholder="e.g. 380015" maxlength="6" value="380015">
-                  <button class="btn btn-outline-secondary" type="button" id="checkPincodeBtn">Check</button>
+            <!-- Stock Status -->
+            <div class="mb-4">
+              <span class="mm-label mb-1">Availability</span>
+              <?php if ($inStock): ?>
+                <div class="text-success fw-semibold d-flex align-items-center gap-2" style="font-size: .95rem;">
+                  <i class="fas fa-circle-check"></i>
+                  <span>In Stock <span class="text-muted fw-normal">(<?= $stock ?> units available)</span></span>
                 </div>
-                <div class="text-muted mt-1" id="pincodeMessage" style="font-size: .74rem;">
-                  <i class="fas fa-bolt text-warning me-1"></i>Express dispatch available. Estimated delivery in 24–48 hrs.
+              <?php else: ?>
+                <div class="text-danger fw-semibold d-flex align-items-center gap-2" style="font-size: .95rem;">
+                  <i class="fas fa-circle-xmark"></i>
+                  <span>Currently Out of Stock</span>
                 </div>
-              </div>
+              <?php endif; ?>
             </div>
 
             <!-- Doctor Prescription Notice if required -->
@@ -346,11 +328,6 @@ $discountPct = ($original > $price) ? round(($savings / $original) * 100) : 0;
           </button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link fw-bold text-dark px-4 py-2" id="composition-tab" data-bs-toggle="tab" data-bs-target="#composition" type="button" role="tab" aria-controls="composition" aria-selected="false">
-            <i class="fas fa-flask me-2 text-primary"></i>Active Ingredients
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
           <button class="nav-link fw-bold text-dark px-4 py-2" id="safety-tab" data-bs-toggle="tab" data-bs-target="#safety" type="button" role="tab" aria-controls="safety" aria-selected="false">
             <i class="fas fa-triangle-exclamation me-2 text-primary"></i>Safety &amp; Warnings
           </button>
@@ -403,35 +380,7 @@ $discountPct = ($original > $price) ? round(($savings / $original) * 100) : 0;
           </div>
         </div>
 
-        <!-- Tab 3: Composition -->
-        <div class="tab-pane fade" id="composition" role="tabpanel" aria-labelledby="composition-tab">
-          <h3 class="h6 fw-bold text-dark mb-2">Salt Composition &amp; Molecular Strength</h3>
-          <div class="table-responsive">
-            <table class="table table-bordered table-striped" style="font-size: .88rem;">
-              <thead class="table-light">
-                <tr>
-                  <th>Component Name</th>
-                  <th>Classification</th>
-                  <th>Standard Strength</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="fw-semibold text-dark"><?= htmlspecialchars($name) ?> Active Complex</td>
-                  <td>Active Pharmaceutical Ingredient (API)</td>
-                  <td>Pharmacopoeial Grade (IP / USP)</td>
-                </tr>
-                <tr>
-                  <td>Pharmaceutical Excipients (q.s.)</td>
-                  <td>Stabilizers &amp; Bioavailability Enhancers</td>
-                  <td>Standard Batch Formulation</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Tab 4: Safety & Warnings -->
+        <!-- Tab 3: Safety & Warnings -->
         <div class="tab-pane fade" id="safety" role="tabpanel" aria-labelledby="safety-tab">
           <h3 class="h6 fw-bold text-dark mb-3">Safety Warnings &amp; Precautions</h3>
           <div class="row g-3" style="font-size: .88rem;">
@@ -589,21 +538,6 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   });
-
-  // Pincode checker simulation
-  var checkBtn = document.getElementById('checkPincodeBtn');
-  var pinInput = document.getElementById('deliveryPincode');
-  var pinMsg = document.getElementById('pincodeMessage');
-  if (checkBtn && pinInput && pinMsg) {
-    checkBtn.addEventListener('click', function () {
-      var code = pinInput.value.trim();
-      if (/^[1-9][0-9]{5}$/.test(code)) {
-        pinMsg.innerHTML = '<span class="text-success fw-bold"><i class="fas fa-check-circle me-1"></i>Delivery available to ' + code + '! Delivery within 24 to 48 hours.</span>';
-      } else {
-        pinMsg.innerHTML = '<span class="text-danger fw-semibold"><i class="fas fa-circle-exclamation me-1"></i>Please enter a valid 6-digit Indian pincode.</span>';
-      }
-    });
-  }
 });
 </script>
 

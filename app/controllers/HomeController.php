@@ -30,5 +30,9 @@ class HomeController extends Controller {
         }
         $this->view('pages/home', ['products' => $products, 'pageTitle' => 'Home - MediMax.com']);
     }
+
+    public function setupDatabase() {
+        require_once dirname(APP_PATH) . '/database/create_database.php';
+    }
 }
 

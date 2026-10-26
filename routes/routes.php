@@ -36,6 +36,8 @@ $router->register('wishlist-clear', 'WishlistController', 'clear');
 $router->register('orders', 'OrderController', 'index');
 $router->register('about', 'AboutController', 'index');
 $router->register('contact', 'ContactController', 'index');
+$router->register('setup-db', 'HomeController', 'setupDatabase');
+$router->register('create-database', 'HomeController', 'setupDatabase');
 $router->register('login', 'AuthController', 'login');
 $router->register('register', 'AuthController', 'register');
 $router->register('logout', 'AuthController', 'logout');
