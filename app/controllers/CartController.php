@@ -98,12 +98,11 @@ class CartController extends Controller {
                 if (!empty($userId)) {
                     $stmt = $pdo->prepare("
                         INSERT INTO cart_items (user_id, session_id, product_id, quantity)
-                        VALUES (:uid, :sid, :pid, :qty)
+                        VALUES (:uid, NULL, :pid, :qty)
                         ON DUPLICATE KEY UPDATE quantity = LEAST(:max_qty, quantity + :qty2)
                     ");
                     $stmt->execute([
                         ':uid'      => (int)$userId,
-                        ':sid'      => $sessionId,
                         ':pid'      => $productId,
                         ':qty'      => $quantity,
                         ':max_qty'  => $allowedMax,
@@ -194,13 +193,23 @@ class CartController extends Controller {
         if ($pdo) {
             try {
                 if ($cartId > 0) {
-                    $qStmt = $pdo->prepare("
-                        SELECT ci.id, ci.product_id, p.stock_quantity, p.name 
-                        FROM cart_items ci 
-                        JOIN products p ON ci.product_id = p.id 
-                        WHERE ci.id = :id LIMIT 1
-                    ");
-                    $qStmt->execute([':id' => $cartId]);
+                    if (!empty($userId)) {
+                        $qStmt = $pdo->prepare("
+                            SELECT ci.id, ci.product_id, p.stock_quantity, p.name 
+                            FROM cart_items ci 
+                            JOIN products p ON ci.product_id = p.id 
+                            WHERE ci.id = :id AND ci.user_id = :uid LIMIT 1
+                        ");
+                        $qStmt->execute([':id' => $cartId, ':uid' => (int)$userId]);
+                    } else {
+                        $qStmt = $pdo->prepare("
+                            SELECT ci.id, ci.product_id, p.stock_quantity, p.name 
+                            FROM cart_items ci 
+                            JOIN products p ON ci.product_id = p.id 
+                            WHERE ci.id = :id AND ci.session_id = :sid AND ci.user_id IS NULL LIMIT 1
+                        ");
+                        $qStmt->execute([':id' => $cartId, ':sid' => $sessionId]);
+                    }
                     $row = $qStmt->fetch();
                     if ($row) {
                         $productId = (int)$row['product_id'];
@@ -227,7 +236,7 @@ class CartController extends Controller {
                     $stmt = $pdo->prepare("UPDATE cart_items SET quantity = :qty WHERE id = :id AND user_id = :uid");
                     $stmt->execute([':qty' => $cappedQty, ':id' => $cartId, ':uid' => (int)$userId]);
                 } else {
-                    $stmt = $pdo->prepare("UPDATE cart_items SET quantity = :qty WHERE id = :id AND session_id = :sid");
+                    $stmt = $pdo->prepare("UPDATE cart_items SET quantity = :qty WHERE id = :id AND session_id = :sid AND user_id IS NULL");
                     $stmt->execute([':qty' => $cappedQty, ':id' => $cartId, ':sid' => $sessionId]);
                 }
             } catch (PDOException $e) {
@@ -291,7 +300,7 @@ class CartController extends Controller {
                         $stmt = $pdo->prepare("DELETE FROM cart_items WHERE id = :id AND user_id = :uid");
                         $stmt->execute([':id' => $cartId, ':uid' => (int)$userId]);
                     } else {
-                        $stmt = $pdo->prepare("DELETE FROM cart_items WHERE id = :id AND session_id = :sid");
+                        $stmt = $pdo->prepare("DELETE FROM cart_items WHERE id = :id AND session_id = :sid AND user_id IS NULL");
                         $stmt->execute([':id' => $cartId, ':sid' => $sessionId]);
                     }
                 } elseif ($productId > 0) {
@@ -299,7 +308,7 @@ class CartController extends Controller {
                         $stmt = $pdo->prepare("DELETE FROM cart_items WHERE product_id = :pid AND user_id = :uid");
                         $stmt->execute([':pid' => $productId, ':uid' => (int)$userId]);
                     } else {
-                        $stmt = $pdo->prepare("DELETE FROM cart_items WHERE product_id = :pid AND session_id = :sid");
+                        $stmt = $pdo->prepare("DELETE FROM cart_items WHERE product_id = :pid AND session_id = :sid AND user_id IS NULL");
                         $stmt->execute([':pid' => $productId, ':sid' => $sessionId]);
                     }
                 }
@@ -343,13 +352,20 @@ class CartController extends Controller {
         $productId = (int)($_POST['product_id'] ?? $_GET['product_id'] ?? 0);
 
         $pdo = Database::getConnection();
+        $userId = $_SESSION['user']['id'] ?? null;
+        $sessionId = session_id();
         $productName = 'Product';
 
         // Resolve product_id from cart_id if needed
         if ($productId <= 0 && $cartId > 0 && $pdo) {
             try {
-                $stmt = $pdo->prepare("SELECT ci.product_id, p.name FROM cart_items ci JOIN products p ON ci.product_id = p.id WHERE ci.id = :id LIMIT 1");
-                $stmt->execute([':id' => $cartId]);
+                if (!empty($userId)) {
+                    $stmt = $pdo->prepare("SELECT ci.product_id, p.name FROM cart_items ci JOIN products p ON ci.product_id = p.id WHERE ci.id = :id AND ci.user_id = :uid LIMIT 1");
+                    $stmt->execute([':id' => $cartId, ':uid' => (int)$userId]);
+                } else {
+                    $stmt = $pdo->prepare("SELECT ci.product_id, p.name FROM cart_items ci JOIN products p ON ci.product_id = p.id WHERE ci.id = :id AND ci.session_id = :sid AND ci.user_id IS NULL LIMIT 1");
+                    $stmt->execute([':id' => $cartId, ':sid' => $sessionId]);
+                }
                 $row = $stmt->fetch();
                 if ($row) {
                     $productId = (int)$row['product_id'];
@@ -388,7 +404,7 @@ class CartController extends Controller {
                         $dStmt = $pdo->prepare("DELETE FROM cart_items WHERE id = :id AND user_id = :uid");
                         $dStmt->execute([':id' => $cartId, ':uid' => (int)$userId]);
                     } else {
-                        $dStmt = $pdo->prepare("DELETE FROM cart_items WHERE id = :id AND session_id = :sid");
+                        $dStmt = $pdo->prepare("DELETE FROM cart_items WHERE id = :id AND session_id = :sid AND user_id IS NULL");
                         $dStmt->execute([':id' => $cartId, ':sid' => $sessionId]);
                     }
                 } catch (PDOException $e) {
@@ -439,7 +455,7 @@ class CartController extends Controller {
                     $stmt = $pdo->prepare("DELETE FROM cart_items WHERE user_id = :uid");
                     $stmt->execute([':uid' => (int)$userId]);
                 } else {
-                    $stmt = $pdo->prepare("DELETE FROM cart_items WHERE session_id = :sid");
+                    $stmt = $pdo->prepare("DELETE FROM cart_items WHERE session_id = :sid AND user_id IS NULL");
                     $stmt->execute([':sid' => $sessionId]);
                 }
             } catch (PDOException $e) {
@@ -612,7 +628,7 @@ class CartController extends Controller {
                     $stmt->execute([':uid' => (int)$userId]);
                     return (int)$stmt->fetchColumn();
                 } else {
-                    $stmt = $pdo->prepare("SELECT COALESCE(SUM(quantity), 0) FROM cart_items WHERE session_id = :sid");
+                    $stmt = $pdo->prepare("SELECT COALESCE(SUM(quantity), 0) FROM cart_items WHERE session_id = :sid AND user_id IS NULL");
                     $stmt->execute([':sid' => $sessionId]);
                     return (int)$stmt->fetchColumn();
                 }
@@ -649,17 +665,25 @@ class CartController extends Controller {
             $guestItems = $stmt->fetchAll();
 
             foreach ($guestItems as $gi) {
+                $pid = (int)$gi['product_id'];
+                $qty = (int)$gi['quantity'];
+
+                $stockStmt = $pdo->prepare("SELECT stock_quantity FROM products WHERE id = :pid LIMIT 1");
+                $stockStmt->execute([':pid' => $pid]);
+                $stock = (int)$stockStmt->fetchColumn();
+                $allowedMax = min(self::MAX_ITEM_QUANTITY, max(1, $stock));
+
                 $upd = $pdo->prepare("
                     INSERT INTO cart_items (user_id, session_id, product_id, quantity)
-                    VALUES (:uid, :sid, :pid, :qty)
-                    ON DUPLICATE KEY UPDATE quantity = LEAST(" . self::MAX_ITEM_QUANTITY . ", quantity + :qty2)
+                    VALUES (:uid, NULL, :pid, :qty)
+                    ON DUPLICATE KEY UPDATE quantity = LEAST(:max_qty, quantity + :qty2)
                 ");
                 $upd->execute([
-                    ':uid'  => $userId,
-                    ':sid'  => $sessionId,
-                    ':pid'  => (int)$gi['product_id'],
-                    ':qty'  => (int)$gi['quantity'],
-                    ':qty2' => (int)$gi['quantity']
+                    ':uid'     => $userId,
+                    ':pid'     => $pid,
+                    ':qty'     => $qty,
+                    ':max_qty' => $allowedMax,
+                    ':qty2'    => $qty
                 ]);
                 $del = $pdo->prepare("DELETE FROM cart_items WHERE id = :id");
                 $del->execute([':id' => (int)$gi['id']]);
@@ -668,17 +692,26 @@ class CartController extends Controller {
             // Also migrate array in $_SESSION['cart'] if any
             if (!empty($_SESSION['cart']) && is_array($_SESSION['cart'])) {
                 foreach ($_SESSION['cart'] as $pid => $qty) {
+                    $pid = (int)$pid;
+                    $qty = (int)$qty;
+                    if ($pid <= 0 || $qty <= 0) continue;
+
+                    $stockStmt = $pdo->prepare("SELECT stock_quantity FROM products WHERE id = :pid LIMIT 1");
+                    $stockStmt->execute([':pid' => $pid]);
+                    $stock = (int)$stockStmt->fetchColumn();
+                    $allowedMax = min(self::MAX_ITEM_QUANTITY, max(1, $stock));
+
                     $ins = $pdo->prepare("
                         INSERT INTO cart_items (user_id, session_id, product_id, quantity)
-                        VALUES (:uid, :sid, :pid, :qty)
-                        ON DUPLICATE KEY UPDATE quantity = LEAST(" . self::MAX_ITEM_QUANTITY . ", quantity + :qty2)
+                        VALUES (:uid, NULL, :pid, :qty)
+                        ON DUPLICATE KEY UPDATE quantity = LEAST(:max_qty, quantity + :qty2)
                     ");
                     $ins->execute([
-                        ':uid'  => $userId,
-                        ':sid'  => $sessionId,
-                        ':pid'  => (int)$pid,
-                        ':qty'  => (int)$qty,
-                        ':qty2' => (int)$qty
+                        ':uid'     => $userId,
+                        ':pid'     => $pid,
+                        ':qty'     => $qty,
+                        ':max_qty' => $allowedMax,
+                        ':qty2'    => $qty
                     ]);
                 }
                 $_SESSION['cart'] = [];
@@ -707,7 +740,7 @@ class CartController extends Controller {
                     $q = $stmt->fetchColumn();
                     return $q !== false ? (int)$q : 0;
                 } else {
-                    $stmt = $pdo->prepare("SELECT quantity FROM cart_items WHERE session_id = :sid AND product_id = :pid LIMIT 1");
+                    $stmt = $pdo->prepare("SELECT quantity FROM cart_items WHERE session_id = :sid AND user_id IS NULL AND product_id = :pid LIMIT 1");
                     $stmt->execute([':sid' => $sessionId, ':pid' => $productId]);
                     $q = $stmt->fetchColumn();
                     return $q !== false ? (int)$q : 0;
@@ -756,7 +789,7 @@ class CartController extends Controller {
                         FROM cart_items ci
                         JOIN products p ON ci.product_id = p.id
                         LEFT JOIN categories c ON p.category_id = c.id
-                        WHERE ci.session_id = :sid AND p.is_active = 1
+                        WHERE ci.session_id = :sid AND ci.user_id IS NULL AND p.is_active = 1
                         ORDER BY ci.id DESC
                     ");
                     $stmt->execute([':sid' => $sessionId]);

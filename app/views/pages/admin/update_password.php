@@ -14,12 +14,6 @@
     </div>
   <?php endif; ?>
 
-  <?php if (!empty($successMessage)): ?>
-    <div class="alert alert-success d-flex align-items-center gap-2 py-2 px-3 mb-4 rounded-3 shadow-sm" role="alert">
-      <i class="fas fa-circle-check flex-shrink-0 text-success"></i>
-      <div><?= $successMessage ?></div>
-    </div>
-  <?php endif; ?>
 
   <form action="<?= url('admin-update-password') ?>" method="POST" id="passwordForm">
     <div class="mm-field">

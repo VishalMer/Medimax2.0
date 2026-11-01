@@ -1,6 +1,6 @@
 <?php
 $pageTitle   = $pageTitle   ?? 'Admin Panel';
-$adminUser   = $adminUser   ?? ['id' => 1, 'name' => 'Vishal Mer', 'email' => 'vishal@medimax.com', 'role' => 'owner', 'image' => 'Rahul.jpg'];
+$adminUser   = $adminUser   ?? ['id' => 1, 'name' => 'Vishal Mer', 'email' => 'vishal@medimax.com', 'role' => 'owner', 'image' => 'default_pfp.jpg'];
 $pageContent = $pageContent ?? '';
 $currentPage = $_GET['page'] ?? 'admin';
 
@@ -63,13 +63,36 @@ $sectionLabel = $sections[$currentPage] ?? 'Console';
           <a class="btn-mm btn-mm-light btn-mm-sm" href="<?= url() ?>" title="Open the storefront">
             <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i><span class="d-none d-sm-inline">View shop</span>
           </a>
-          <span class="avatar" data-avatar-tint="<?= htmlspecialchars($adminUser['name'] ?? 'Admin') ?>" aria-hidden="true">
-            <?= strtoupper(substr((string) ($adminUser['name'] ?? 'A'), 0, 1)) ?>
+          <span class="avatar" aria-hidden="true">
+            <img src="<?= profileImage($adminUser['image'] ?? 'default_pfp.jpg') ?>" alt="<?= htmlspecialchars($adminUser['name'] ?? 'Admin') ?>">
           </span>
         </div>
       </header>
 
       <main class="admin-body" id="adminMain">
+        <?php 
+        $adminToast = $_SESSION['flash_toast'] ?? null;
+        unset($_SESSION['flash_toast']);
+        if (!$adminToast && !empty($_SESSION['flash_success'])) {
+            $adminToast = [
+                'message' => $_SESSION['flash_success'],
+                'icon'    => 'fa-circle-check'
+            ];
+        }
+        if (!$adminToast && !empty($_SESSION['flash_error'])) {
+            $adminToast = [
+                'message' => $_SESSION['flash_error'],
+                'icon'    => 'fa-circle-exclamation'
+            ];
+        }
+        unset($_SESSION['flash_success'], $_SESSION['flash_error']);
+        ?>
+        <?php if ($adminToast): ?>
+          <div id="mmSessionToast" 
+               data-msg="<?= htmlspecialchars($adminToast['message'] ?? '') ?>" 
+               data-icon="<?= htmlspecialchars($adminToast['icon'] ?? 'fa-circle-check') ?>" 
+               style="display:none;"></div>
+        <?php endif; ?>
         <?= $pageContent ?>
       </main>
     </div>

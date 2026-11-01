@@ -6,7 +6,6 @@ $uUsername = $user['username'] ?? '';
 $uEmail    = $user['email'] ?? '';
 $uRole     = $user['role'] ?? 'customer';
 $displayName = !empty($uName) ? $uName : $uUsername;
-$avatarInitial = strtoupper(substr($displayName ?: 'U', 0, 1));
 $returnTo = $returnTo ?? url('profile');
 ?>
 
@@ -26,20 +25,14 @@ $returnTo = $returnTo ?? url('profile');
       </div>
     <?php endif; ?>
 
-    <?php if (!empty($successMessage)): ?>
-      <div class="alert alert-success d-flex align-items-center gap-2 py-2 px-3 mb-4 rounded-3 shadow-sm" role="alert">
-        <i class="fas fa-circle-check flex-shrink-0 text-success"></i>
-        <div><?= $successMessage ?></div>
-      </div>
-    <?php endif; ?>
 
     <div class="row g-4">
       
       <!-- Left Column: User Summary & Password Guide -->
       <div class="col-lg-4">
         <div class="mm-card p-4 text-center">
-          <div class="avatar mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem; border-radius: 50%;" data-avatar-tint="<?= htmlspecialchars($displayName) ?>">
-            <?= htmlspecialchars($avatarInitial) ?>
+          <div class="avatar avatar--profile mx-auto mb-3">
+            <img src="<?= profileImage($user['image']) ?>" alt="<?= htmlspecialchars($displayName) ?>">
           </div>
           <h2 class="h5 mb-1 text-dark"><?= htmlspecialchars($displayName) ?></h2>
           <p class="text-muted num mb-2" style="font-size: .88rem; color: var(--primary-teal, #26547C);">@<?= htmlspecialchars($uUsername) ?></p>

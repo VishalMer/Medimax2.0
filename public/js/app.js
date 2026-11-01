@@ -885,6 +885,8 @@
       iconClass += ' is-cart';
     } else if (icon.indexOf('exclamation') !== -1 || icon.indexOf('ban') !== -1) {
       iconClass += ' is-danger';
+    } else if (icon.indexOf('check') !== -1 || icon.indexOf('user') !== -1 || icon.indexOf('key') !== -1 || icon.indexOf('lock') !== -1 || icon.indexOf('shield') !== -1) {
+      iconClass += ' is-success';
     }
 
     toastEl.innerHTML =
@@ -921,4 +923,24 @@
       dismiss();
     });
   };
+
+  // Auto-detect and trigger session toast if element #mmSessionToast exists
+  function checkSessionToast() {
+    var sessionToastEl = document.getElementById('mmSessionToast');
+    if (sessionToastEl && window.MediMax && window.MediMax.toast) {
+      var sMsg = sessionToastEl.getAttribute('data-msg');
+      var sIcon = sessionToastEl.getAttribute('data-icon') || 'fa-circle-check';
+      if (sMsg) {
+        setTimeout(function () {
+          window.MediMax.toast(sMsg, sIcon);
+        }, 150);
+      }
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', checkSessionToast);
+  } else {
+    checkSessionToast();
+  }
 })();

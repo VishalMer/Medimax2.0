@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `email` varchar(191) NOT NULL COMMENT 'Unique login email address',
   `password` varchar(255) NOT NULL COMMENT 'Bcrypt or Argon2 hashed password',
   `role` enum('customer','admin','owner') NOT NULL DEFAULT 'customer' COMMENT 'Role permissions for storefront and console',
-  `image` varchar(255) DEFAULT NULL COMMENT 'Profile photo filename in public/images/',
+  `image` varchar(255) NOT NULL DEFAULT 'default_pfp.jpg' COMMENT 'Profile photo filename in public/images/profiles/',
   `phone` varchar(20) DEFAULT NULL COMMENT 'Optional contact phone number',
   `status` enum('active','inactive','suspended') NOT NULL DEFAULT 'active',
   `is_active` tinyint(1) NOT NULL DEFAULT 1,

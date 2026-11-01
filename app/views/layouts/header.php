@@ -10,7 +10,6 @@ $navUser           = $_SESSION['user'] ?? null;
 $hasName           = !empty($navUser['name']);
 $displayHeaderName = $hasName ? $navUser['name'] : (!empty($navUser['username']) ? $navUser['username'] : 'User');
 $navUserFirst      = $navUser ? strtok($displayHeaderName, ' ') : 'Sign in';
-$avatarLetter      = strtoupper(substr($displayHeaderName, 0, 1));
 ?>
 <script>window.BASE_URL = <?= json_encode(BASE_URL) ?>;</script>
 <!DOCTYPE html>
@@ -81,10 +80,10 @@ $avatarLetter      = strtoupper(substr($displayHeaderName, 0, 1));
           </a>
           <button class="account-btn" id="profileOptionsBtn" type="button" aria-haspopup="true" aria-expanded="false">
             <?php if ($isLoggedIn): ?>
-              <span class="avatar" data-avatar-tint="<?= htmlspecialchars($displayHeaderName) ?>"><?= htmlspecialchars($avatarLetter) ?></span>
+              <span class="avatar"><img src="<?= profileImage($navUser['image'] ?? 'default_pfp.jpg') ?>" alt="<?= htmlspecialchars($displayHeaderName) ?>"></span>
               <span id="userName"><?= htmlspecialchars($navUserFirst) ?></span>
             <?php else: ?>
-              <span class="avatar"><i class="far fa-user" aria-hidden="true"></i></span>
+              <span class="avatar"><img src="<?= profileImage('default_pfp.jpg') ?>" alt="Sign in"></span>
               <span id="userName">Sign in</span>
             <?php endif; ?>
             <i class="fas fa-chevron-down" style="font-size:.62rem;opacity:.5" aria-hidden="true"></i>
@@ -144,24 +143,26 @@ $avatarLetter      = strtoupper(substr($displayHeaderName, 0, 1));
 
 <main id="main">
 
-<?php if (!empty($_SESSION['flash_success'])): ?>
-  <div class="mm-container pt-3">
-    <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 py-2 px-3 rounded-3 shadow-sm mb-3" role="alert" style="font-size: .9rem;">
-      <i class="fas fa-circle-check flex-shrink-0 text-success"></i>
-      <div class="flex-grow-1"><?= htmlspecialchars($_SESSION['flash_success']) ?></div>
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-  </div>
-  <?php unset($_SESSION['flash_success']); ?>
-<?php endif; ?>
-
-<?php if (!empty($_SESSION['flash_error'])): ?>
-  <div class="mm-container pt-3">
-    <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 py-2 px-3 rounded-3 shadow-sm mb-3" role="alert" style="font-size: .9rem;">
-      <i class="fas fa-circle-exclamation flex-shrink-0 text-danger"></i>
-      <div class="flex-grow-1"><?= htmlspecialchars($_SESSION['flash_error']) ?></div>
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-  </div>
-  <?php unset($_SESSION['flash_error']); ?>
+<?php 
+$sessionToast = $_SESSION['flash_toast'] ?? null;
+unset($_SESSION['flash_toast']);
+if (!$sessionToast && !empty($_SESSION['flash_success'])) {
+    $sessionToast = [
+        'message' => $_SESSION['flash_success'],
+        'icon'    => 'fa-circle-check'
+    ];
+}
+if (!$sessionToast && !empty($_SESSION['flash_error'])) {
+    $sessionToast = [
+        'message' => $_SESSION['flash_error'],
+        'icon'    => 'fa-circle-exclamation'
+    ];
+}
+unset($_SESSION['flash_success'], $_SESSION['flash_error']);
+?>
+<?php if ($sessionToast): ?>
+  <div id="mmSessionToast" 
+       data-msg="<?= htmlspecialchars($sessionToast['message'] ?? '') ?>" 
+       data-icon="<?= htmlspecialchars($sessionToast['icon'] ?? 'fa-circle-check') ?>" 
+       style="display:none;"></div>
 <?php endif; ?>

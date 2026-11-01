@@ -36,15 +36,8 @@
       <div class="col-md-5">
         <div class="h-100 p-4 text-center d-flex flex-column align-items-center justify-content-center"
              style="background:var(--mist);border-radius:var(--r-md);border:1px solid var(--line)">
-          <?php if (!empty($adminUser['image'])): ?>
-            <img src="<?= asset('images/' . $adminUser['image']) ?>" alt="Your profile picture"
-                 style="width:132px;height:132px;object-fit:cover;border-radius:50%;border:3px solid var(--paper);box-shadow:var(--sh-2)"
-                 data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
-          <?php else: ?>
-            <span class="d-grid" style="place-items:center;width:132px;height:132px;border-radius:50%;background:var(--navy);color:#fff;font-family:var(--font-display);font-size:2.6rem;font-weight:600;border:3px solid var(--paper);box-shadow:var(--sh-2)">
-              <?= strtoupper(substr((string) ($adminUser['name'] ?? 'A'), 0, 1)) ?>
-            </span>
-          <?php endif; ?>
+          <img src="<?= profileImage($adminUser['image']) ?>" alt="Your profile picture"
+               style="width:132px;height:132px;object-fit:cover;border-radius:50%;border:3px solid var(--paper);box-shadow:var(--sh-2)">
 
           <div class="w-100 mt-4 text-start">
             <label class="mm-label" for="image">Change picture</label>

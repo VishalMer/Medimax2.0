@@ -54,10 +54,7 @@ function productImage($filename) {
 }
 
 function profileImage($filename) {
-    if (empty($filename)) {
-        return asset('images/profiles/Rahul.jpg');
-    }
-    return asset('images/profiles/' . ltrim($filename, '/'));
+    return asset('images/profiles/' . ltrim((string)$filename, '/'));
 }
 
 function brandAsset($filename) {

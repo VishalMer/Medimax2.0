@@ -11,15 +11,8 @@
     <input type="hidden" name="id" value="<?= htmlspecialchars($user['id'] ?? '') ?>">
 
     <div class="d-flex align-items-center gap-3 mb-4 pb-4" style="border-bottom:1px dashed var(--line-strong)">
-      <?php if (!empty($user['image'])): ?>
-        <img src="<?= asset('images/' . $user['image']) ?>" alt="" width="52" height="52"
-             style="border-radius:50%;object-fit:cover;border:1px solid var(--line)"
-             data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
-      <?php else: ?>
-        <span class="avatar" data-avatar-tint="<?= htmlspecialchars($user['name'] ?? '') ?>" aria-hidden="true">
-          <?= strtoupper(substr((string) ($user['name'] ?? 'U'), 0, 1)) ?>
-        </span>
-      <?php endif; ?>
+      <img src="<?= profileImage($user['image']) ?>" alt="<?= htmlspecialchars($user['name'] ?? '') ?>" width="52" height="52"
+           style="border-radius:50%;object-fit:cover;border:1px solid var(--line)">
       <div>
         <strong style="display:block;font-size:.95rem"><?= htmlspecialchars($user['name'] ?? '') ?></strong>
         <span class="num" style="font-size:.76rem;color:var(--ink-40)"><?= htmlspecialchars($user['email'] ?? '') ?></span>

@@ -12,10 +12,11 @@ $grandTotal = (float)($grandTotal ?? 0.0);
 $appliedCoupon = $appliedCoupon ?? ($_SESSION['applied_coupon'] ?? null);
 ?>
 
-<div class="page bg-light pt-4 pb-5">
+<div class="page bg-light pb-5">
   <div class="mm-container">
     
     <div class="page-head mb-4">
+      <p class="eyebrow mb-1">Final Step</p>
       <h1 class="title-page">Secure Checkout</h1>
       <p class="lede mb-0">Complete your delivery and payment details below.</p>
     </div>
@@ -28,32 +29,42 @@ $appliedCoupon = $appliedCoupon ?? ($_SESSION['applied_coupon'] ?? null);
           
           <!-- Delivery Information -->
           <div class="mm-card mb-4 shadow-sm" style="border: none; border-radius: 12px; overflow: hidden;">
-            <div class="p-3 text-white d-flex align-items-center gap-2" style="background-color: var(--primary-dark, #26547C);">
-              <i class="fas fa-truck-fast"></i>
-              <h4 class="mb-0 fs-5 fw-bold">1. Delivery Information</h4>
+            <div class="p-3 text-white d-flex align-items-center gap-2" style="background-color: var(--navy, #26547C);">
+              <i class="fas fa-truck-fast text-white"></i>
+              <h4 class="mb-0 fs-5 fw-bold text-white" style="color: #ffffff !important;">1. Delivery Information</h4>
             </div>
             
             <div class="p-4">
-              <!-- Saved Addresses (Mock) -->
+              <!-- Saved Addresses -->
               <div class="mb-4">
                 <p class="eyebrow mb-2">Saved Addresses</p>
-                <div class="d-flex flex-wrap gap-2">
-                  <button type="button" class="btn btn-outline-secondary text-start p-2 saved-addr-btn" 
+                <div class="d-flex flex-wrap gap-3">
+                  <button type="button" class="saved-addr-card saved-addr-btn" 
                           data-name="Vishal Patel" data-mobile="9876543210" data-email="vishal@example.com" 
                           data-address="123 Example Street" data-apt="Apt 4B" data-area="Kuvadva Road" 
-                          data-city="Rajkot" data-state="Gujarat" data-pincode="360001" style="font-size: 0.85rem; width: 220px;">
-                    <div class="fw-bold text-dark"><i class="fas fa-home me-1"></i> Home</div>
-                    Vishal Patel<br>Rajkot, Gujarat - 360001
+                          data-city="Rajkot" data-state="Gujarat" data-pincode="360001">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <span class="saved-addr-badge"><i class="fas fa-home"></i> Home</span>
+                      <i class="fas fa-circle-check addr-check-icon" style="display: none; font-size: 0.95rem; color: #2C7A80;"></i>
+                    </div>
+                    <div class="fw-bold saved-addr-name" style="font-size: 0.88rem; color: #1E293B;">Vishal Patel</div>
+                    <div class="text-muted text-truncate" style="font-size: 0.78rem;">Rajkot, Gujarat - 360001</div>
                   </button>
-                  <button type="button" class="btn btn-outline-secondary text-start p-2 saved-addr-btn" 
+
+                  <button type="button" class="saved-addr-card saved-addr-btn" 
                           data-name="Demo User" data-mobile="9998887776" data-email="demo@example.com" 
                           data-address="456 Office Tower" data-apt="Floor 10" data-area="Business Hub" 
-                          data-city="Ahmedabad" data-state="Gujarat" data-pincode="380001" style="font-size: 0.85rem; width: 220px;">
-                    <div class="fw-bold text-dark"><i class="fas fa-building me-1"></i> Work</div>
-                    Demo User<br>Ahmedabad, Gujarat - 380001
+                          data-city="Ahmedabad" data-state="Gujarat" data-pincode="380001">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <span class="saved-addr-badge"><i class="fas fa-building"></i> Work</span>
+                      <i class="fas fa-circle-check addr-check-icon" style="display: none; font-size: 0.95rem; color: #2C7A80;"></i>
+                    </div>
+                    <div class="fw-bold saved-addr-name" style="font-size: 0.88rem; color: #1E293B;">Demo User</div>
+                    <div class="text-muted text-truncate" style="font-size: 0.78rem;">Ahmedabad, Gujarat - 380001</div>
                   </button>
-                  <button type="button" class="btn btn-outline-primary p-2 d-flex align-items-center justify-content-center" id="clearAddrBtn" style="width: 220px; font-size: 0.85rem; border-style: dashed;">
-                    <i class="fas fa-plus me-1"></i> Add New Address
+
+                  <button type="button" class="saved-addr-card-add" id="clearAddrBtn">
+                    <i class="fas fa-plus-circle text-primary fs-6"></i> Add New Address
                   </button>
                 </div>
               </div>
@@ -114,9 +125,9 @@ $appliedCoupon = $appliedCoupon ?? ($_SESSION['applied_coupon'] ?? null);
 
           <!-- Payment Method -->
           <div class="mm-card mb-4 shadow-sm" style="border: none; border-radius: 12px; overflow: hidden;">
-            <div class="p-3 text-white d-flex align-items-center gap-2" style="background-color: var(--primary-teal, #70ABAF);">
-              <i class="fas fa-credit-card"></i>
-              <h4 class="mb-0 fs-5 fw-bold">2. Payment Method</h4>
+            <div class="p-3 text-white d-flex align-items-center gap-2" style="background-color: var(--navy, #26547C);">
+              <i class="fas fa-credit-card text-white"></i>
+              <h4 class="mb-0 fs-5 fw-bold text-white" style="color: #ffffff !important;">2. Payment Method</h4>
             </div>
             
             <div class="p-0">
@@ -254,8 +265,9 @@ $appliedCoupon = $appliedCoupon ?? ($_SESSION['applied_coupon'] ?? null);
         <!-- Right Column: Order Summary -->
         <div class="col-lg-5 col-xl-4">
           <div class="mm-card sticky-top shadow-sm" style="top: 100px; border-radius: 12px; overflow: hidden; border: none;">
-            <div class="p-3 text-white" style="background-color: var(--primary-dark, #26547C);">
-              <h4 class="mb-0 fs-5 fw-bold">Order Summary</h4>
+            <div class="p-3 text-white d-flex align-items-center gap-2" style="background-color: var(--navy, #26547C);">
+              <i class="fas fa-receipt text-white"></i>
+              <h4 class="mb-0 fs-5 fw-bold text-white" style="color: #ffffff !important;">Order Summary</h4>
             </div>
             
             <div class="p-3 bg-light border-bottom" style="max-height: 250px; overflow-y: auto;">
@@ -310,8 +322,8 @@ $appliedCoupon = $appliedCoupon ?? ($_SESSION['applied_coupon'] ?? null);
                 <span class="fs-4 fw-bold" id="chkTotal" style="color: var(--accent-orange, rgb(230, 120, 52))">&#8377;<?= number_format($grandTotal, 2) ?></span>
               </div>
 
-              <button type="submit" form="checkoutForm" id="placeOrderBtn" class="btn btn-mm-amber btn-lg w-100 fw-bold d-flex justify-content-center align-items-center shadow">
-                <i class="fas fa-lock me-2"></i><span id="placeOrderBtnText">Place Order &amp; Pay &#8377;<?= number_format($grandTotal, 2) ?></span>
+              <button type="submit" form="checkoutForm" id="placeOrderBtn" class="btn-mm btn-mm-amber btn-mm-block btn-mm-lg shadow" style="background-color: var(--amber, #E67834); color: #ffffff !important; border: none; border-radius: var(--r-pill, 999px);">
+                <i class="fas fa-lock me-2 text-white" aria-hidden="true"></i><span id="placeOrderBtnText" class="text-white fw-bold">Place Order &amp; Pay &#8377;<?= number_format($grandTotal, 2) ?></span>
               </button>
             </div>
           </div>
@@ -344,9 +356,15 @@ window.selectPayment = function (method) {
 document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.saved-addr-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      document.querySelectorAll('.saved-addr-btn').forEach(function(b){ b.classList.remove('active', 'btn-primary'); b.classList.add('btn-outline-secondary'); });
-      btn.classList.add('active', 'btn-primary');
-      btn.classList.remove('btn-outline-secondary');
+      document.querySelectorAll('.saved-addr-btn').forEach(function(b){
+        b.classList.remove('is-selected');
+        var chk = b.querySelector('.addr-check-icon');
+        if (chk) chk.style.display = 'none';
+      });
+      btn.classList.add('is-selected');
+      var thisChk = btn.querySelector('.addr-check-icon');
+      if (thisChk) thisChk.style.display = 'inline-block';
+
       if (document.getElementById('delName')) document.getElementById('delName').value = btn.dataset.name || '';
       if (document.getElementById('delMobile')) document.getElementById('delMobile').value = btn.dataset.mobile || '';
       if (document.getElementById('delEmail')) document.getElementById('delEmail').value = btn.dataset.email || '';
@@ -361,9 +379,51 @@ document.addEventListener('DOMContentLoaded', function () {
   var clearBtn = document.getElementById('clearAddrBtn');
   if (clearBtn) {
     clearBtn.addEventListener('click', function () {
-      document.querySelectorAll('.saved-addr-btn').forEach(function(b){ b.classList.remove('active', 'btn-primary'); b.classList.add('btn-outline-secondary'); });
+      document.querySelectorAll('.saved-addr-btn').forEach(function(b){
+        b.classList.remove('is-selected');
+        var chk = b.querySelector('.addr-check-icon');
+        if (chk) chk.style.display = 'none';
+      });
       var form = document.getElementById('checkoutForm');
       if (form) form.reset();
+      var firstInput = document.getElementById('delName');
+      if (firstInput) firstInput.focus();
+    });
+  }
+
+  // Radio button click synchronization
+  document.querySelectorAll('input[name="paymentMethodRadio"]').forEach(function (radio) {
+    radio.addEventListener('change', function () {
+      if (this.checked) {
+        var hidden = document.getElementById('selectedPaymentMethod');
+        if (hidden) hidden.value = this.value;
+      }
+    });
+  });
+
+  // Validation feedback and loading state on place order button
+  var chkForm = document.getElementById('checkoutForm');
+  var orderBtn = document.getElementById('placeOrderBtn');
+  if (chkForm && orderBtn) {
+    chkForm.addEventListener('submit', function (e) {
+      if (chkForm.checkValidity()) {
+        orderBtn.disabled = true;
+        var btnText = document.getElementById('placeOrderBtnText');
+        if (btnText) {
+          btnText.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing Order...';
+        }
+      }
+    });
+
+    orderBtn.addEventListener('click', function () {
+      if (!chkForm.checkValidity()) {
+        chkForm.reportValidity();
+        var invalidEl = chkForm.querySelector(':invalid');
+        if (invalidEl) {
+          invalidEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          invalidEl.focus();
+        }
+      }
     });
   }
 });

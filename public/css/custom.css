@@ -398,16 +398,47 @@ h4, h5, h6 { font-family: var(--font-body); font-weight: 700; letter-spacing: -.
 }
 .account-btn:hover { border-color: var(--navy); box-shadow: var(--sh-2); }
 .avatar {
-  display: grid; place-items: center;
-  width: 32px; height: 32px;
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: var(--navy);
   color: #fff;
   font-family: var(--font-mono);
-  font-size: .8rem; font-weight: 600;
+  font-size: .8rem;
+  font-weight: 600;
   flex: none;
+  overflow: hidden;
+  position: relative;
+  /* Hardware-accelerated smooth antialiased clipping */
+  -webkit-mask-image: -webkit-radial-gradient(circle, white 100%, black 100%);
+  mask-image: radial-gradient(circle, white 100%, black 100%);
+  transform: translateZ(0);
 }
-.avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.avatar:has(img),
+.avatar.has-img {
+  background: transparent;
+}
+.avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.account-btn .avatar {
+  background: transparent;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+.avatar--profile {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: transparent;
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 3px 8px rgba(0, 0, 0, 0.06);
+}
 .avatar--lg { width: 60px; height: 60px; font-size: 1.4rem; }
 .avatar--xl { width: 132px; height: 132px; font-size: 2.6rem; }
 
@@ -1138,6 +1169,10 @@ h4, h5, h6 { font-family: var(--font-body); font-weight: 700; letter-spacing: -.
   background: rgba(220, 38, 38, 0.2);
   color: #FCA5A5;
 }
+.toast-msg__icon.is-success {
+  background: rgba(34, 197, 94, 0.22);
+  color: #4ADE80;
+}
 .toast-msg__text {
   flex: 1 1 auto;
   color: #ffffff;
@@ -1297,7 +1332,10 @@ h4, h5, h6 { font-family: var(--font-body); font-weight: 700; letter-spacing: -.
   border: 1px solid rgba(255, 255, 255, .09);
   border-radius: var(--r-md);
 }
-.admin-rail__user .avatar { background: var(--amber); }
+.admin-rail__user .avatar {
+  background: transparent;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
 .admin-rail__user strong { display: block; font-size: .88rem; font-weight: 700; color: #fff; line-height: 1.3; }
 .admin-rail__user span { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: var(--teal); }
 
@@ -1554,5 +1592,97 @@ tr.is-row-inactive {
 }
 tr.is-row-inactive:hover {
   opacity: 0.95;
+}
+
+/* --- Checkout Saved Addresses ---------------------------------------- */
+.saved-addr-card {
+  position: relative;
+  width: 220px;
+  min-height: 84px;
+  background: #ffffff;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.84rem;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.saved-addr-card:hover {
+  background: #F0F9FA !important;
+  border-color: #2C7A80 !important;
+  color: #0F172A !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(44, 122, 128, 0.16) !important;
+}
+
+.saved-addr-card:hover .saved-addr-name {
+  color: #215F64 !important;
+}
+
+.saved-addr-card:hover .saved-addr-badge {
+  background: rgba(44, 122, 128, 0.15) !important;
+  color: #215F64 !important;
+}
+
+.saved-addr-card.is-selected {
+  background: #EBF7F8 !important;
+  border-color: #2C7A80 !important;
+  border-width: 2px !important;
+  box-shadow: 0 4px 14px rgba(44, 122, 128, 0.2) !important;
+  color: #0F172A !important;
+}
+
+.saved-addr-card.is-selected .saved-addr-name {
+  color: #26547C !important;
+}
+
+.saved-addr-card.is-selected .saved-addr-badge {
+  background: #2C7A80 !important;
+  color: #ffffff !important;
+}
+
+.saved-addr-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 700;
+  font-size: 0.78rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #F1F5F9;
+  color: #334155;
+  transition: all 0.2s ease;
+}
+
+.saved-addr-card-add {
+  width: 220px;
+  min-height: 84px;
+  background: #FAFAFA;
+  border: 2px dashed #94A3B8;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #26547C;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+
+.saved-addr-card-add:hover {
+  background: #F0F9FA !important;
+  border-color: #2C7A80 !important;
+  color: #215F64 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(44, 122, 128, 0.12) !important;
 }
 

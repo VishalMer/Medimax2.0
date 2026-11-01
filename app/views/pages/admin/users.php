@@ -65,14 +65,8 @@ $roleTone = static function (string $role): string {
               <td><span class="mm-table__id">U<?= str_pad((string) $uId, 3, '0', STR_PAD_LEFT) ?></span></td>
               <td>
                 <div class="cell-product">
-                  <?php if (!empty($uImage)): ?>
-                    <img class="mm-table__thumb" style="border-radius:50%" src="<?= asset('images/' . $uImage) ?>"
-                         alt="" loading="lazy" data-fallback="<?= asset('images/assets/MediMax_Logo.png') ?>">
-                  <?php else: ?>
-                    <span class="avatar" data-avatar-tint="<?= htmlspecialchars($uName) ?>" aria-hidden="true">
-                      <?= strtoupper(substr((string) $uName, 0, 1)) ?>
-                    </span>
-                  <?php endif; ?>
+                  <img class="mm-table__thumb" style="border-radius:50%;object-fit:cover;" src="<?= profileImage($uImage) ?>"
+                       alt="" loading="lazy">
                   <div>
                     <strong><?= htmlspecialchars($uName) ?></strong>
                     <?php if (!empty($uUsername)): ?>

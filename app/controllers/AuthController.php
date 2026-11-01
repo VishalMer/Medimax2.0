@@ -59,13 +59,16 @@ class AuthController extends Controller {
                                 'name'     => $user['name'] ?? null,
                                 'email'    => $user['email'],
                                 'role'     => $user['role'],
-                                'image'    => $user['image'] ?: 'Rahul.jpg',
+                                'image'    => $user['image'],
                                 'phone'    => $user['phone'] ?? ''
                             ];
 
                             // Migrate guest wishlist and cart items to database account
                             WishlistController::syncSessionWishlistToDb((int)$user['id']);
                             CartController::syncSessionCartToDb((int)$user['id']);
+
+                            // Regenerate session ID for security and fresh authenticated session
+                            session_regenerate_id(true);
 
                             $greetName = !empty($user['name']) ? $user['name'] : ($user['username'] ?? 'User');
                             $_SESSION['flash_success'] = 'Welcome back, ' . htmlspecialchars($greetName) . '!';
@@ -172,7 +175,7 @@ class AuthController extends Controller {
                                 // Insert new user with unique username; name is NULL by default until profile is edited
                                 $insertStmt = $pdo->prepare(
                                     "INSERT INTO users (username, name, email, password, role, image, phone, status, is_active, created_at, updated_at) 
-                                     VALUES (:username, NULL, :email, :password, 'customer', NULL, NULL, 'active', 1, NOW(), NOW())"
+                                     VALUES (:username, NULL, :email, :password, 'customer', 'default_pfp.jpg', NULL, 'active', 1, NOW(), NOW())"
                                 );
                                 $insertStmt->execute([
                                     ':username' => $username,
@@ -189,9 +192,14 @@ class AuthController extends Controller {
                                     'name'     => null,
                                     'email'    => $email,
                                     'role'     => 'customer',
-                                    'image'    => 'Rahul.jpg',
+                                    'image'    => 'default_pfp.jpg',
                                     'phone'    => ''
                                 ];
+
+                                // Migrate guest wishlist and cart items to new database account
+                                WishlistController::syncSessionWishlistToDb($newUserId);
+                                CartController::syncSessionCartToDb($newUserId);
+                                session_regenerate_id(true);
 
                                 $_SESSION['flash_success'] = 'Welcome to MediMax, @' . htmlspecialchars($username) . '! Your account has been created. You can set your display name in your profile.';
 
@@ -296,7 +304,12 @@ class AuthController extends Controller {
                         $user['name'] = !empty($name) ? $name : null;
                         $user['phone'] = !empty($phone) ? $phone : null;
 
-                        $_SESSION['flash_success'] = 'Your profile details have been saved successfully! Your display name is now updated.';
+                        $_SESSION['flash_toast'] = [
+                            'message' => 'Profile updated successfully!',
+                            'icon'    => 'fa-circle-check',
+                            'type'    => 'success'
+                        ];
+                        $_SESSION['flash_success'] = 'Profile updated successfully!';
                         header('Location: ' . $returnTo);
                         exit;
                     } catch (PDOException $e) {
@@ -461,7 +474,12 @@ class AuthController extends Controller {
                             ':id'       => $userId
                         ]);
 
-                        $_SESSION['flash_success'] = 'Your password has been changed successfully! Please use your new password next time you sign in.';
+                        $_SESSION['flash_toast'] = [
+                            'message' => 'Password updated successfully!',
+                            'icon'    => 'fa-key',
+                            'type'    => 'success'
+                        ];
+                        $_SESSION['flash_success'] = 'Password updated successfully!';
                         header('Location: ' . $returnTo);
                         exit;
                     } catch (PDOException $e) {
@@ -525,8 +543,32 @@ class AuthController extends Controller {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        unset($_SESSION['user']);
+
+        // Wipe all session variables (user, cart, wishlist, coupons)
+        $_SESSION = [];
+
+        // Expire the session cookie in the client browser
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
+        }
+
         session_destroy();
+
+        // Initialize a clean, independent guest session
+        session_start();
+        session_regenerate_id(true);
+
+        $_SESSION['flash_toast'] = [
+            'message' => 'You have been signed out successfully.',
+            'icon'    => 'fa-right-from-bracket',
+            'type'    => 'success'
+        ];
+        $_SESSION['flash_success'] = 'You have been signed out successfully.';
+
         header('Location: ' . url());
         exit;
     }

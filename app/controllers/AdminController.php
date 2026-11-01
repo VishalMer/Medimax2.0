@@ -38,7 +38,7 @@ class AdminController extends Controller {
                         'name'  => $dbUser['name'],
                         'email' => $dbUser['email'],
                         'role'  => $dbUser['role'],
-                        'image' => $dbUser['image'] ?: 'Rahul.jpg'
+                        'image' => $dbUser['image']
                     ];
                     $_SESSION['user'] = array_merge($_SESSION['user'], $this->adminUser);
                 } else {
@@ -212,7 +212,7 @@ class AdminController extends Controller {
             'name' => 'Rahul Sharma',
             'email' => 'rahul@gmail.com',
             'role' => 'customer',
-            'image' => ''
+            'image' => 'default_pfp.jpg'
         ];
         $this->view('pages/admin/edit_user', [
             'user' => $user,
@@ -336,6 +336,11 @@ class AdminController extends Controller {
                             ':password' => $hashed,
                             ':id'       => $this->adminUser['id']
                         ]);
+                        $_SESSION['flash_toast'] = [
+                            'message' => 'Password updated successfully!',
+                            'icon'    => 'fa-key',
+                            'type'    => 'success'
+                        ];
                         $_SESSION['flash_success'] = 'Administrator password has been successfully updated.';
                         header('Location: ' . url('admin-update-password'));
                         exit;

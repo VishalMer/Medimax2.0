@@ -1,7 +1,6 @@
 <?php
 $currentPage = $_GET['page'] ?? 'admin';
-$adminUser   = $adminUser ?? ['name' => 'Admin User', 'role' => 'Administrator'];
-$firstLetter = strtoupper(substr((string) $adminUser['name'], 0, 1));
+$adminUser   = $adminUser ?? ['name' => 'Admin User', 'role' => 'Administrator', 'image' => 'default_pfp.jpg'];
 
 // Grouped so the rail reads as a workspace, not a flat list of links.
 $groups = [
@@ -33,7 +32,9 @@ $groups = [
 </a>
 
 <div class="admin-rail__user">
-  <span class="avatar" aria-hidden="true"><?= $firstLetter ?></span>
+  <span class="avatar" aria-hidden="true">
+    <img src="<?= profileImage($adminUser['image'] ?? 'default_pfp.jpg') ?>" alt="<?= htmlspecialchars($adminUser['name'] ?? 'Admin') ?>">
+  </span>
   <div>
     <strong><?= htmlspecialchars($adminUser['name']) ?></strong>
     <span><?= htmlspecialchars($adminUser['role'] ?? 'staff') ?></span>

@@ -10,22 +10,6 @@ foreach ($items as $it) { $saved += (float) ($it['price'] ?? 0); }
 <div class="page">
   <div class="mm-container">
 
-    <!-- Flash message alerts -->
-    <?php if (!empty($_SESSION['flash_success'])): ?>
-      <div class="alert alert-success d-flex align-items-center gap-2 mb-4" role="alert" style="border-radius: var(--r-md); background: #E4F3EC; border-color: rgba(31,122,85,.3); color: #1F7A55;">
-        <i class="fas fa-circle-check" aria-hidden="true"></i>
-        <div><?= htmlspecialchars($_SESSION['flash_success']) ?></div>
-      </div>
-      <?php unset($_SESSION['flash_success']); ?>
-    <?php endif; ?>
-
-    <?php if (!empty($_SESSION['flash_error'])): ?>
-      <div class="alert alert-danger d-flex align-items-center gap-2 mb-4" role="alert" style="border-radius: var(--r-md); background: #FBEAE8; border-color: rgba(180,52,43,.3); color: #B4342B;">
-        <i class="fas fa-circle-exclamation" aria-hidden="true"></i>
-        <div><?= htmlspecialchars($_SESSION['flash_error']) ?></div>
-      </div>
-      <?php unset($_SESSION['flash_error']); ?>
-    <?php endif; ?>
 
     <div class="page-head">
       <p class="eyebrow">Saved for later</p>
