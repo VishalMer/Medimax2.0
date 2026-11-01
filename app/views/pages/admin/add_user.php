@@ -7,25 +7,32 @@
     <p>Create an account for a colleague or a customer. They can change the password after their first sign-in.</p>
   </div>
 
+  <?php if (!empty($_SESSION['flash_error'])): ?>
+    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+      <?= htmlspecialchars($_SESSION['flash_error']) ?>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <?php unset($_SESSION['flash_error']); ?>
+  <?php endif; ?>
+
   <form action="<?= url('admin-add-user-submit') ?>" method="POST">
     <div class="mm-field">
       <label for="name">Full name</label>
-      <input class="mm-input" type="text" id="name" name="name" required data-validation="required alpha min" data-min="2" placeholder="Priya Patel" autocomplete="name">
+      <input class="mm-input" type="text" id="name" name="name" required placeholder="Priya Patel" autocomplete="name">
     </div>
 
     <div class="mm-field">
       <label for="email">Email address</label>
-      <input class="mm-input" type="email" id="email" name="email" required data-validation="required email" placeholder="priya@example.com" autocomplete="email">
+      <input class="mm-input" type="email" id="email" name="email" required placeholder="priya@example.com" autocomplete="email">
     </div>
 
     <div class="mm-field">
       <label for="role">Role</label>
-      <input class="mm-input" type="text" id="role" name="role" list="roleOptions" required data-validation="required alpha" placeholder="customer">
-      <datalist id="roleOptions">
-        <option value="customer">
-        <option value="admin">
-        <option value="owner">
-      </datalist>
+      <select class="mm-input" id="role" name="role" required>
+        <option value="customer" selected>Customer (Storefront shop access)</option>
+        <option value="admin">Administrator (Console management access)</option>
+        <option value="owner">Owner (Full system &amp; roles access)</option>
+      </select>
       <p class="mb-0 mt-2" style="font-size:.76rem;color:var(--ink-40)">
         Customers see the shop only. Admins reach this console. Owners can change roles.
       </p>
@@ -34,7 +41,7 @@
     <div class="mm-field">
       <label for="password">Temporary password</label>
       <div class="mm-field--pw">
-        <input class="mm-input" type="password" id="password" name="password" required data-validation="required strongPassword min max" data-min="8" data-max="25"
+        <input class="mm-input" type="password" id="password" name="password" required minlength="8"
           placeholder="At least 8 characters" autocomplete="new-password">
         <button class="pw-toggle" type="button" data-pw-toggle="password" aria-label="Show password">
           <i class="far fa-eye" aria-hidden="true"></i>

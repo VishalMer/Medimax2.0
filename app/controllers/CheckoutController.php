@@ -125,6 +125,27 @@ class CheckoutController extends Controller {
                             ':sub'   => $pPrice * $pQty
                         ]);
                     }
+
+                    // Log coupon redemption and increment used_count if a coupon was used
+                    if ($couponId && $couponId > 0) {
+                        try {
+                            $redStmt = $pdo->prepare("
+                                INSERT INTO coupon_redemptions (coupon_id, user_id, order_id, discount_amount, redeemed_at)
+                                VALUES (:cid, :uid, :oid, :disc, NOW())
+                            ");
+                            $redStmt->execute([
+                                ':cid'  => $couponId,
+                                ':uid'  => $dbUserId,
+                                ':oid'  => $orderDbId,
+                                ':disc' => (float)$summary['discountAmount']
+                            ]);
+
+                            $updCoupon = $pdo->prepare("UPDATE coupons SET used_count = used_count + 1 WHERE id = :cid");
+                            $updCoupon->execute([':cid' => $couponId]);
+                        } catch (PDOException $e) {
+                            error_log("Failed to record coupon redemption: " . $e->getMessage());
+                        }
+                    }
                 }
             } catch (PDOException $e) {
                 error_log("CheckoutController placeOrder DB error: " . $e->getMessage());

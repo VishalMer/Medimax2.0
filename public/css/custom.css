@@ -1308,21 +1308,27 @@ h4, h5, h6 { font-family: var(--font-body); font-weight: 700; letter-spacing: -.
   height: 100vh;
   overflow-y: auto;
 }
-.admin-rail__brand {
+.admin-rail__brand,
+.admin-rail__brand:hover,
+.admin-rail__brand:focus,
+.admin-rail__brand:active {
   display: flex; align-items: center; gap: .65rem;
   padding: .25rem .4rem 1.15rem;
   font-family: var(--font-display);
   font-variation-settings: 'opsz' 48, 'SOFT' 20, 'WONK' 1;
   font-size: 1.28rem; font-weight: 600;
-  color: #fff; text-decoration: none;
+  color: #fff !important; text-decoration: none !important;
 }
 .admin-rail__brand img { height: 34px; border-radius: 8px; }
-.admin-rail__brand span small {
+.admin-rail__brand span small,
+.admin-rail__brand:hover span small,
+.admin-rail__brand:focus span small,
+.admin-rail__brand:active span small {
   display: block;
   font-family: var(--font-mono);
   font-size: .54rem; font-weight: 500;
   letter-spacing: .2em; text-transform: uppercase;
-  color: var(--teal);
+  color: var(--teal) !important;
 }
 .admin-rail__user {
   display: flex; align-items: center; gap: .75rem;
@@ -1399,6 +1405,8 @@ h4, h5, h6 { font-family: var(--font-body); font-weight: 700; letter-spacing: -.
   border-radius: var(--r-lg);
   box-shadow: var(--sh-1);
   overflow: hidden;
+  text-decoration: none !important;
+  color: inherit;
   transition: transform .28s var(--ease), box-shadow .28s var(--ease), border-color .28s var(--ease);
 }
 .stat-card::before {
@@ -1407,7 +1415,20 @@ h4, h5, h6 { font-family: var(--font-body); font-weight: 700; letter-spacing: -.
 }
 .stat-card--amber::before { background: var(--amber); }
 .stat-card--navy::before { background: var(--navy); }
-.stat-card:hover { transform: translateY(-4px); box-shadow: var(--sh-2); border-color: rgba(112, 171, 175, .55); }
+.stat-card:hover,
+.stat-card:focus {
+  transform: translateY(-4px);
+  box-shadow: var(--sh-2);
+  border-color: rgba(112, 171, 175, .55);
+  text-decoration: none !important;
+  color: inherit;
+}
+.stat-card:hover .stat-card__label,
+.stat-card:hover .stat-card__value,
+.stat-card:focus .stat-card__label,
+.stat-card:focus .stat-card__value {
+  text-decoration: none !important;
+}
 .stat-card__label { font-family: var(--font-mono); font-size: .64rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-60); margin: 0 0 .5rem; }
 .stat-card__value { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 1.65rem; font-weight: 600; letter-spacing: -.03em; color: var(--ink); margin: 0; line-height: 1.05; }
 .stat-card__icon {

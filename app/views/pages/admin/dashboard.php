@@ -94,30 +94,44 @@ foreach ($orders as $o) {
     </a>
   </div>
 
+  <?php
+  $dStats = $discountStats ?? [
+      'active_coupons'    => 0,
+      'total_redemptions' => 0,
+      'discount_given'    => 0.0,
+      'scheduled_offers'  => 0,
+  ];
+  $discGivenAmount = (float)($dStats['discount_given'] ?? 0);
+  $discGivenFormatted = '₹' . number_format($discGivenAmount, ($discGivenAmount == floor($discGivenAmount)) ? 0 : 2);
+  ?>
+
   <div class="stat-grid">
     <?php Controller::component('stat_card', [
         'title' => 'Active Coupons',
-        'value' => 12,
+        'value' => (int)($dStats['active_coupons'] ?? 0),
         'icon'  => 'fas fa-ticket',
-        'link'  => url('admin-discounts'),
+        'link'  => url('admin-discounts') . '&filter=active',
     ]); ?>
     <?php Controller::component('stat_card', [
         'title' => 'Total Redemptions',
-        'value' => 428,
+        'value' => (int)($dStats['total_redemptions'] ?? 0),
         'icon'  => 'fas fa-hand-holding-heart',
         'tone'  => 'navy',
+        'link'  => url('admin-discounts'),
     ]); ?>
     <?php Controller::component('stat_card', [
         'title' => 'Discount Given',
-        'value' => '₹38,450',
+        'value' => $discGivenFormatted,
         'icon'  => 'fas fa-percent',
         'tone'  => 'amber',
+        'link'  => url('admin-discounts'),
     ]); ?>
     <?php Controller::component('stat_card', [
         'title' => 'Scheduled Offers',
-        'value' => 4,
+        'value' => (int)($dStats['scheduled_offers'] ?? 0),
         'icon'  => 'fas fa-calendar-check',
         'tone'  => 'navy',
+        'link'  => url('admin-discounts') . '&filter=scheduled',
     ]); ?>
   </div>
 </section>

@@ -7,11 +7,19 @@
     <p>Changing a role takes effect the next time this person signs in.</p>
   </div>
 
+  <?php if (!empty($_SESSION['flash_error'])): ?>
+    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+      <?= htmlspecialchars($_SESSION['flash_error']) ?>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <?php unset($_SESSION['flash_error']); ?>
+  <?php endif; ?>
+
   <form action="<?= url('admin-edit-user-submit') ?>" method="POST">
-    <input type="hidden" name="id" value="<?= htmlspecialchars($user['id'] ?? '') ?>">
+    <input type="hidden" name="id" value="<?= htmlspecialchars((string)($user['id'] ?? '')) ?>">
 
     <div class="d-flex align-items-center gap-3 mb-4 pb-4" style="border-bottom:1px dashed var(--line-strong)">
-      <img src="<?= profileImage($user['image']) ?>" alt="<?= htmlspecialchars($user['name'] ?? '') ?>" width="52" height="52"
+      <img src="<?= profileImage($user['image'] ?? 'default_pfp.jpg') ?>" alt="<?= htmlspecialchars($user['name'] ?? '') ?>" width="52" height="52"
            style="border-radius:50%;object-fit:cover;border:1px solid var(--line)">
       <div>
         <strong style="display:block;font-size:.95rem"><?= htmlspecialchars($user['name'] ?? '') ?></strong>
@@ -22,24 +30,22 @@
     <div class="mm-field">
       <label for="name">Full name</label>
       <input class="mm-input" type="text" id="name" name="name"
-             value="<?= htmlspecialchars($user['name'] ?? '') ?>" required data-validation="required alpha min" data-min="2" autocomplete="name">
+             value="<?= htmlspecialchars($user['name'] ?? '') ?>" required autocomplete="name">
     </div>
 
     <div class="mm-field">
       <label for="email">Email address</label>
       <input class="mm-input" type="email" id="email" name="email"
-             value="<?= htmlspecialchars($user['email'] ?? '') ?>" required data-validation="required email" autocomplete="email">
+             value="<?= htmlspecialchars($user['email'] ?? '') ?>" required autocomplete="email">
     </div>
 
     <div class="mm-field">
       <label for="role">Role</label>
-      <input class="mm-input" type="text" id="role" name="role" list="roleOptions"
-             value="<?= htmlspecialchars($user['role'] ?? '') ?>" required data-validation="required alpha">
-      <datalist id="roleOptions">
-        <option value="customer">
-        <option value="admin">
-        <option value="owner">
-      </datalist>
+      <select class="mm-input" id="role" name="role" required>
+        <option value="customer" <?= ($user['role'] ?? '') === 'customer' ? 'selected' : '' ?>>Customer</option>
+        <option value="admin" <?= ($user['role'] ?? '') === 'admin' ? 'selected' : '' ?>>Administrator</option>
+        <option value="owner" <?= ($user['role'] ?? '') === 'owner' ? 'selected' : '' ?>>Owner</option>
+      </select>
     </div>
 
     <div class="form-actions">

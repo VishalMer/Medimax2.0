@@ -1,20 +1,69 @@
 <?php
 ob_start();
-$rows = $coupons ?? [];
+$allRows = $coupons ?? [];
+$filter = strtolower(trim($_GET['filter'] ?? 'all'));
+
 $activeCount = 0;
-foreach ($rows as $c) {
-    if (!empty($c['isActive'])) { $activeCount++; }
+$scheduledCount = 0;
+foreach ($allRows as $c) {
+    $isActive = !empty($c['isActive']);
+    $isExpired = !empty($c['expiryDate']) && strtotime($c['expiryDate']) < strtotime('today');
+    if ($isActive && !$isExpired) {
+        $activeCount++;
+    } else {
+        $scheduledCount++;
+    }
 }
+
+$rows = array_filter($allRows, function ($c) use ($filter) {
+    $isActive = !empty($c['isActive']);
+    $isExpired = !empty($c['expiryDate']) && strtotime($c['expiryDate']) < strtotime('today');
+    if ($filter === 'active') {
+        return $isActive && !$isExpired;
+    }
+    if ($filter === 'scheduled' || $filter === 'inactive') {
+        return !$isActive || $isExpired;
+    }
+    return true;
+});
 ?>
+
+<?php if (!empty($_SESSION['flash_success'])): ?>
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <?= htmlspecialchars($_SESSION['flash_success']) ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <?php unset($_SESSION['flash_success']); ?>
+<?php endif; ?>
+
+<?php if (!empty($_SESSION['flash_error'])): ?>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <?= htmlspecialchars($_SESSION['flash_error']) ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <?php unset($_SESSION['flash_error']); ?>
+<?php endif; ?>
 
 <div class="admin-section-head">
   <div>
     <p class="eyebrow">Marketing</p>
     <h2 class="title-section mt-2 mb-0">Discount & Coupons</h2>
-    <p><span class="num"><?= count($rows) ?></span> campaigns (<span class="num"><?= $activeCount ?></span> active).</p>
+    <p><span class="num"><?= count($allRows) ?></span> campaigns (<span class="num"><?= $activeCount ?></span> active, <span class="num"><?= $scheduledCount ?></span> scheduled/inactive).</p>
   </div>
   <a class="btn-mm btn-mm-amber btn-mm-sm" href="<?= url('admin-add-discount') ?>">
     <i class="fas fa-plus" aria-hidden="true"></i><span>Add discount</span>
+  </a>
+</div>
+
+<div class="d-flex gap-2 mb-3">
+  <a href="<?= url('admin-discounts') ?>" class="btn-mm <?= $filter === 'all' ? 'btn-mm-primary' : 'btn-mm-light' ?> btn-mm-sm">
+    All (<?= count($allRows) ?>)
+  </a>
+  <a href="<?= url('admin-discounts') ?>&amp;filter=active" class="btn-mm <?= $filter === 'active' ? 'btn-mm-primary' : 'btn-mm-light' ?> btn-mm-sm">
+    Active (<?= $activeCount ?>)
+  </a>
+  <a href="<?= url('admin-discounts') ?>&amp;filter=scheduled" class="btn-mm <?= ($filter === 'scheduled' || $filter === 'inactive') ? 'btn-mm-primary' : 'btn-mm-light' ?> btn-mm-sm">
+    Scheduled / Inactive (<?= $scheduledCount ?>)
   </a>
 </div>
 
@@ -27,6 +76,7 @@ foreach ($rows as $c) {
           <th scope="col">Type</th>
           <th scope="col">Discount</th>
           <th scope="col">Min. Order</th>
+          <th scope="col">Redemptions</th>
           <th scope="col">Valid Until</th>
           <th scope="col">Status</th>
           <th scope="col" class="text-end">Actions</th>
@@ -39,6 +89,8 @@ foreach ($rows as $c) {
               $cId = (int)($c['id'] ?? 0);
               $isActive = !empty($c['isActive']);
               $code = $c['code'] ?? '';
+              $usedCount = (int)($c['usedCount'] ?? 0);
+              $usageLimit = !empty($c['usageLimit']) ? (int)$c['usageLimit'] : null;
             ?>
             <tr id="discount-row-<?= $cId ?>" class="<?= $isActive ? '' : 'is-row-inactive' ?>">
               <td>
@@ -53,6 +105,9 @@ foreach ($rows as $c) {
                 <?php endif; ?>
               </td>
               <td><span class="num">&#8377;<?= number_format((float) ($c['minimumOrderValue'] ?? 0), 2) ?></span></td>
+              <td>
+                <span class="num"><?= $usedCount ?></span><?= $usageLimit ? ' / ' . $usageLimit : '' ?>
+              </td>
               <td><span class="num"><?= !empty($c['expiryDate']) ? date('d M Y', strtotime($c['expiryDate'])) : 'N/A' ?></span></td>
               <td>
                 <button type="button" 
@@ -82,9 +137,9 @@ foreach ($rows as $c) {
           <?php endforeach; ?>
         <?php else: ?>
           <tr>
-            <td colspan="7" class="mm-table__empty">
+            <td colspan="8" class="mm-table__empty">
               <i class="fas fa-ticket" aria-hidden="true"></i>
-              No discounts yet. <a href="<?= url('admin-add-discount') ?>">Add the first one</a>.
+              No <?= $filter !== 'all' ? htmlspecialchars($filter) : '' ?> discounts found. <a href="<?= url('admin-add-discount') ?>">Add a discount</a>.
             </td>
           </tr>
         <?php endif; ?>

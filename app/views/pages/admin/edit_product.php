@@ -1,4 +1,7 @@
-<?php ob_start(); ?>
+<?php 
+ob_start(); 
+$catList = $categories ?? [];
+?>
 
 <div class="form-card">
   <div class="form-card__head">
@@ -7,24 +10,63 @@
     <p>Changes go live on the shelf immediately. Leave the image empty to keep the current one.</p>
   </div>
 
+  <?php if (!empty($_SESSION['flash_error'])): ?>
+    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+      <?= htmlspecialchars($_SESSION['flash_error']) ?>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <?php unset($_SESSION['flash_error']); ?>
+  <?php endif; ?>
+
   <form action="<?= url('admin-edit-product-submit') ?>" method="POST" enctype="multipart/form-data">
-    <input type="hidden" name="id" value="<?= htmlspecialchars($product['id'] ?? '') ?>">
+    <input type="hidden" name="id" value="<?= htmlspecialchars((string)($product['id'] ?? '')) ?>">
 
     <div class="mm-field">
       <label for="name">Product name</label>
       <input class="mm-input" type="text" id="name" name="name"
-             value="<?= htmlspecialchars($product['name'] ?? '') ?>" required data-validation="required min max" data-min="2" data-max="150">
+             value="<?= htmlspecialchars($product['name'] ?? '') ?>" required>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mm-field">
+        <label for="price">Price (&#8377;)</label>
+        <input class="mm-input num" type="number" id="price" name="price" step="0.01" min="0"
+               value="<?= htmlspecialchars((string) ($product['price'] ?? '')) ?>" required>
+      </div>
+
+      <div class="col-md-6 mm-field">
+        <label for="stock_quantity">Stock quantity</label>
+        <input class="mm-input num" type="number" id="stock_quantity" name="stock_quantity" min="0"
+               value="<?= htmlspecialchars((string) ($product['stock_quantity'] ?? 50)) ?>" required>
+      </div>
     </div>
 
     <div class="mm-field">
-      <label for="price">Price (&#8377;)</label>
-      <input class="mm-input num" type="number" id="price" name="price" step="0.01" min="0"
-             value="<?= htmlspecialchars((string) ($product['price'] ?? '')) ?>" required data-validation="required">
+      <label for="category_id">Category / Shelf</label>
+      <select class="mm-input" id="category_id" name="category_id" required>
+        <?php if (!empty($catList)): ?>
+          <?php foreach ($catList as $c): ?>
+            <option value="<?= (int)$c['id'] ?>" <?= ((int)($product['category_id'] ?? 0) === (int)$c['id']) ? 'selected' : '' ?>>
+              <?= htmlspecialchars($c['name']) ?>
+            </option>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <option value="1">Vitamins</option>
+          <option value="2">Supplements</option>
+          <option value="3">Skincare</option>
+          <option value="4">Hair Care</option>
+          <option value="5">First Aid</option>
+          <option value="6">Baby Care</option>
+          <option value="7">Personal Care</option>
+          <option value="8">Beverages</option>
+          <option value="9">Ayurveda &amp; Herbal</option>
+        <?php endif; ?>
+      </select>
     </div>
 
     <div class="mm-field">
-      <label for="image">Replace image</label>
-      <input class="mm-input" type="file" id="image" name="image" accept="image/*" data-validation="file filesize" data-filesize="2048" data-filetypes="jpg,jpeg,png,webp">
+      <label for="image">Replace image (optional)</label>
+      <input class="mm-input" type="file" id="image" name="image" accept="image/*">
     </div>
 
     <?php if (!empty($product['image'])): ?>

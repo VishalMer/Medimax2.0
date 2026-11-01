@@ -12,6 +12,22 @@ foreach ($rows as $o) {
 }
 ?>
 
+<?php if (!empty($_SESSION['flash_success'])): ?>
+  <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+    <?= htmlspecialchars($_SESSION['flash_success']) ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <?php unset($_SESSION['flash_success']); ?>
+<?php endif; ?>
+
+<?php if (!empty($_SESSION['flash_error'])): ?>
+  <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+    <?= htmlspecialchars($_SESSION['flash_error']) ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <?php unset($_SESSION['flash_error']); ?>
+<?php endif; ?>
+
 <div class="admin-section-head">
   <div>
     <p class="eyebrow">Fulfilment</p>
@@ -34,7 +50,7 @@ foreach ($rows as $o) {
 
 <div class="mm-table-wrap">
   <div class="mm-table-scroll">
-    <table class="mm-table">
+    <table class="mm-table" id="ordersTable">
       <thead>
         <tr>
           <th scope="col">Order</th>
@@ -60,7 +76,7 @@ foreach ($rows as $o) {
               $stamp = strtotime((string) ($order['placed_on'] ?? '')) ?: null;
               $delTone = $del === 'Delivered' ? 'ok' : ($del === 'Shipped' ? 'info' : 'warn');
             ?>
-            <tr>
+            <tr id="order-row-<?= $oId ?>">
               <td>
                 <span class="mm-table__id">#MX-<?= str_pad((string) $oId, 4, '0', STR_PAD_LEFT) ?></span><br>
                 <span style="font-size:.7rem;color:var(--ink-40)">user <?= htmlspecialchars((string) ($order['user_id'] ?? '—')) ?></span>
@@ -80,7 +96,7 @@ foreach ($rows as $o) {
               <td>
                 <span class="pill pill--<?= $pay === 'Completed' ? 'ok' : 'warn' ?>"><?= htmlspecialchars($pay) ?></span>
                 <?php if ($pay !== 'Completed'): ?>
-                  <button type="button" class="btn-mm btn-mm-light btn-mm-sm mt-2" data-mark="payment" data-order="<?= $oId ?>">
+                  <button type="button" class="btn-mm btn-mm-light btn-mm-sm mt-2 btn-mark-order" data-mark="payment" data-order="<?= $oId ?>">
                     <i class="fas fa-check" aria-hidden="true"></i><span>Mark paid</span>
                   </button>
                 <?php endif; ?>
@@ -88,7 +104,7 @@ foreach ($rows as $o) {
               <td>
                 <span class="pill pill--<?= $delTone ?>"><?= htmlspecialchars($del) ?></span>
                 <?php if ($del !== 'Delivered'): ?>
-                  <button type="button" class="btn-mm btn-mm-light btn-mm-sm mt-2" data-mark="delivery" data-order="<?= $oId ?>">
+                  <button type="button" class="btn-mm btn-mm-light btn-mm-sm mt-2 btn-mark-order" data-mark="delivery" data-order="<?= $oId ?>">
                     <i class="fas fa-check" aria-hidden="true"></i><span>Mark delivered</span>
                   </button>
                 <?php endif; ?>
@@ -102,9 +118,9 @@ foreach ($rows as $o) {
                 <?php endif; ?>
               </td>
               <td class="is-actions text-end">
-                <button type="button" class="btn-mm btn-mm-danger btn-mm-sm"
+                <button type="button" class="btn-mm btn-mm-danger btn-mm-sm btn-remove-order"
                         data-remove-order="<?= $oId ?>">
-                  <i class="fa-solid fa-trash" aria-hidden="true"></i><span>Remove</span>
+                  <i class="fa-solid fa-ban" aria-hidden="true"></i><span>Cancel</span>
                 </button>
               </td>
             </tr>
@@ -122,9 +138,46 @@ foreach ($rows as $o) {
   </div>
 </div>
 
-<p class="mt-3 mb-0" style="font-size:.78rem;color:var(--ink-40)">
-  Status changes and removals are not wired to routes in this build &mdash; the buttons confirm the intent and report it.
-</p>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  function handleOrderAction(orderId, action) {
+    var url = '<?= url("admin-update-order-status") ?>&action=' + encodeURIComponent(action) + '&order_id=' + encodeURIComponent(orderId) + '&ajax=1';
+    fetch(url, {
+      method: 'POST',
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.success) {
+        window.location.reload();
+      } else {
+        alert(data.message || 'Operation failed.');
+      }
+    })
+    .catch(function(err) {
+      console.error(err);
+      window.location.reload();
+    });
+  }
+
+  document.querySelectorAll('.btn-mark-order').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var oId = this.getAttribute('data-order');
+      var type = this.getAttribute('data-mark');
+      handleOrderAction(oId, type === 'payment' ? 'mark_payment' : 'mark_delivery');
+    });
+  });
+
+  document.querySelectorAll('.btn-remove-order').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var oId = this.getAttribute('data-remove-order');
+      if (confirm('Are you sure you want to cancel order #MX-' + oId.padStart(4, '0') + '?')) {
+        handleOrderAction(oId, 'remove_order');
+      }
+    });
+  });
+});
+</script>
 
 <?php
 $pageContent = ob_get_clean();

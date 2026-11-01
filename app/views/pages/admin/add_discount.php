@@ -7,7 +7,7 @@
     <p>Create a new coupon code to offer discounts to customers.</p>
   </div>
 
-  <form action="#" method="POST">
+  <form action="<?= url('admin-add-discount') ?>" method="POST">
     <div class="mm-field">
       <label for="code">Coupon Code</label>
       <input class="mm-input" type="text" id="code" name="code" required placeholder="e.g. SUMMER20" style="text-transform: uppercase;">
@@ -64,7 +64,7 @@
     </div>
 
     <div class="form-actions mt-4">
-      <button type="button" class="btn-mm btn-mm-primary btn-mm-lg btn-mm-block" onclick="window.MediMax.toast('Discount created successfully (Demo)', 'fa-check'); setTimeout(() => window.location.href='<?= url('admin-discounts') ?>', 1000);">
+      <button type="submit" class="btn-mm btn-mm-primary btn-mm-lg btn-mm-block">
         <i class="fas fa-plus" aria-hidden="true"></i><span>Create discount</span>
       </button>
       <a class="btn-mm btn-mm-ghost btn-mm-block" href="<?= url('admin-discounts') ?>">
