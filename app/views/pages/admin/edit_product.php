@@ -10,14 +10,6 @@ $catList = $categories ?? [];
     <p>Changes go live on the shelf immediately. Leave the image empty to keep the current one.</p>
   </div>
 
-  <?php if (!empty($_SESSION['flash_error'])): ?>
-    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-      <?= htmlspecialchars($_SESSION['flash_error']) ?>
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <?php unset($_SESSION['flash_error']); ?>
-  <?php endif; ?>
-
   <form action="<?= url('admin-edit-product-submit') ?>" method="POST" enctype="multipart/form-data">
     <input type="hidden" name="id" value="<?= htmlspecialchars((string)($product['id'] ?? '')) ?>">
 

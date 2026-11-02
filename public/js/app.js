@@ -44,6 +44,62 @@
       });
     }
 
+    /* --- Admin Rail: Preserve scroll position & mobile drawer toggle --- */
+    var adminRail = document.getElementById('adminRail');
+    var adminBurger = document.querySelector('.admin-burger');
+    var adminScrim = document.querySelector('.admin-scrim');
+
+    if (adminRail) {
+      // 1. Restore scroll position
+      var savedScroll = sessionStorage.getItem('adminRailScroll');
+      if (savedScroll !== null) {
+        adminRail.scrollTop = parseInt(savedScroll, 10);
+        requestAnimationFrame(function () {
+          adminRail.scrollTop = parseInt(savedScroll, 10);
+        });
+      } else {
+        var activeLink = adminRail.querySelector('.rail-link.is-active');
+        if (activeLink) {
+          activeLink.scrollIntoView({ block: 'nearest' });
+        }
+      }
+
+      // 2. Save scroll position on link click
+      adminRail.addEventListener('click', function (e) {
+        var link = e.target.closest('a.rail-link');
+        if (link) {
+          if (link.classList.contains('is-exit')) {
+            sessionStorage.removeItem('adminRailScroll');
+          } else {
+            sessionStorage.setItem('adminRailScroll', adminRail.scrollTop);
+          }
+        }
+      });
+
+      // 3. Also save scroll position on beforeunload
+      window.addEventListener('beforeunload', function () {
+        if (adminRail) {
+          sessionStorage.setItem('adminRailScroll', adminRail.scrollTop);
+        }
+      });
+
+      // 4. Mobile drawer toggle
+      if (adminBurger) {
+        adminBurger.addEventListener('click', function () {
+          var open = adminRail.classList.toggle('is-open');
+          if (adminScrim) adminScrim.classList.toggle('is-open', open);
+          adminBurger.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+      }
+      if (adminScrim) {
+        adminScrim.addEventListener('click', function () {
+          adminRail.classList.remove('is-open');
+          adminScrim.classList.remove('is-open');
+          if (adminBurger) adminBurger.setAttribute('aria-expanded', 'false');
+        });
+      }
+    }
+
     /* --- Password visibility toggler ---------------------------------- */
     document.querySelectorAll('.pw-toggle').forEach(function (btn) {
       btn.addEventListener('click', function () {

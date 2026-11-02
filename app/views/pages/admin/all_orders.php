@@ -12,22 +12,6 @@ foreach ($rows as $o) {
 }
 ?>
 
-<?php if (!empty($_SESSION['flash_success'])): ?>
-  <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
-    <?= htmlspecialchars($_SESSION['flash_success']) ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <?php unset($_SESSION['flash_success']); ?>
-<?php endif; ?>
-
-<?php if (!empty($_SESSION['flash_error'])): ?>
-  <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-    <?= htmlspecialchars($_SESSION['flash_error']) ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <?php unset($_SESSION['flash_error']); ?>
-<?php endif; ?>
-
 <div class="admin-section-head">
   <div>
     <p class="eyebrow">Fulfilment</p>
@@ -151,7 +135,11 @@ document.addEventListener('DOMContentLoaded', function () {
       if (data.success) {
         window.location.reload();
       } else {
-        alert(data.message || 'Operation failed.');
+        if (window.MediMax && window.MediMax.toast) {
+          window.MediMax.toast(data.message || 'Operation failed.', 'fa-circle-exclamation');
+        } else {
+          alert(data.message || 'Operation failed.');
+        }
       }
     })
     .catch(function(err) {

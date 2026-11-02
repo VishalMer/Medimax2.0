@@ -283,6 +283,66 @@ class AuthController extends Controller {
                 $errors[] = 'Please enter a valid phone number (8 to 20 digits, spaces or dashes).';
             }
 
+            $currentImage = $user['image'] ?? 'default_pfp.jpg';
+            $imageName = $currentImage;
+            $removeImage = !empty($_POST['remove_image']);
+
+            // Handle Profile Picture Upload
+            if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
+                $file = $_FILES['image'];
+                if ($file['error'] !== UPLOAD_ERR_OK) {
+                    $errors[] = 'Failed to upload profile picture. Please try again.';
+                } else {
+                    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                    $allowedExts = ['jpg', 'jpeg', 'png', 'webp'];
+                    if (!in_array($ext, $allowedExts, true)) {
+                        $errors[] = 'Only JPG, JPEG, PNG, or WebP image files are allowed.';
+                    } elseif ($file['size'] > 2 * 1024 * 1024) {
+                        $errors[] = 'Profile picture file size must not exceed 2MB.';
+                    } else {
+                        $imgInfo = @getimagesize($file['tmp_name']);
+                        if ($imgInfo === false) {
+                            $errors[] = 'The uploaded file is not a valid image.';
+                        } else {
+                            $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+                            if (!in_array($imgInfo['mime'], $allowedMimes, true)) {
+                                $errors[] = 'The uploaded image format is not supported.';
+                            }
+                        }
+                    }
+
+                    if (empty($errors)) {
+                        $targetDir = PUBLIC_PATH . '/images/profiles/';
+                        if (!is_dir($targetDir)) {
+                            mkdir($targetDir, 0755, true);
+                        }
+                        $targetFileName = 'avatar_' . $userId . '_' . time() . '.' . $ext;
+                        $saved = false;
+                        if (is_uploaded_file($file['tmp_name'])) {
+                            $saved = move_uploaded_file($file['tmp_name'], $targetDir . $targetFileName);
+                        } else {
+                            $saved = @copy($file['tmp_name'], $targetDir . $targetFileName);
+                        }
+
+                        if ($saved) {
+                            // Delete previous uploaded avatar if it was custom for this user
+                            if (!empty($currentImage) && $currentImage !== 'default_pfp.jpg' && $currentImage !== $targetFileName && str_starts_with($currentImage, 'avatar_' . $userId . '_') && file_exists($targetDir . $currentImage)) {
+                                @unlink($targetDir . $currentImage);
+                            }
+                            $imageName = $targetFileName;
+                        } else {
+                            $errors[] = 'Failed to save uploaded profile picture.';
+                        }
+                    }
+                }
+            } elseif ($removeImage) {
+                $imageName = 'default_pfp.jpg';
+                $targetDir = PUBLIC_PATH . '/images/profiles/';
+                if (!empty($currentImage) && $currentImage !== 'default_pfp.jpg' && str_starts_with($currentImage, 'avatar_' . $userId . '_') && file_exists($targetDir . $currentImage)) {
+                    @unlink($targetDir . $currentImage);
+                }
+            }
+
             if (!empty($errors)) {
                 $errorMessage = implode('<br>', $errors);
                 // Retain entered values so inputs are not lost
@@ -291,18 +351,21 @@ class AuthController extends Controller {
             } else {
                 if ($pdo) {
                     try {
-                        $upd = $pdo->prepare("UPDATE users SET name = :name, phone = :phone, updated_at = NOW() WHERE id = :id");
+                        $upd = $pdo->prepare("UPDATE users SET name = :name, phone = :phone, image = :image, updated_at = NOW() WHERE id = :id");
                         $upd->execute([
                             ':name'  => !empty($name) ? $name : null,
                             ':phone' => !empty($phone) ? $phone : null,
+                            ':image' => $imageName,
                             ':id'    => $userId
                         ]);
 
                         // Update session so header updates immediately
                         $_SESSION['user']['name'] = !empty($name) ? $name : null;
                         $_SESSION['user']['phone'] = !empty($phone) ? $phone : null;
+                        $_SESSION['user']['image'] = $imageName;
                         $user['name'] = !empty($name) ? $name : null;
                         $user['phone'] = !empty($phone) ? $phone : null;
+                        $user['image'] = $imageName;
 
                         $_SESSION['flash_toast'] = [
                             'message' => 'Profile updated successfully!',

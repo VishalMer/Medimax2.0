@@ -54,7 +54,11 @@ function productImage($filename) {
 }
 
 function profileImage($filename) {
-    return asset('images/profiles/' . ltrim((string)$filename, '/'));
+    $file = trim((string)$filename);
+    if ($file === '') {
+        $file = 'default_pfp.jpg';
+    }
+    return asset('images/profiles/' . ltrim($file, '/'));
 }
 
 function brandAsset($filename) {

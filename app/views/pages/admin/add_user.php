@@ -7,14 +7,6 @@
     <p>Create an account for a colleague or a customer. They can change the password after their first sign-in.</p>
   </div>
 
-  <?php if (!empty($_SESSION['flash_error'])): ?>
-    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-      <?= htmlspecialchars($_SESSION['flash_error']) ?>
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <?php unset($_SESSION['flash_error']); ?>
-  <?php endif; ?>
-
   <form action="<?= url('admin-add-user-submit') ?>" method="POST">
     <div class="mm-field">
       <label for="name">Full name</label>

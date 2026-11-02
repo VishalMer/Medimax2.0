@@ -10,14 +10,6 @@ $catList = $categories ?? [];
     <p>It appears on the shelf as soon as it is saved. Prices are in rupees, inclusive of tax.</p>
   </div>
 
-  <?php if (!empty($_SESSION['flash_error'])): ?>
-    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-      <?= htmlspecialchars($_SESSION['flash_error']) ?>
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <?php unset($_SESSION['flash_error']); ?>
-  <?php endif; ?>
-
   <form action="<?= url('admin-add-product-submit') ?>" method="POST" enctype="multipart/form-data">
     <div class="mm-field">
       <label for="name">Product name</label>

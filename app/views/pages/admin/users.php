@@ -20,22 +20,6 @@ $roleTone = static function (string $role): string {
 };
 ?>
 
-<?php if (!empty($_SESSION['flash_success'])): ?>
-  <div class="alert alert-success alert-dismissible fade show" role="alert">
-    <?= htmlspecialchars($_SESSION['flash_success']) ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <?php unset($_SESSION['flash_success']); ?>
-<?php endif; ?>
-
-<?php if (!empty($_SESSION['flash_error'])): ?>
-  <div class="alert alert-danger alert-dismissible fade show" role="alert">
-    <?= htmlspecialchars($_SESSION['flash_error']) ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <?php unset($_SESSION['flash_error']); ?>
-<?php endif; ?>
-
 <div class="admin-section-head">
   <div>
     <p class="eyebrow">People</p>
@@ -154,8 +138,15 @@ document.addEventListener('DOMContentLoaded', function () {
     .then(function (data) {
       if (data.success && typeof callback === 'function') {
         callback(data);
+        if (window.MediMax && window.MediMax.toast) {
+          window.MediMax.toast(data.message || 'Status updated successfully.', 'fa-circle-check');
+        }
       } else if (!data.success) {
-        alert(data.message || 'Operation failed.');
+        if (window.MediMax && window.MediMax.toast) {
+          window.MediMax.toast(data.message || 'Operation failed.', 'fa-circle-exclamation');
+        } else {
+          alert(data.message || 'Operation failed.');
+        }
       }
     })
     .catch(function (err) {
