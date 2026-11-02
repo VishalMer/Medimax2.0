@@ -40,6 +40,7 @@ $router->register('setup-db', 'HomeController', 'setupDatabase');
 $router->register('create-database', 'HomeController', 'setupDatabase');
 $router->register('login', 'AuthController', 'login');
 $router->register('register', 'AuthController', 'register');
+$router->register('forgot-password', 'AuthController', 'forgotPassword');
 $router->register('logout', 'AuthController', 'logout');
 $router->register('profile', 'AuthController', 'profile');
 $router->register('edit-profile', 'AuthController', 'profile');
@@ -73,4 +74,6 @@ $router->register('admin-add-discount', 'AdminController', 'addDiscount');
 $router->register('admin-edit-discount', 'AdminController', 'editDiscount');
 $router->register('admin-toggle-status', 'AdminController', 'toggleStatus');
 $router->register('user-deactivate-profile', 'AuthController', 'deactivateProfile');
+$router->register('delete-account', 'AuthController', 'deactivateProfile');
+$router->register('deactivate-account', 'AuthController', 'deactivateProfile');
 

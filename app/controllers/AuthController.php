@@ -96,6 +96,29 @@ class AuthController extends Controller {
             'old'            => ['identifier' => $_POST['identifier'] ?? '']
         ]);
     }
+
+    /**
+     * Display forgot password page (UI design preview)
+     */
+    public function forgotPassword() {
+        if (!empty($_SESSION['user'])) {
+            header('Location: ' . url());
+            exit;
+        }
+
+        $sent = isset($_GET['sent']) && $_GET['sent'] == '1';
+        $identifier = trim($_POST['identifier'] ?? $_GET['email'] ?? '');
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $sent = true;
+        }
+
+        $this->view('pages/forgot_password', [
+            'pageTitle'      => 'Forgot Password - MediMax.com',
+            'sent'           => $sent,
+            'submittedEmail' => !empty($identifier) ? $identifier : 'user@example.com'
+        ]);
+    }
     
     /**
      * Display registration form or process new user registration
@@ -587,14 +610,31 @@ class AuthController extends Controller {
             }
         }
 
-        // Destroy session so user is logged out immediately
-        unset($_SESSION['user']);
+        // Wipe all session variables
+        $_SESSION = [];
+
+        // Expire the session cookie in the client browser
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
+        }
+
         session_destroy();
 
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        $_SESSION['flash_success'] = 'Your profile has been deactivated. Your account data has been safely preserved, but you cannot log in until an administrator reactivates your account.';
+        // Initialize a clean session for the flash notification
+        session_start();
+        session_regenerate_id(true);
+
+        $_SESSION['flash_toast'] = [
+            'message' => 'Your account has been deactivated successfully.',
+            'icon'    => 'fa-circle-check',
+            'type'    => 'success'
+        ];
+        $_SESSION['flash_success'] = 'Your account has been deactivated. Your data has been safely preserved, but you cannot log in until an administrator reactivates your account.';
+
         header('Location: ' . url('login'));
         exit;
     }

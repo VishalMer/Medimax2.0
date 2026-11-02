@@ -85,7 +85,7 @@
         <p class="error-text" id="passwordError" aria-live="polite"></p>
 
         <p class="text-end mb-3" style="font-size:.82rem">
-          <a href="#" style="color:var(--navy);font-weight:600;text-decoration:none">Forgot your password?</a>
+          <a href="<?= url('forgot-password') ?>" style="color:var(--navy);font-weight:600;text-decoration:none">Forgot your password?</a>
         </p>
 
         <button type="submit" class="btn-mm btn-mm-primary btn-mm-lg btn-mm-block">

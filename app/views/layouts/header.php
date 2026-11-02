@@ -127,6 +127,7 @@ $navUserFirst      = $navUser ? strtok($displayHeaderName, ' ') : 'Sign in';
     <?php endif; ?>
     <a href="<?= url('contact') ?>"><i class="fas fa-headset" aria-hidden="true"></i> Support</a>
     <hr class="label-rule my-1">
+    <a class="is-exit" href="<?= url('delete-account') ?>" data-confirm="Are you sure you want to delete and deactivate your account? You will be signed out immediately."><i class="fas fa-user-xmark" aria-hidden="true"></i> Delete account</a>
     <a class="is-exit" href="<?= url('logout') ?>"><i class="fas fa-right-from-bracket" aria-hidden="true"></i> Log out</a>
   <?php else: ?>
     <div class="account-menu__head">
