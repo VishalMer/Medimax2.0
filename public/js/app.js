@@ -277,25 +277,19 @@
 
     /* --- Wishlist Heart Toggle Handler (data-act="fav") --------------- */
     function updateHeaderWishlistBadge(count) {
-      var badge = document.getElementById('headerWishlistCount');
-      if (!badge) return;
-      badge.textContent = count;
-      if (count > 0) {
-        badge.style.display = '';
-      } else {
-        badge.style.display = 'none';
-      }
+      var badges = document.querySelectorAll('#headerWishlistCount, #headerWishlistCountMobile');
+      badges.forEach(function (badge) {
+        badge.textContent = count;
+        badge.style.display = count > 0 ? '' : 'none';
+      });
     }
 
     function updateHeaderCartBadge(count) {
-      var badge = document.getElementById('headerCartCount');
-      if (!badge) return;
-      badge.textContent = count;
-      if (count > 0) {
-        badge.style.display = '';
-      } else {
-        badge.style.display = 'none';
-      }
+      var badges = document.querySelectorAll('#headerCartCount, #headerCartCountMobile');
+      badges.forEach(function (badge) {
+        badge.textContent = count;
+        badge.style.display = count > 0 ? '' : 'none';
+      });
     }
 
     document.addEventListener('click', function (e) {
