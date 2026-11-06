@@ -148,7 +148,14 @@
           var field = $(input);
           var value = field.val() ? String(field.val()).trim() : '';
           var errorSpan = $('#' + (field.attr('id') || field.attr('name')) + 'Error');
-          if (!errorSpan.length) errorSpan = field.siblings('.validation-error').first();
+          if (!errorSpan.length) errorSpan = field.siblings('.validation-error, .error-text').first();
+          if (!errorSpan.length) {
+            var group = field.closest('.input-group, .mm-input-group, .mm-field--pw');
+            if (group.length) errorSpan = group.siblings('.validation-error, .error-text').first();
+          }
+          if (!errorSpan.length) {
+            errorSpan = field.closest('.mm-field, .form-group, .mb-3, .col-md-6, .col-12').find('.validation-error, .error-text').first();
+          }
           var validationType = field.data('validation') || '';
           var minLength = field.data('min') || 0;
           var maxLength = field.data('max') || 9999;
@@ -219,13 +226,25 @@
           return !errorMessage;
         }
 
-        $('input, textarea, select').each(function () {
-          var field = $(this);
-          if (!field.data('validation')) return;
-          if (!field.siblings('.validation-error').length &&
-              !$('#' + (field.attr('id') || field.attr('name')) + 'Error').length) {
-            $('<span class="validation-error error-text" role="alert"></span>').insertAfter(field);
+        function initFieldValidation(field) {
+          if (field.prop('required') && !field.data('validation')) {
+            field.attr('data-validation', 'required');
           }
+          if (!field.data('validation')) return;
+
+          var target = field;
+          var group = field.closest('.input-group, .mm-input-group, .mm-field--pw');
+          if (group.length) target = group;
+
+          var existing = $('#' + (field.attr('id') || field.attr('name')) + 'Error');
+          if (!existing.length) existing = target.siblings('.validation-error, .error-text');
+          if (!existing.length) {
+            $('<span class="validation-error error-text" role="alert"></span>').insertAfter(target);
+          }
+        }
+
+        $('input, textarea, select').each(function () {
+          initFieldValidation($(this));
         });
 
         $(document).on('input change blur', 'input, textarea, select', function () {
@@ -236,7 +255,11 @@
           var form = this;
           var isValid = true;
           $(form).find('input, textarea, select').each(function () {
-            if ($(this).data('validation') && !validateField(this)) isValid = false;
+            var f = $(this);
+            if (f.prop('required') && !f.data('validation')) {
+              initFieldValidation(f);
+            }
+            if (f.data('validation') && !validateField(this)) isValid = false;
           });
           if (!isValid) {
             e.preventDefault();

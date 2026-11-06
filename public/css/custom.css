@@ -910,6 +910,76 @@ h4, h5, h6 { font-family: var(--font-body); font-weight: 700; letter-spacing: -.
 .mm-input:disabled, .mm-field .form-control:disabled { background: var(--mist); color: var(--ink-40); cursor: not-allowed; }
 .mm-hint { display: block; margin-top: .4rem; font-size: .76rem; color: var(--ink-40); }
 
+/* --- Form Validation Errors & Warnings (Both User & Admin Panels) ---- */
+.error-text,
+.validation-error,
+.invalid-feedback,
+.field-error,
+.form-error,
+[id$="Error"],
+[id$="-error"],
+span.error-text,
+p.error-text,
+span.validation-error {
+  display: block;
+  color: var(--danger, #B4342B) !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  margin-top: 0.35rem;
+  margin-bottom: 0.25rem;
+}
+
+.error-text:empty,
+.validation-error:empty,
+.invalid-feedback:empty,
+.field-error:empty,
+.form-error:empty,
+[id$="Error"]:empty,
+[id$="-error"]:empty {
+  display: none !important;
+  margin: 0 !important;
+}
+
+/* Invalid Input Highlighting (Both User & Admin Panels) */
+.mm-input.is-invalid,
+.form-control.is-invalid,
+.form-select.is-invalid,
+textarea.is-invalid,
+select.is-invalid,
+input.is-invalid,
+.mm-field .mm-input.is-invalid,
+.mm-field .form-control.is-invalid,
+.mm-field .form-select.is-invalid,
+.mm-field textarea.is-invalid {
+  border-color: var(--danger, #B4342B) !important;
+  box-shadow: 0 0 0 3px rgba(180, 52, 43, 0.15) !important;
+}
+
+.mm-input.is-invalid:focus,
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus,
+textarea.is-invalid:focus,
+select.is-invalid:focus,
+input.is-invalid:focus,
+.mm-field .mm-input.is-invalid:focus,
+.mm-field .form-control.is-invalid:focus,
+.mm-field .form-select.is-invalid:focus,
+.mm-field textarea.is-invalid:focus {
+  border-color: var(--danger, #B4342B) !important;
+  box-shadow: 0 0 0 4px rgba(180, 52, 43, 0.22) !important;
+}
+
+/* Form alert error boxes */
+.alert-danger {
+  color: var(--danger, #B4342B) !important;
+  background-color: var(--danger-bg, #FBEAE8) !important;
+  border-color: rgba(180, 52, 43, 0.25) !important;
+}
+.alert-danger i {
+  color: var(--danger, #B4342B) !important;
+}
+
 /* --- Input Group & Prefixes (@username handle) --------------------- */
 .mm-input-group,
 .mm-field .input-group {
